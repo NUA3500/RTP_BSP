@@ -183,9 +183,14 @@ IRQn_Type;
 /*                            Register definitions                            */
 /******************************************************************************/
 
+#include "whc_reg.h"
+#include "hwsem_reg.h"
 ///////////////////////////////////////////////////
 //// ADD YOUR REGISTER INCLUDE HERE ///////////////
 ///////////////////////////////////////////////////
+
+
+
 
 /** @addtogroup PERIPHERAL_MEM_MAP Peripheral Memory Base
   Memory Mapped Structure for Peripherals

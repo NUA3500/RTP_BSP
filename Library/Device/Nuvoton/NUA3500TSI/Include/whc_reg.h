@@ -291,11 +291,11 @@ typedef struct
 #define WHC_RXSTS_CH3RDY_Pos                (3)
 #define WHC_RXSTS_CH3RDY_Msk                (0x1ul << WHC_RXSTS_CH3RDY_Pos)
 
-#define WHRO_TMDAT_DAT_Pos                   (0)
-#define WHRO_TMDAT_DAT_Msk                   (0xfffffffful << WHRO_TMDAT_DAT_Pos)
+#define WHC_TMDAT_DAT_Pos                   (0)
+#define WHC_TMDAT_DAT_Msk                   (0xfffffffful << WHC_TMDAT_DAT_Pos)
 
-#define WHRO_RMDAT_DAT_Pos                   (0)
-#define WHRO_RMDAT_DAT_Msk                   (0xfffffffful << WHRO_RMDAT_DAT_Pos)
+#define WHC_RMDAT_DAT_Pos                   (0)
+#define WHC_RMDAT_DAT_Msk                   (0xfffffffful << WHC_RMDAT_DAT_Pos)
 
 /**@}*/ /* WHC_CONST */
 /**@}*/ /* end of WHC register group */
