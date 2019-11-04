@@ -25,7 +25,7 @@ extern "C"
 /** @addtogroup HWSEM_EXPORTED_CONSTANTS HWSEM Exported Constants
   @{
 */
-#define HWSEM_CNT             7ul /*!<HWSEM count \hideinitializer */
+#define HWSEM_CNT             8ul /*!<HWSEM count \hideinitializer */
 
 
 /*@}*/ /* end of group HWSEM_EXPORTED_CONSTANTS */
@@ -100,7 +100,7 @@ extern "C"
   *
   *    \hideinitializer
   */
-#define HWSEM_GET_INT_FLAG(hwsem,u32Num)    ((hwsem)->INTSTS_CM4 = (1 << u32Num))
+#define HWSEM_CLR_INT_FLAG(hwsem,u32Num)    ((hwsem)->INTSTS_CM4 = (1 << u32Num))
 
 /**
   * @brief        Lock specified semaphore
