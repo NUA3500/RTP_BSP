@@ -38,6 +38,7 @@ typedef struct
     __I  uint32_t RXSTS;
     __I  uint32_t RESERVE3[12];
     __O  uint32_t TMDAT[4][4];
+    __I  uint32_t RESERVE4[48];
     __I  uint32_t RMDAT[4][4];
 } WHC_T;
 
