@@ -27,12 +27,16 @@ typedef struct
     __IO uint32_t WKCTL;
     __IO uint32_t INTEN;
     __IO uint32_t INTSTS;
+    __I  uint32_t RESERVE0[13];
     __IO uint32_t CPSTS;
+    __I  uint32_t RESERVE1[15];
     __O  uint32_t GINTTRG;
+    __I  uint32_t RESERVE2[15];
     __O  uint32_t TXCTL;
     __I  uint32_t TXSTS;
     __O  uint32_t RXCTL;
     __I  uint32_t RXSTS;
+    __I  uint32_t RESERVE3[12];
     __O  uint32_t TMDAT[4][4];
     __I  uint32_t RMDAT[4][4];
 } WHC_T;

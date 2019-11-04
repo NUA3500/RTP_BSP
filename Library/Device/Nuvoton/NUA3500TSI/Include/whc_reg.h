@@ -27,14 +27,18 @@ typedef struct
     __IO uint32_t WKCTL;
     __IO uint32_t INTEN;
     __IO uint32_t INTSTS;
+    __I  uint32_t RESERVE0[13];
     __IO uint32_t CPSTS;
+    __I  uint32_t RESERVE1[15];
     __O  uint32_t GINTTRG;
+    __I  uint32_t RESERVE2[15];
     __O  uint32_t TXCTL;
     __I  uint32_t TXSTS;
     __O  uint32_t RXCTL;
     __I  uint32_t RXSTS;
-    __O  uint32_t TM0DAT[4][4];
-    __I  uint32_t RM0DAT[4][4];
+    __I  uint32_t RESERVE3[12];
+    __O  uint32_t TMDAT[4][4];
+    __I  uint32_t RMDAT[4][4];
 } WHC_T;
 
 /**
@@ -48,8 +52,8 @@ typedef struct
 #define WHC_WKCTL_POFF0WKEN_Pos             (1)
 #define WHC_WKCTL_POFF0WKEN_Msk             (0x1ul << WHC_WKCTL_POFF0WKEN_Pos)
 
-#define WHC_WKCTL_PD1WKEN_Pos               (2)
-#define WHC_WKCTL_PD1WKEN_Msk               (0x1ul << WHC_WKCTL_PD0WKEN_Pos)
+#define WHC_WKCTL_PD0WKEN_Pos               (2)
+#define WHC_WKCTL_PD0WKEN_Msk               (0x1ul << WHC_WKCTL_PD0WKEN_Pos)
 
 #define WHC_WKCTL_RST1WKEN_Pos              (3)
 #define WHC_WKCTL_RST1WKEN_Msk              (0x1ul << WHC_WKCTL_RST1WKEN_Pos)
@@ -102,8 +106,8 @@ typedef struct
 #define WHC_INTEN_POFF0IEN_Pos              (1)
 #define WHC_INTEN_POFF0IEN_Msk              (0x1ul << WHC_INTEN_POFF0IEN_Pos)
 
-#define WHC_INTEN_PD1IEN_Pos                (2)
-#define WHC_INTEN_PD1IEN_Msk                (0x1ul << WHC_INTEN_PD0IEN_Pos)
+#define WHC_INTEN_PD0IEN_Pos                (2)
+#define WHC_INTEN_PD0IEN_Msk                (0x1ul << WHC_INTEN_PD0IEN_Pos)
 
 #define WHC_INTEN_RST1IEN_Pos               (3)
 #define WHC_INTEN_RST1IEN_Msk               (0x1ul << WHC_INTEN_RST1IEN_Pos)
@@ -156,8 +160,8 @@ typedef struct
 #define WHC_INTSTS_POFF0IF_Pos              (1)
 #define WHC_INTSTS_POFF0IF_Msk              (0x1ul << WHC_INTSTS_POFF0IF_Pos)
 
-#define WHC_INTSTS_PD1IF_Pos                (2)
-#define WHC_INTSTS_PD1IF_Msk                (0x1ul << WHC_INTSTS_PD0IF_Pos)
+#define WHC_INTSTS_PD0IF_Pos                (2)
+#define WHC_INTSTS_PD0IF_Msk                (0x1ul << WHC_INTSTS_PD0IF_Pos)
 
 #define WHC_INTSTS_RST1IF_Pos               (3)
 #define WHC_INTSTS_RST1IF_Msk               (0x1ul << WHC_INTSTS_RST1IF_Pos)
