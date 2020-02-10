@@ -42,7 +42,7 @@ typedef enum IRQn
     WDT_IRQn                      = 0,
     TAMPER_IRQn                   = 1,
     CKFAIL_IRQn                   = 2,
-    WHC0_IRQn                     = 3,
+    WHC_IRQn                      = 3,
     CRYPTO_IRQn                   = 4,
     TRNG_IRQn                     = 7,
     KS_IRQn                       = 8,
@@ -119,7 +119,7 @@ IRQn_Type;
 #define TIMER0_BASE         (APBPERIPH_BASE + 0x20000UL)
 #define TIMER1_BASE         (APBPERIPH_BASE + 0x10100UL)
 #define TRNG_BASE           (APBPERIPH_BASE + 0x30000UL)
-
+#define WHC_BASE            (0x503B0000)
 
 
 
@@ -139,7 +139,7 @@ IRQn_Type;
 #define UART0                ((UART_T *)  UART0_BASE)
 #define CRPT                 ((CRPT_T *)  CRPTO_BASE)
 #define TRNG                 ((TRNG_T *)  TRNG_BASE)
-
+#define WHC                  ((WHC_T *)   WHC_BASE)
 
 /*@}*/ /* end of group ERIPHERAL_DECLARATION */
 

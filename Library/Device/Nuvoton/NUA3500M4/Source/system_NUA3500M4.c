@@ -27,6 +27,7 @@ uint32_t gau32ClkSrcTbl[] = {__HXT, __LXT, 0UL, __LIRC, 0UL, 0UL, 0UL, __HIRC};
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
 {
+#if 0
     uint32_t u32Freq, u32ClkSrc;
     uint32_t u32HclkDiv;
 
@@ -56,6 +57,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
     //    __BKPT(0);
 
     CyclesPerUs = (SystemCoreClock + 500000UL) / 1000000UL;
+#endif
 }
 
 /**
@@ -66,11 +68,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
   *             To use HXT, PF.2 and PF.3 must not set as quasi mode. This function changes
   *             PF.2 and PF.3 to input mode no matter which mode they are working at.
   */
-static __INLINE void HXTInit(void)
-{
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
 
-}
 
 /**
  * @brief  Initialize the System
@@ -91,19 +89,6 @@ void SystemInit (void)
                    (3UL << 11*2)  );               /* set CP11 Full Access */
 #endif
 
-    /* Set access cycle for CPU @ 192MHz */
-    FMC->CYCCTL = (FMC->CYCCTL & ~FMC_CYCCTL_CYCLE_Msk) | (8 << FMC_CYCCTL_CYCLE_Pos);
-    /* Configure power down bias, must set 1 before entering power down mode.
-       So set it at the very beginning */
-    CLK->LDOCTL |= CLK_LDOCTL_PDBIASEN_Msk;
-    /* Hand over the control of PF.4~11 I/O function from RTC module to GPIO module */
-    CLK->APBCLK0 |= CLK_APBCLK0_RTCCKEN_Msk;
-    RTC->GPIOCTL0 &= ~(RTC_GPIOCTL0_CTLSEL0_Msk | RTC_GPIOCTL0_CTLSEL1_Msk |
-                       RTC_GPIOCTL0_CTLSEL2_Msk | RTC_GPIOCTL0_CTLSEL3_Msk);
-    RTC->GPIOCTL1 &= ~(RTC_GPIOCTL1_CTLSEL4_Msk | RTC_GPIOCTL1_CTLSEL5_Msk |
-                       RTC_GPIOCTL1_CTLSEL6_Msk | RTC_GPIOCTL1_CTLSEL7_Msk);
-    CLK->APBCLK0 &= ~CLK_APBCLK0_RTCCKEN_Msk;
-    HXTInit();
 
 }
 /*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

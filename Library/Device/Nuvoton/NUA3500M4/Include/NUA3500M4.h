@@ -182,9 +182,13 @@ IRQn_Type;
 /******************************************************************************/
 /*                            Register definitions                            */
 /******************************************************************************/
-
+#include "clk_reg.h"
+#include "uart_reg.h"
 #include "whc_reg.h"
 #include "hwsem_reg.h"
+#include "wdt_reg.h"
+#include "adc_reg.h"
+#include "sc_reg.h"
 ///////////////////////////////////////////////////
 //// ADD YOUR REGISTER INCLUDE HERE ///////////////
 ///////////////////////////////////////////////////
@@ -203,8 +207,8 @@ IRQn_Type;
 #define APBPERIPH_BASE       ((uint32_t)0x40400000)      /*!< AHB Base Address */
 
 /*!< AHB peripherals */
-#define SYS_BASE               (AHBPERIPH_BASE + 0x00000UL)
-#define CLK_BASE               (AHBPERIPH_BASE + 0x00200UL)
+#define SYS_BASE               (0x40460000UL)
+#define CLK_BASE               (0x40460200UL)
 #define GPIOA_BASE             (AHBPERIPH_BASE + 0x04000UL)
 #define GPIOB_BASE             (AHBPERIPH_BASE + 0x04040UL)
 #define GPIOC_BASE             (AHBPERIPH_BASE + 0x04080UL)
@@ -214,83 +218,22 @@ IRQn_Type;
 #define GPIOG_BASE             (AHBPERIPH_BASE + 0x04180UL)
 #define GPIOH_BASE             (AHBPERIPH_BASE + 0x041C0UL)
 #define GPIOI_BASE             (AHBPERIPH_BASE + 0x04200UL)
-#define PDMA0_BASE             (AHBPERIPH_BASE + 0x08000UL)
-#define PDMA1_BASE             (AHBPERIPH_BASE + 0x09000UL)
-#define PDMA2_BASE             (AHBPERIPH_BASE + 0x0A000UL)
-#define PDMA3_BASE             (AHBPERIPH_BASE + 0x0B000UL)
-#define EBI_BASE               (AHBPERIPH_BASE + 0x10000UL)
-#define HWSEM0_BASE            (AHBPERIPH_BASE + 0x38000UL)
-#define HRSHO0_BASE            (AHBPERIPH_BASE + 0x3A000UL)
+
+#define HWSEM_BASE             (0x40380000UL)
+#define WHC0_BASE              (AHBPERIPH_BASE + 0x3A000UL)
 
 /*!< APB peripherals */
 //#define WDT0_BASE             (APBPERIPH_BASE + 0x00000UL)
 //#define WWDT0_BASE            (APBPERIPH_BASE + 0x00100UL)
-#define RTC_BASE              (APBPERIPH_BASE + 0x01000UL)
-#define ADC0_BASE             (APBPERIPH_BASE + 0x02000UL)
-#define EADC0_BASE            (APBPERIPH_BASE + 0x03000UL)
-//#define WDT1_BASE             (APBPERIPH_BASE + 0x04000UL)
-//#define WWDT1_BASE            (APBPERIPH_BASE + 0x04100UL)
-#define I2S0_BASE             (APBPERIPH_BASE + 0x08000UL)
-#define I2S1_BASE             (APBPERIPH_BASE + 0x09000UL)
-#define KPI_BASE              (APBPERIPH_BASE + 0x0A000UL)
-#define TIMER0_BASE           (APBPERIPH_BASE + 0x10000UL)
-#define TIMER1_BASE           (APBPERIPH_BASE + 0x10100UL)
-#define TIMER2_BASE           (APBPERIPH_BASE + 0x11000UL)
-#define TIMER3_BASE           (APBPERIPH_BASE + 0x11100UL)
-#define TIMER4_BASE           (APBPERIPH_BASE + 0x12000UL)
-#define TIMER5_BASE           (APBPERIPH_BASE + 0x12100UL)
-#define TIMER6_BASE           (APBPERIPH_BASE + 0x13000UL)
-#define TIMER7_BASE           (APBPERIPH_BASE + 0x13100UL)
-#define TIMER8_BASE           (APBPERIPH_BASE + 0x14000UL)
-#define TIMER9_BASE           (APBPERIPH_BASE + 0x14100UL)
-#define TIMER10_BASE          (APBPERIPH_BASE + 0x15000UL)
-#define TIMER11_BASE          (APBPERIPH_BASE + 0x15100UL)
-#define EPWM0_BASE            (APBPERIPH_BASE + 0x18000UL)
-#define EPWM1_BASE            (APBPERIPH_BASE + 0x19000UL)
-#define EPWM2_BASE            (APBPERIPH_BASE + 0x1A000UL)
-#define SPI0_BASE             (APBPERIPH_BASE + 0x20000UL)
-#define SPI1_BASE             (APBPERIPH_BASE + 0x21000UL)
-#define SPI2_BASE             (APBPERIPH_BASE + 0x22000UL)
-#define SPI3_BASE             (APBPERIPH_BASE + 0x23000UL)
-//#define QSPI0_BASE             (APBPERIPH_BASE + 0x28000UL)
-#define QSPI1_BASE             (APBPERIPH_BASE + 0x29000UL)
+
+
 //#define UART0_BASE            (APBPERIPH_BASE + 0x30000UL)
-#define UART1_BASE            (APBPERIPH_BASE + 0x31000UL)
-#define UART2_BASE            (APBPERIPH_BASE + 0x32000UL)
-#define UART3_BASE            (APBPERIPH_BASE + 0x33000UL)
-#define UART4_BASE            (APBPERIPH_BASE + 0x34000UL)
-#define UART5_BASE            (APBPERIPH_BASE + 0x35000UL)
-#define UART6_BASE            (APBPERIPH_BASE + 0x36000UL)
-#define UART7_BASE            (APBPERIPH_BASE + 0x37000UL)
-#define UART8_BASE            (APBPERIPH_BASE + 0x38000UL)
-#define UART9_BASE            (APBPERIPH_BASE + 0x39000UL)
-#define UART10_BASE           (APBPERIPH_BASE + 0x3A000UL)
-#define UART11_BASE           (APBPERIPH_BASE + 0x3B000UL)
-#define UART12_BASE           (APBPERIPH_BASE + 0x3C000UL)
-#define UART13_BASE           (APBPERIPH_BASE + 0x3D000UL)
-#define UART14_BASE           (APBPERIPH_BASE + 0x3E000UL)
-#define UART15_BASE           (APBPERIPH_BASE + 0x3F000UL)
-#define UART16_BASE           (APBPERIPH_BASE + 0x48000UL)
-//#define I2C0_BASE             (APBPERIPH_BASE + 0x40000UL)
-#define I2C1_BASE             (APBPERIPH_BASE + 0x41000UL)
-#define I2C2_BASE             (APBPERIPH_BASE + 0x42000UL)
-#define I2C3_BASE             (APBPERIPH_BASE + 0x43000UL)
-#define I2C4_BASE             (APBPERIPH_BASE + 0x44000UL)
-#define I2C5_BASE             (APBPERIPH_BASE + 0x45000UL)
+#define UART1_BASE             (0x40710000UL)
+
+
 #define SC0_BASE              (APBPERIPH_BASE + 0x50000UL)
 #define SC1_BASE              (APBPERIPH_BASE + 0x51000UL)
-#define WDT2_BASE             (APBPERIPH_BASE + 0x58000UL)
-#define WWDT2_BASE            (APBPERIPH_BASE + 0x58100UL)
-#define CANFD0_BASE           (APBPERIPH_BASE + 0x60000UL)
-#define CANFD1_BASE           (APBPERIPH_BASE + 0x61000UL)
-#define CANFD2_BASE           (APBPERIPH_BASE + 0x62000UL)
-#define CANFD3_BASE           (APBPERIPH_BASE + 0x63000UL)
-#define QEI0_BASE             (APBPERIPH_BASE + 0x70000UL)
-#define QEI1_BASE             (APBPERIPH_BASE + 0x71000UL)
-#define QEI2_BASE             (APBPERIPH_BASE + 0x72000UL)
-#define ECAP0_BASE            (APBPERIPH_BASE + 0x74000UL)
-#define ECAP1_BASE            (APBPERIPH_BASE + 0x75000UL)
-#define ECAP2_BASE            (APBPERIPH_BASE + 0x76000UL)
+
 
 
 /*@}*/ /* end of group PERIPHERAL_MEM_MAP */
@@ -303,91 +246,93 @@ IRQn_Type;
 
 #define SYS                  ((SYS_T *)   SYS_BASE)
 #define CLK                  ((CLK_T *)   CLK_BASE)
-#define NMI                  ((NMI_T *)   NMI_BASE)
-#define PA                   ((GPIO_T *)  GPIOA_BASE)
-#define PB                   ((GPIO_T *)  GPIOB_BASE)
-#define PC                   ((GPIO_T *)  GPIOC_BASE)
-#define PD                   ((GPIO_T *)  GPIOD_BASE)
-#define PE                   ((GPIO_T *)  GPIOE_BASE)
-#define PF                   ((GPIO_T *)  GPIOF_BASE)
-#define PG                   ((GPIO_T *)  GPIOG_BASE)
-#define PH                   ((GPIO_T *)  GPIOH_BASE)
-#define GPA                  ((GPIO_T *)  GPIOA_BASE)
-#define GPB                  ((GPIO_T *)  GPIOB_BASE)
-#define GPC                  ((GPIO_T *)  GPIOC_BASE)
-#define GPD                  ((GPIO_T *)  GPIOD_BASE)
-#define GPE                  ((GPIO_T *)  GPIOE_BASE)
-#define GPF                  ((GPIO_T *)  GPIOF_BASE)
-#define GPG                  ((GPIO_T *)  GPIOG_BASE)
-#define GPH                  ((GPIO_T *)  GPIOH_BASE)
-#define GPIO                 ((GPIO_DBCTL_T *) GPIO_DBCTL_BASE)
-#define PDMA                 ((PDMA_T *)  PDMA_BASE)
-#define EBI                  ((EBI_T *)   EBI_BASE)
-#define CRC                  ((CRC_T *)   CRC_BASE)
-#define TAMPER               ((TAMPER_T *) TAMPER_BASE)
+#define HWSEM                ((HWSEM_T *)   HWSEM_BASE)
+#define WHC0                 ((WHC_T *)   WHC0_BASE)
+//#define NMI                  ((NMI_T *)   NMI_BASE)
+//#define PA                   ((GPIO_T *)  GPIOA_BASE)
+//#define PB                   ((GPIO_T *)  GPIOB_BASE)
+//#define PC                   ((GPIO_T *)  GPIOC_BASE)
+//#define PD                   ((GPIO_T *)  GPIOD_BASE)
+//#define PE                   ((GPIO_T *)  GPIOE_BASE)
+//#define PF                   ((GPIO_T *)  GPIOF_BASE)
+//#define PG                   ((GPIO_T *)  GPIOG_BASE)
+//#define PH                   ((GPIO_T *)  GPIOH_BASE)
+//#define GPA                  ((GPIO_T *)  GPIOA_BASE)
+//#define GPB                  ((GPIO_T *)  GPIOB_BASE)
+//#define GPC                  ((GPIO_T *)  GPIOC_BASE)
+//#define GPD                  ((GPIO_T *)  GPIOD_BASE)
+//#define GPE                  ((GPIO_T *)  GPIOE_BASE)
+//#define GPF                  ((GPIO_T *)  GPIOF_BASE)
+//#define GPG                  ((GPIO_T *)  GPIOG_BASE)
+//#define GPH                  ((GPIO_T *)  GPIOH_BASE)
+//#define GPIO                 ((GPIO_DBCTL_T *) GPIO_DBCTL_BASE)
+//#define PDMA                 ((PDMA_T *)  PDMA_BASE)
+//#define EBI                  ((EBI_T *)   EBI_BASE)
+//#define CRC                  ((CRC_T *)   CRC_BASE)
+//#define TAMPER               ((TAMPER_T *) TAMPER_BASE)
 
 #define WDT2                  ((WDT_T *)   WDT2_BASE)
-#define WWDT2                 ((WWDT_T *)  WWDT2_BASE)
-#define RTC                  ((RTC_T *)   RTC_BASE)
-#define ADC0                  ((ADC_T *)  ADC0_BASE)
-#define EADC0                ((EADC_T *)  EADC0_BASE)
+//#define WWDT2                 ((WWDT_T *)  WWDT2_BASE)
+//#define RTC                  ((RTC_T *)   RTC_BASE)
+#define ADC                  ((ADC_T *)  ADC0_BASE)
+//#define EADC0                ((EADC_T *)  EADC0_BASE)
 
-#define I2S0                 ((I2S_T *)   I2S0_BASE)
-#define I2S1                 ((I2S_T *)   I2S1_BASE)
-#define TIMER0               ((TIMER_T *) TIMER0_BASE)
-#define TIMER1               ((TIMER_T *) TIMER1_BASE)
-#define TIMER2               ((TIMER_T *) TIMER2_BASE)
-#define TIMER3               ((TIMER_T *) TIMER3_BASE)
-#define TIMER4               ((TIMER_T *) TIMER4_BASE)
-#define TIMER5               ((TIMER_T *) TIMER5_BASE)
-#define TIMER6               ((TIMER_T *) TIMER6_BASE)
-#define TIMER7               ((TIMER_T *) TIMER7_BASE)
-#define TIMER8               ((TIMER_T *) TIMER8_BASE)
-#define TIMER9               ((TIMER_T *) TIMER9_BASE)
-#define TIMER10               ((TIMER_T *) TIMER10_BASE)
-#define TIMER11               ((TIMER_T *) TIMER11_BASE)
-#define EPWM0                ((EPWM_T *)  EPWM0_BASE)
-#define EPWM1                ((EPWM_T *)  EPWM1_BASE)
-#define EPWM2                ((EPWM_T *)  EPWM2_BASE)
+//#define I2S0                 ((I2S_T *)   I2S0_BASE)
+//#define I2S1                 ((I2S_T *)   I2S1_BASE)
+//#define TIMER0               ((TIMER_T *) TIMER0_BASE)
+//#define TIMER1               ((TIMER_T *) TIMER1_BASE)
+//#define TIMER2               ((TIMER_T *) TIMER2_BASE)
+//#define TIMER3               ((TIMER_T *) TIMER3_BASE)
+//#define TIMER4               ((TIMER_T *) TIMER4_BASE)
+//#define TIMER5               ((TIMER_T *) TIMER5_BASE)
+//#define TIMER6               ((TIMER_T *) TIMER6_BASE)
+//#define TIMER7               ((TIMER_T *) TIMER7_BASE)
+//#define TIMER8               ((TIMER_T *) TIMER8_BASE)
+//#define TIMER9               ((TIMER_T *) TIMER9_BASE)
+//#define TIMER10               ((TIMER_T *) TIMER10_BASE)
+//#define TIMER11               ((TIMER_T *) TIMER11_BASE)
+//#define EPWM0                ((EPWM_T *)  EPWM0_BASE)
+//#define EPWM1                ((EPWM_T *)  EPWM1_BASE)
+//#define EPWM2                ((EPWM_T *)  EPWM2_BASE)
 
-#define ECAP0                ((ECAP_T *)  ECAP0_BASE)
-#define ECAP1                ((ECAP_T *)  ECAP1_BASE)
-#define ECAP2                ((ECAP_T *)  ECAP2_BASE)
-#define QEI0                 ((QEI_T *)   QEI0_BASE)
-#define QEI1                 ((QEI_T *)   QEI1_BASE)
-#define QEI2                 ((QEI_T *)   QEI2_BASE)
-#define QSPI0                ((QSPI_T *)  QSPI0_BASE)
-#define QSPI1                ((QSPI_T *)  QSPI1_BASE)
-#define SPI0                 ((SPI_T *)   SPI0_BASE)
-#define SPI1                 ((SPI_T *)   SPI1_BASE)
-#define SPI2                 ((SPI_T *)   SPI2_BASE)
-#define SPI3                 ((SPI_T *)   SPI3_BASE)
+//#define ECAP0                ((ECAP_T *)  ECAP0_BASE)
+//#define ECAP1                ((ECAP_T *)  ECAP1_BASE)
+//#define ECAP2                ((ECAP_T *)  ECAP2_BASE)
+//#define QEI0                 ((QEI_T *)   QEI0_BASE)
+//#define QEI1                 ((QEI_T *)   QEI1_BASE)
+//#define QEI2                 ((QEI_T *)   QEI2_BASE)
+//#define QSPI0                ((QSPI_T *)  QSPI0_BASE)
+//#define QSPI1                ((QSPI_T *)  QSPI1_BASE)
+//#define SPI0                 ((SPI_T *)   SPI0_BASE)
+//#define SPI1                 ((SPI_T *)   SPI1_BASE)
+//#define SPI2                 ((SPI_T *)   SPI2_BASE)
+//#define SPI3                 ((SPI_T *)   SPI3_BASE)
 
 #define UART1                ((UART_T *)  UART1_BASE)
-#define UART2                ((UART_T *)  UART2_BASE)
-#define UART3                ((UART_T *)  UART3_BASE)
-#define UART4                ((UART_T *)  UART4_BASE)
-#define UART5                ((UART_T *)  UART5_BASE)
-#define UART6                ((UART_T *)  UART6_BASE)
-#define UART7                ((UART_T *)  UART7_BASE)
-#define UART8                ((UART_T *)  UART8_BASE)
-#define UART9                ((UART_T *)  UART9_BASE)
-#define UART10                ((UART_T *)  UART10_BASE)
-#define UART11                ((UART_T *)  UART11_BASE)
-#define UART12                ((UART_T *)  UART12_BASE)
-#define UART13                ((UART_T *)  UART13_BASE)
-#define UART14                ((UART_T *)  UART14_BASE)
-#define UART15                ((UART_T *)  UART15_BASE)
-#define UART16                ((UART_T *)  UART16_BASE)
-#define I2C0                 ((I2C_T *)   I2C0_BASE)
-#define I2C1                 ((I2C_T *)   I2C1_BASE)
-#define I2C2                 ((I2C_T *)   I2C2_BASE)
+//#define UART2                ((UART_T *)  UART2_BASE)
+//#define UART3                ((UART_T *)  UART3_BASE)
+//#define UART4                ((UART_T *)  UART4_BASE)
+//#define UART5                ((UART_T *)  UART5_BASE)
+//#define UART6                ((UART_T *)  UART6_BASE)
+//#define UART7                ((UART_T *)  UART7_BASE)
+//#define UART8                ((UART_T *)  UART8_BASE)
+//#define UART9                ((UART_T *)  UART9_BASE)
+//#define UART10                ((UART_T *)  UART10_BASE)
+//#define UART11                ((UART_T *)  UART11_BASE)
+//#define UART12                ((UART_T *)  UART12_BASE)
+//#define UART13                ((UART_T *)  UART13_BASE)
+//#define UART14                ((UART_T *)  UART14_BASE)
+//#define UART15                ((UART_T *)  UART15_BASE)
+//#define UART16                ((UART_T *)  UART16_BASE)
+//#define I2C0                 ((I2C_T *)   I2C0_BASE)
+//#define I2C1                 ((I2C_T *)   I2C1_BASE)
+//#define I2C2                 ((I2C_T *)   I2C2_BASE)
 #define SC0                  ((SC_T *)    SC0_BASE)
 #define SC1                  ((SC_T *)    SC1_BASE)
-#define CANFD0                 ((CAN_T *)   CANFD0_BASE)
-#define CANFD1                 ((CAN_T *)   CANFD1_BASE)
-#define CANFD2                 ((CAN_T *)   CANFD2_BASE)
-#define CANFD3                 ((CAN_T *)   CANFD3_BASE)
+//#define CANFD0                 ((CAN_T *)   CANFD0_BASE)
+//#define CANFD1                 ((CAN_T *)   CANFD1_BASE)
+//#define CANFD2                 ((CAN_T *)   CANFD2_BASE)
+//#define CANFD3                 ((CAN_T *)   CANFD3_BASE)
 
 /*@}*/ /* end of group ERIPHERAL_DECLARATION */
 
@@ -597,27 +542,29 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 #include "clk.h"
 
 #include "uart.h"
-#include "gpio.h"
-#include "ecap.h"
-#include "qei.h"
-#include "timer.h"
-#include "timer_pwm.h"
-#include "pdma.h"
-#include "crypto.h"
-#include "trng.h"
-#include "i2c.h"
-#include "i2s.h"
-#include "epwm.h"
-#include "eadc.h"
+#include "hwsem.h"
+#include "whc.h"
+//#include "gpio.h"
+//#include "ecap.h"
+//#include "qei.h"
+//#include "timer.h"
+//#include "timer_pwm.h"
+//#include "pdma.h"
+//#include "crypto.h"
+//#include "trng.h"
+//#include "i2c.h"
+//#include "i2s.h"
+//#include "epwm.h"
+//#include "eadc.h"
 #include "wdt.h"
-#include "wwdt.h"
-#include "ebi.h"
-#include "scuart.h"
-#include "sc.h"
-#include "spi.h"
-#include "qspi.h"
-#include "can.h"
-#include "rtc.h"
+//#include "wwdt.h"
+//#include "ebi.h"
+//#include "scuart.h"
+//#include "sc.h"
+//#include "spi.h"
+//#include "qspi.h"
+//#include "can.h"
+//#include "rtc.h"
 
 
 

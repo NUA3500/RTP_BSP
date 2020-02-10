@@ -15,7 +15,7 @@
 ; </h>
 
 	IF :LNOT: :DEF: Stack_Size
-Stack_Size      EQU     0x00000800
+Stack_Size      EQU     0x00000200
 	ENDIF
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
@@ -28,7 +28,7 @@ __initial_sp
 ; </h>
 
 	IF :LNOT: :DEF: Heap_Size
-Heap_Size       EQU     0x00000100
+Heap_Size       EQU     0x00000000
 	ENDIF
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
@@ -192,28 +192,13 @@ Reset_Handler   PROC
                 IMPORT  __main
 
                 ; Unlock Register
-                LDR     R0, =0x40000100
-                LDR     R1, =0x59
-                STR     R1, [R0]
-                LDR     R1, =0x16
-                STR     R1, [R0]
-                LDR     R1, =0x88
-                STR     R1, [R0]
-
-	IF :LNOT: :DEF: ENABLE_SPIM_CACHE
-                LDR     R0, =0x40000200            ; R0 = Clock Controller Register Base Address
-                LDR     R1, [R0,#0x4]              ; R1 = 0x40000204  (AHBCLK)
-                ORR     R1, R1, #0x4000              
-                STR     R1, [R0,#0x4]              ; CLK->AHBCLK |= CLK_AHBCLK_SPIMCKEN_Msk;
-                
-                LDR     R0, =0x40007000            ; R0 = SPIM Register Base Address
-                LDR     R1, [R0,#4]                ; R1 = SPIM->CTL1
-                ORR     R1, R1,#2                  ; R1 |= SPIM_CTL1_CACHEOFF_Msk
-                STR     R1, [R0,#4]                ; _SPIM_DISABLE_CACHE()
-                LDR     R1, [R0,#4]                ; R1 = SPIM->CTL1
-                ORR     R1, R1, #4                 ; R1 |= SPIM_CTL1_CCMEN_Msk
-                STR     R1, [R0,#4]                ; _SPIM_ENABLE_CCM()
-	ENDIF
+                ;LDR     R0, =0x40000100
+                ;LDR     R1, =0x59
+                ;STR     R1, [R0]
+                ;LDR     R1, =0x16
+                ;STR     R1, [R0]
+                ;LDR     R1, =0x88
+                ;STR     R1, [R0]
 
                 LDR     R0, =SystemInit
                 BLX     R0
@@ -224,9 +209,9 @@ Reset_Handler   PROC
                 ; STR     R1, [R2]
 
                 ; Lock
-                LDR     R0, =0x40000100
-                LDR     R1, =0
-                STR     R1, [R0]
+                ;LDR     R0, =0x40000100
+                ;LDR     R1, =0
+                ;STR     R1, [R0]
 
                 LDR     R0, =__main
                 BX      R0

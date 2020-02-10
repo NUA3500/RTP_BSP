@@ -210,19 +210,19 @@ typedef struct
 #define WHC_INTSTS_RX3IF_Msk                (0x1ul << WHC_INTSTS_RX3IF_Pos)
 
 #define WHC_CPSTS_WDTRF_Pos                 (2)
-#define WHC_CPSTS_WDTRF_Msk                 (0x1ul << WHC_INTSTS_WDTRF_Pos)
+#define WHC_CPSTS_WDTRF_Msk                 (0x1ul << WHC_CPSTS_WDTRF_Pos)
 
 #define WHC_CPSTS_SYSRF_Pos                 (5)
-#define WHC_CPSTS_SYSRF_Msk                 (0x1ul << WHC_INTSTS_SYSRF_Pos)
+#define WHC_CPSTS_SYSRF_Msk                 (0x1ul << WHC_CPSTS_SYSRF_Pos)
 
 #define WHC_CPSTS_CPURF_Pos                 (7)
-#define WHC_CPSTS_CPURF_Msk                 (0x1ul << WHC_INTSTS_CPURF_Pos)
+#define WHC_CPSTS_CPURF_Msk                 (0x1ul << WHC_CPSTS_CPURF_Pos)
 
 #define WHC_CPSTS_CPULKRF_Pos               (8)
-#define WHC_CPSTS_CPULKRF_Msk               (0x1ul << WHC_INTSTS_CPULKRF_Pos)
+#define WHC_CPSTS_CPULKRF_Msk               (0x1ul << WHC_CPSTS_CPULKRF_Pos)
 
 #define WHC_CPSTS_OPMODE_Pos                (24)
-#define WHC_CPSTS_OPMODE_Msk                (0xful << WHC_INTSTS_OPMODE_Pos)
+#define WHC_CPSTS_OPMODE_Msk                (0xful << WHC_CPSTS_OPMODE_Pos)
 
 #define WHC_GINTTRG_TRGG0_Pos               (0)
 #define WHC_GINTTRG_TRGG0_Msk               (0x1ul << WHC_GINTTRG_TRGG0_Pos)
