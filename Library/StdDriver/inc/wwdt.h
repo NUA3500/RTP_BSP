@@ -13,6 +13,7 @@ extern "C"
 {
 #endif
 
+#define WWDT	WWDT2
 
 /** @addtogroup Standard_Driver Standard Driver
   @{
@@ -132,7 +133,7 @@ extern "C"
   *             WWDT reset signal will generate immediately to reset system.
   * \hideinitializer
   */
-#define WWDT_RELOAD_COUNTER()       (WWDT->RLDCNT = WWDT_RELOAD_WORD)
+#define WWDT_RELOAD_COUNTER()       (WWDT2->RLDCNT = WWDT_RELOAD_WORD)
 
 void WWDT_Open(uint32_t u32PreScale, uint32_t u32CmpValue, uint32_t u32EnableInt);
 

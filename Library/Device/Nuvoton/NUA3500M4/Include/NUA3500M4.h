@@ -187,8 +187,10 @@ IRQn_Type;
 #include "whc_reg.h"
 #include "hwsem_reg.h"
 #include "wdt_reg.h"
+#include "wwdt_reg.h"
 #include "adc_reg.h"
 #include "sc_reg.h"
+#include "gpio_reg.h"
 ///////////////////////////////////////////////////
 //// ADD YOUR REGISTER INCLUDE HERE ///////////////
 ///////////////////////////////////////////////////
@@ -209,23 +211,27 @@ IRQn_Type;
 /*!< AHB peripherals */
 #define SYS_BASE               (0x40460000UL)
 #define CLK_BASE               (0x40460200UL)
-#define GPIOA_BASE             (AHBPERIPH_BASE + 0x04000UL)
-#define GPIOB_BASE             (AHBPERIPH_BASE + 0x04040UL)
-#define GPIOC_BASE             (AHBPERIPH_BASE + 0x04080UL)
-#define GPIOD_BASE             (AHBPERIPH_BASE + 0x040C0UL)
-#define GPIOE_BASE             (AHBPERIPH_BASE + 0x04100UL)
-#define GPIOF_BASE             (AHBPERIPH_BASE + 0x04140UL)
-#define GPIOG_BASE             (AHBPERIPH_BASE + 0x04180UL)
-#define GPIOH_BASE             (AHBPERIPH_BASE + 0x041C0UL)
-#define GPIOI_BASE             (AHBPERIPH_BASE + 0x04200UL)
+#define GPIOA_BASE             (0x40040000UL)
+#define GPIOB_BASE             (0x40040040UL)
+#define GPIOC_BASE             (0x40040080UL)
+#define GPIOD_BASE             (0x400400C0UL)
+#define GPIOE_BASE             (0x40040100UL)
+#define GPIOF_BASE             (0x40040140UL)
+#define GPIOG_BASE             (0x40040180UL)
+#define GPIOH_BASE             (0x400401C0UL)
+#define GPIOI_BASE             (0x40040200UL)
+#define GPIO_DBCTL_BASE        (0x40044440UL)
+#define GPIO_PIN_DATA_BASE     (0x40040000UL + 0x04800UL)
 
 #define HWSEM_BASE             (0x40380000UL)
 #define WHC0_BASE              (AHBPERIPH_BASE + 0x3A000UL)
 
 /*!< APB peripherals */
-//#define WDT0_BASE             (APBPERIPH_BASE + 0x00000UL)
-//#define WWDT0_BASE            (APBPERIPH_BASE + 0x00100UL)
+#define WDT2_BASE             (AHBPERIPH_BASE + 0x980000UL)
+#define WWDT2_BASE            (AHBPERIPH_BASE + 0x980100UL)
 
+#define ETIMER2_BASE          (0x40510000UL)
+#define ETIMER3_BASE          (0x40510100UL)
 
 //#define UART0_BASE            (APBPERIPH_BASE + 0x30000UL)
 #define UART1_BASE             (0x40710000UL)
@@ -249,7 +255,7 @@ IRQn_Type;
 #define HWSEM                ((HWSEM_T *)   HWSEM_BASE)
 #define WHC0                 ((WHC_T *)   WHC0_BASE)
 //#define NMI                  ((NMI_T *)   NMI_BASE)
-//#define PA                   ((GPIO_T *)  GPIOA_BASE)
+#define PA                   ((GPIO_T *)  GPIOA_BASE)
 //#define PB                   ((GPIO_T *)  GPIOB_BASE)
 //#define PC                   ((GPIO_T *)  GPIOC_BASE)
 //#define PD                   ((GPIO_T *)  GPIOD_BASE)
@@ -272,7 +278,7 @@ IRQn_Type;
 //#define TAMPER               ((TAMPER_T *) TAMPER_BASE)
 
 #define WDT2                  ((WDT_T *)   WDT2_BASE)
-//#define WWDT2                 ((WWDT_T *)  WWDT2_BASE)
+#define WWDT2                 ((WWDT_T *)  WWDT2_BASE)
 //#define RTC                  ((RTC_T *)   RTC_BASE)
 #define ADC                  ((ADC_T *)  ADC0_BASE)
 //#define EADC0                ((EADC_T *)  EADC0_BASE)
@@ -544,7 +550,7 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 #include "uart.h"
 #include "hwsem.h"
 #include "whc.h"
-//#include "gpio.h"
+#include "gpio.h"
 //#include "ecap.h"
 //#include "qei.h"
 //#include "timer.h"
@@ -557,7 +563,7 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 //#include "epwm.h"
 //#include "eadc.h"
 #include "wdt.h"
-//#include "wwdt.h"
+#include "wwdt.h"
 //#include "ebi.h"
 //#include "scuart.h"
 //#include "sc.h"
