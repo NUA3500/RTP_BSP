@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     wdt.c
- * @version  V3.00
- * @brief    M480 series WDT driver source file
+ * @brief    WDT driver source file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include "NuMicro.h"
 
@@ -46,14 +46,14 @@
   *             enable or disable WDT time-out reset system or wake-up system.
   * @note       Please make sure that Register Write-Protection Function has been disabled before using this function.
   */
-void WDT_Open(WDT_T* wdt, uint32_t u32TimeoutInterval,
+void WDT_Open(uint32_t u32TimeoutInterval,
               uint32_t u32ResetDelay,
               uint32_t u32EnableReset,
               uint32_t u32EnableWakeup)
 {
-    wdt->ALTCTL = u32ResetDelay;
+    WDT->ALTCTL = u32ResetDelay;
 
-    wdt->CTL = u32TimeoutInterval | WDT_CTL_WDTEN_Msk |
+    WDT->CTL = u32TimeoutInterval | WDT_CTL_WDTEN_Msk |
                (u32EnableReset << WDT_CTL_RSTEN_Pos) |
                (u32EnableWakeup << WDT_CTL_WKEN_Pos);
     return;
@@ -65,4 +65,3 @@ void WDT_Open(WDT_T* wdt, uint32_t u32TimeoutInterval,
 
 /*@}*/ /* end of group Standard_Driver */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

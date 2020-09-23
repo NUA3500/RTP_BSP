@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file     ecap.h
- * @version  V3.00
  * @brief    EnHanced Input Capture Timer(ECAP) driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 #ifndef __ECAP_H__
 #define __ECAP_H__
 
@@ -454,4 +454,3 @@ void ECAP_DisableINT(ECAP_T* ecap, uint32_t u32Mask);
 
 #endif /* __ECAP_H__ */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

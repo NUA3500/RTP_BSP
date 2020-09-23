@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     GPIO.h
- * @version  V3.00
- * @brief    M480 series GPIO driver header file
+ * @brief    GPIO driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #ifndef __GPIO_H__
 #define __GPIO_H__
@@ -242,7 +242,7 @@ extern "C"
 /**
  * @brief       Clear GPIO Pin Interrupt Flag
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -258,7 +258,7 @@ extern "C"
 /**
  * @brief       Disable Pin De-bounce Function
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -274,7 +274,7 @@ extern "C"
 /**
  * @brief       Enable Pin De-bounce Function
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -289,7 +289,7 @@ extern "C"
 /**
  * @brief       Disable I/O Digital Input Path
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -305,7 +305,7 @@ extern "C"
 /**
  * @brief       Enable I/O Digital Input Path
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -321,7 +321,7 @@ extern "C"
 /**
  * @brief       Disable I/O DOUT mask
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -337,7 +337,7 @@ extern "C"
 /**
  * @brief       Enable I/O DOUT mask
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -353,7 +353,7 @@ extern "C"
 /**
  * @brief       Get GPIO Pin Interrupt Flag
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -403,7 +403,7 @@ extern "C"
 /**
  * @brief       Get GPIO Port IN Data
  *
-* @param[in]    port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+* @param[in]    port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  *
  * @return      The specified port data
  *
@@ -415,7 +415,7 @@ extern "C"
 /**
  * @brief       Set GPIO Port OUT Data
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32Data     GPIO port data.
  *
  * @return      None
@@ -441,7 +441,7 @@ extern "C"
 /**
  * @brief       Enable External GPIO interrupt
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32Pin      The pin of specified GPIO port.
  *                          It could be 0 ~ 15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be 0 ~ 13 for PE GPIO port.
@@ -459,7 +459,7 @@ extern "C"
 /**
  * @brief       Disable External GPIO interrupt
  *
- * @param[in]   port        GPIO port. It could be It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
  * @param[in]   u32Pin      The pin of specified GPIO port.
  *                          It could be 0 ~ 15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be 0 ~ 13 for PE GPIO port.
@@ -492,5 +492,3 @@ void GPIO_SetPullCtl(GPIO_T *port, uint32_t u32PinMask, uint32_t u32Mode);
 #endif
 
 #endif  /* __GPIO_H__ */
-
-/*** (C) COPYRIGHT 2013~2016 Nuvoton Technology Corp. ***/

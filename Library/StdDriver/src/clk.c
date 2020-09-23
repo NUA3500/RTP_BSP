@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     clk.c
- * @version  V3.00
- * @brief    M480 series CLK driver source file
+ * @brief    series CLK driver source file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
 #include "NuMicro.h"
@@ -505,46 +505,21 @@ void CLK_SetModuleClock(uint32_t u32ModuleIdx, uint32_t u32ClkSrc, uint32_t u32C
 
     if(MODULE_CLKDIV_Msk(u32ModuleIdx) != MODULE_NoMsk)
     {
+
         /* Get clock divider control register address */
-        if ((SYS->CSERVER & SYS_CSERVER_VERSION_Msk) == 0x1) // M480LD
+        if(MODULE_CLKDIV(u32ModuleIdx) == 2U)
         {
-            if(MODULE_CLKDIV(u32ModuleIdx) == 2U && MODULE_IP_EN_Pos_ENC(u32ModuleIdx) == 31U) //EADC1
-            {
-                u32div = (uint32_t)&CLK->CLKDIV2;
-            }
-            else if(MODULE_CLKDIV(u32ModuleIdx) == 2U && MODULE_IP_EN_Pos_ENC(u32ModuleIdx) == 29U) //I2S0
-            {
-                u32div = (uint32_t)&CLK->CLKDIV2;
-            }
-            else if (MODULE_CLKDIV(u32ModuleIdx) == 2U)
-            {
-                u32div = (uint32_t)&CLK->CLKDIV3;
-            }
-            else if (MODULE_CLKDIV(u32ModuleIdx) == 3U)
-            {
-                u32div = (uint32_t)&CLK->CLKDIV4;
-            }
-            else
-            {
-                u32div = (uint32_t)&CLK->CLKDIV0 + ((MODULE_CLKDIV(u32ModuleIdx)) * 4U);
-            }
+            u32div = (uint32_t)&CLK->CLKDIV3;
+        }
+        else if (MODULE_CLKDIV(u32ModuleIdx) == 3U)
+        {
+            u32div = (uint32_t)&CLK->CLKDIV4;
         }
         else
         {
-            /* Get clock divider control register address */
-            if(MODULE_CLKDIV(u32ModuleIdx) == 2U)
-            {
-                u32div = (uint32_t)&CLK->CLKDIV3;
-            }
-            else if (MODULE_CLKDIV(u32ModuleIdx) == 3U)
-            {
-                u32div = (uint32_t)&CLK->CLKDIV4;
-            }
-            else
-            {
-                u32div = (uint32_t)&CLK->CLKDIV0 + ((MODULE_CLKDIV(u32ModuleIdx)) * 4U);
-            }
+            u32div = (uint32_t)&CLK->CLKDIV0 + ((MODULE_CLKDIV(u32ModuleIdx)) * 4U);
         }
+
 
         /* Apply new divider */
         M32(u32div) = (M32(u32div) & (~(MODULE_CLKDIV_Msk(u32ModuleIdx) << MODULE_CLKDIV_Pos(u32ModuleIdx)))) | u32ClkDiv;
@@ -1349,4 +1324,3 @@ uint32_t CLK_GetModuleClockDivider(uint32_t u32ModuleIdx)
 
 /*@}*/ /* end of group Standard_Driver */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

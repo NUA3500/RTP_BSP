@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     sc.c
- * @version  V3.00
- * @brief    M480 Smartcard(SC) driver source file
+ * @brief    Smartcard(SC) driver source file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #include "NuMicro.h"
 
@@ -396,4 +396,3 @@ uint32_t SC_GetInterfaceClock(SC_T *sc)
 
 /*@}*/ /* end of group Standard_Driver */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

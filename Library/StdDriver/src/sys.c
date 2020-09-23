@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file     sys.c
- * @version  V1.00
- * @brief    M480 series SYS driver source file
+ * @brief    SYS driver source file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 
 #include "NuMicro.h"
 
@@ -280,4 +280,3 @@ void SYS_SetVRef(uint32_t u32VRefCTL)
 }
 #endif
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     scuart.h
- * @version  V1.00
- * @brief    M480 Smartcard UART mode (SCUART) driver header file
+ * @brief    Smartcard UART mode (SCUART) driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #ifndef __SCUART_H__
 #define __SCUART_H__
@@ -263,4 +263,3 @@ void SCUART_Write(SC_T* sc,uint8_t pu8TxBuf[], uint32_t u32WriteBytes);
 
 #endif /* __SCUART_H__ */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

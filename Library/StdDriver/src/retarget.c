@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     retarget.c
- * @version  V3.00
- * @brief    M480 Series Debug Port and Semihost Setting Source File
+ * @brief    Debug Port and Semihost Setting Source File
  *
- * @copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 
 

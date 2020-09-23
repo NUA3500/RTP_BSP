@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file     pdma.c
- * @version  V1.00
- * @brief    M480 series PDMA driver source file
+ * @brief    PDMA driver source file
  *
- * @copyright (C) 2014~2016 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 #include "NuMicro.h"
 
 
@@ -370,7 +370,6 @@ void PDMA_DisableTimeout(PDMA_T * pdma,uint32_t u32Mask)
  * @return      None
  *
  * @details     This function set the timeout count.
- * @note        M480 only supported channel 0/1.
  */
 void PDMA_SetTimeOut(PDMA_T * pdma,uint32_t u32Ch, uint32_t u32OnOff, uint32_t u32TimeOutCnt)
 {
@@ -482,5 +481,3 @@ void PDMA_DisableInt(PDMA_T * pdma,uint32_t u32Ch, uint32_t u32Mask)
 /*@}*/ /* end of group PDMA_Driver */
 
 /*@}*/ /* end of group Standard_Driver */
-
-/*** (C) COPYRIGHT 2014~2016 Nuvoton Technology Corp. ***/

@@ -1,8 +1,9 @@
 /**************************************************************************//**
  * @file     timer.c
- * @brief    M480 Timer Controller(Timer) driver source file
+ * @brief    Timer Controller(Timer) driver source file
  *
- * @copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include "NuMicro.h"
 
@@ -280,8 +281,8 @@ uint32_t TIMER_GetModuleClock(TIMER_T *timer)
 /**
   * @brief This function is used to enable the Timer frequency counter function
   * @param[in] timer The base address of Timer module. Can be \ref TIMER0 or \ref TIMER2
-  * @param[in] u32DropCount This parameter has no effect in M480 series BSP
-  * @param[in] u32Timeout This parameter has no effect in M480 series BSP
+  * @param[in] u32DropCount This parameter has no effect
+  * @param[in] u32Timeout This parameter has no effect
   * @param[in] u32EnableInt Enable interrupt assertion after capture complete or not. Valid values are TRUE and FALSE
   * @return None
   * @details This function is used to calculate input event frequency. After enable

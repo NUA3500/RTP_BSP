@@ -1,10 +1,10 @@
 /****************************************************************************//**
  * @file     i2c.h
- * @version  V1.00
- * @brief    M480 series I2C driver header file
+ * @brief    I2C driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 #ifndef __I2C_H__
 #define __I2C_H__
 
@@ -498,4 +498,4 @@ void I2C_SMBusClockLoTimeout(I2C_T *i2c, uint32_t ms, uint32_t u32Pclk);
 
 #endif
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/
+

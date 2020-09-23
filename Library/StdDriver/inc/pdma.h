@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     pdma.h
- * @version  V1.00
- * @brief    M480 series PDMA driver header file
+ * @brief    PDMA driver header file
  *
- * @copyright (C) 2014~2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #ifndef __PDMA_H__
 #define __PDMA_H__
@@ -387,4 +387,3 @@ void PDMA_SetRepeat(PDMA_T * pdma,uint32_t u32Ch, uint32_t u32DestInterval, uint
 
 #endif /* __PDMA_H__ */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

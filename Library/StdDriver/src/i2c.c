@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     i2c.c
- * @version  V3.00
- * @brief    M480 series I2C driver source file
+ * @brief    I2C driver source file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #include "NuMicro.h"
 
@@ -79,6 +79,11 @@ void I2C_Close(I2C_T *i2c)
     {
         SYS->IPRST1 |= SYS_IPRST1_I2C1RST_Msk;
         SYS->IPRST1 &= ~SYS_IPRST1_I2C1RST_Msk;
+    }
+    else if((uint32_t)i2c == I2C2_BASE)
+    {
+        SYS->IPRST1 |= SYS_IPRST1_I2C2RST_Msk;
+        SYS->IPRST1 &= ~SYS_IPRST1_I2C2RST_Msk;
     }
 
     /* Disable I2C */
@@ -1465,7 +1470,7 @@ uint32_t I2C_ReadMultiBytesTwoRegs(I2C_T *i2c, uint8_t u8SlaveAddr, uint16_t u16
             u8Err = 1u;
             break;
         }
-        I2C_SET_CONTROL_REG(i2c, u8Ctrl);                                   /* Write controlbit to I2C_CTL register */
+        I2C_SET_CONTROL_REG(i2c, u8Ctrl);                                   /* Write control bit to I2C_CTL register */
     }
     return u32rxLen;                                                        /* Return bytes length that have been received */
 }
@@ -1477,4 +1482,3 @@ uint32_t I2C_ReadMultiBytesTwoRegs(I2C_T *i2c, uint8_t u8SlaveAddr, uint16_t u16
 
 /*@}*/ /* end of group Standard_Driver */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     wwdt.h
- * @version  V3.00
- * @brief    M480 series WWDT driver header file
+ * @brief    WWDT driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #ifndef __WWDT_H__
 #define __WWDT_H__
@@ -13,7 +13,6 @@ extern "C"
 {
 #endif
 
-#define WWDT	WWDT2
 
 /** @addtogroup Standard_Driver Standard Driver
   @{
@@ -133,7 +132,7 @@ extern "C"
   *             WWDT reset signal will generate immediately to reset system.
   * \hideinitializer
   */
-#define WWDT_RELOAD_COUNTER()       (WWDT2->RLDCNT = WWDT_RELOAD_WORD)
+#define WWDT_RELOAD_COUNTER()       (WWDT->RLDCNT = WWDT_RELOAD_WORD)
 
 void WWDT_Open(uint32_t u32PreScale, uint32_t u32CmpValue, uint32_t u32EnableInt);
 
@@ -149,4 +148,3 @@ void WWDT_Open(uint32_t u32PreScale, uint32_t u32CmpValue, uint32_t u32EnableInt
 
 #endif /* __WWDT_H__ */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

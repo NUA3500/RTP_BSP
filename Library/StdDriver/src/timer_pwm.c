@@ -1,9 +1,10 @@
 /**************************************************************************//**
  * @file     timer_pwm.c
- * @brief    M480 Timer PWM Controller(Timer PWM) driver source file
+ * @brief    Timer PWM Controller(Timer PWM) driver source file
  *
- * @copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 #include "NuMicro.h"
 
 
@@ -439,4 +440,3 @@ void TPWM_SetBrakePinSource(TIMER_T *timer, uint32_t u32BrakePinNum)
 
 /*@}*/ /* end of group Standard_Driver */
 
-/*** (C) COPYRIGHT 2017 Nuvoton Technology Corp. ***/

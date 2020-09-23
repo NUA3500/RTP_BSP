@@ -1,9 +1,9 @@
 /*************************************************************************//**
  * @file     main.c
- * @version  V1.00
- * @brief    A project template for M480 MCU.
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * @brief    A project template.
+ *
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>
 #include "NuMicro.h"
@@ -52,8 +52,8 @@ void SYS_Init(void)
 }
 
 /*
- * This is a template project for M480 series MCU. Users could based on this project to create their
- * own application without worry about the IAR/Keil project settings.
+ * This is a template project. Users could based on this project to create their
+ * own application without worry about the IAR/Keil/Eclipse project settings.
  *
  * This template application uses external crystal as HCLK source and configures UART0 to print out
  * "Hello World", users may need to do extra system configuration based on their system design.
@@ -73,4 +73,4 @@ int main()
 
 }
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/
+

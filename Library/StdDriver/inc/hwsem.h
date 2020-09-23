@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     hwsem.h
- * @version  V1.00
- * @brief    M480 series HWSEM driver header file
+ * @brief    HWSEM driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #ifndef __HWSEM_H__
 #define __HWSEM_H__
@@ -137,4 +137,3 @@ extern "C"
 
 #endif
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

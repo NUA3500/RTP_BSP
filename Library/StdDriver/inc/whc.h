@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     whc.h
- * @version  V1.00
- * @brief    M480 series WHC driver header file
+ * @brief    WHC driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #ifndef __WHC_H__
 #define __WHC_H__
@@ -136,4 +136,3 @@ int WHC_Recv(WHC_T* whc, uint32_t u32Ch, uint32_t *pu32RxBuf);
 
 #endif
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

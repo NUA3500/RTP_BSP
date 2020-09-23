@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file     scuart.c
- * @version  V3.00
- * @brief    M480 Smartcard UART mode (SCUART) driver source file
+ * @brief    Smartcard UART mode (SCUART) driver source file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 #include "NuMicro.h"
 
 static uint32_t SCUART_GetClock(SC_T *sc);
@@ -238,4 +238,3 @@ void SCUART_Write(SC_T* sc,uint8_t pu8TxBuf[], uint32_t u32WriteBytes)
 
 /*@}*/ /* end of group Standard_Driver */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

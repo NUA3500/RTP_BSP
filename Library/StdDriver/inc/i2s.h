@@ -1,10 +1,10 @@
 /****************************************************************************//**
  * @file     i2s.h
- * @version  V0.10
- * @brief    M480 I2S driver header file
+ * @brief    I2S driver header file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *****************************************************************************/
 #ifndef __I2S_H__
 #define __I2S_H__
 
@@ -348,5 +348,4 @@ uint32_t I2S_Open(I2S_T *i2s, uint32_t u32MasterSlave, uint32_t u32SampleRate, u
 
 #endif
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/
 

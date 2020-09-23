@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file     wwdt.c
- * @version  V3.00
- * @brief    M480 series WWDT driver source file
+ * @brief    WWDT driver source file
  *
- * @copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include "NuMicro.h"
 
@@ -65,4 +65,3 @@ void WWDT_Open(uint32_t u32PreScale,
 
 /*@}*/ /* end of group Standard_Driver */
 
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/
