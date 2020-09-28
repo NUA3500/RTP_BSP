@@ -352,6 +352,7 @@ Default_Handler:
 	def_irq_handler	EINT0_IRQHandler
 	def_irq_handler	EINT1_IRQHandler
 	def_irq_handler	EINT2_IRQHandler
+	def_irq_handler	EINT3_IRQHandler
 	def_irq_handler	GPA_IRQHandler
 	def_irq_handler	GPB_IRQHandler
 	def_irq_handler	GPC_IRQHandler

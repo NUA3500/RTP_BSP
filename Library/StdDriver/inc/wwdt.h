@@ -67,7 +67,7 @@ extern "C"
   * @details    This macro is used to clear WWDT time-out reset system flag.
   * \hideinitializer
   */
-#define WWDT_CLEAR_RESET_FLAG()     (WWDT->STATUS = WWDT_STATUS_WWDTRF_Msk)
+#define WWDT_CLEAR_RESET_FLAG()     (WWDT2->STATUS = WWDT_STATUS_WWDTRF_Msk)
 
 /**
   * @brief      Clear WWDT Compared Match Interrupt Flag
@@ -79,7 +79,7 @@ extern "C"
   * @details    This macro is used to clear WWDT compared match interrupt flag.
   * \hideinitializer
   */
-#define WWDT_CLEAR_INT_FLAG()       (WWDT->STATUS = WWDT_STATUS_WWDTIF_Msk)
+#define WWDT_CLEAR_INT_FLAG()       (WWDT2->STATUS = WWDT_STATUS_WWDTIF_Msk)
 
 /**
   * @brief      Get WWDT Reset System Flag
@@ -92,7 +92,7 @@ extern "C"
   * @details    This macro is used to indicate system has been reset by WWDT time-out reset or not.
   * \hideinitializer
   */
-#define WWDT_GET_RESET_FLAG()       ((WWDT->STATUS & WWDT_STATUS_WWDTRF_Msk)? 1 : 0)
+#define WWDT_GET_RESET_FLAG()       ((WWDT2->STATUS & WWDT_STATUS_WWDTRF_Msk)? 1 : 0)
 
 /**
   * @brief      Get WWDT Compared Match Interrupt Flag
@@ -105,7 +105,7 @@ extern "C"
   * @details    This macro is used to indicate WWDT counter value matches CMPDAT value or not.
   * \hideinitializer
   */
-#define WWDT_GET_INT_FLAG()         ((WWDT->STATUS & WWDT_STATUS_WWDTIF_Msk)? 1 : 0)
+#define WWDT_GET_INT_FLAG()         ((WWDT2->STATUS & WWDT_STATUS_WWDTIF_Msk)? 1 : 0)
 
 /**
   * @brief      Get WWDT Counter
@@ -117,7 +117,7 @@ extern "C"
   * @details    This macro reflects the current WWDT counter value.
   * \hideinitializer
   */
-#define WWDT_GET_COUNTER()          (WWDT->CNT)
+#define WWDT_GET_COUNTER()          (WWDT2->CNT)
 
 /**
   * @brief      Reload WWDT Counter
@@ -132,7 +132,7 @@ extern "C"
   *             WWDT reset signal will generate immediately to reset system.
   * \hideinitializer
   */
-#define WWDT_RELOAD_COUNTER()       (WWDT->RLDCNT = WWDT_RELOAD_WORD)
+#define WWDT_RELOAD_COUNTER()       (WWDT2->RLDCNT = WWDT_RELOAD_WORD)
 
 void WWDT_Open(uint32_t u32PreScale, uint32_t u32CmpValue, uint32_t u32EnableInt);
 

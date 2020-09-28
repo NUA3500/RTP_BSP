@@ -259,6 +259,7 @@ Default_Handler PROC
                 EXPORT  EINT0_IRQHandler        [WEAK]
                 EXPORT  EINT1_IRQHandler        [WEAK]
                 EXPORT  EINT2_IRQHandler        [WEAK]
+                EXPORT  EINT3_IRQHandler        [WEAK]
                 EXPORT  GPA_IRQHandler          [WEAK]
                 EXPORT  GPB_IRQHandler          [WEAK]
                 EXPORT  GPC_IRQHandler          [WEAK]
@@ -348,7 +349,6 @@ Default_Handler PROC
                 EXPORT  MCAN31_IRQHandler       [WEAK]
                 EXPORT  ADC0_IRQHandler         [WEAK]
 
-Default_Handler
 LVD_IRQHandler
 PWRWU_IRQHandler
 HWSEM0_IRQHandler
@@ -361,6 +361,7 @@ WWDT2_IRQHandler
 EINT0_IRQHandler
 EINT1_IRQHandler
 EINT2_IRQHandler
+EINT3_IRQHandler
 GPA_IRQHandler
 GPB_IRQHandler
 GPC_IRQHandler

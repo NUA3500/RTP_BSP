@@ -49,7 +49,6 @@ typedef enum IRQn
     WWDT2_IRQn                    = 9,
     EINT0_IRQn                    = 10,
     EINT1_IRQn                    = 11,
-    EINT1_IRQn                    = 11,
     EINT2_IRQn                    = 12,
     EINT3_IRQn                    = 13,
     GPA_IRQn                      = 16,
@@ -319,8 +318,8 @@ IRQn_Type;
 #define PL                      ((GPIO_T *)  GPIOL_BASE)
 #define PM                      ((GPIO_T *)  GPIOM_BASE)
 #define PN                      ((GPIO_T *)  GPION_BASE)
-#define PDMA2_BASE              ((PDMA_T) *) PDMA2_BASE)
-#define PDMA3_BASE              ((PDMA_T) *) PDMA3_BASE)
+#define PDMA2                   ((PDMA_T) *) PDMA2_BASE)
+#define PDMA3                   ((PDMA_T) *) PDMA3_BASE)
 #define EBI                     ((EBI_T *)   EBI_BASE)
 #define HWSEM                   ((HWSEM_T *) HWSEM_BASE)
 #define WHC0                    ((WHC_T *)   WHC0_BASE)
@@ -604,6 +603,7 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 #include "i2s.h"
 #include "epwm.h"
 #include "eadc.h"
+#include "adc.h"
 #include "wdt.h"
 #include "wwdt.h"
 #include "ebi.h"

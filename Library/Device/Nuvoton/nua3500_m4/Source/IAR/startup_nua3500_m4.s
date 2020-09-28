@@ -230,6 +230,7 @@ SysTick_Handler
         PUBWEAK  EINT0_IRQHandler
         PUBWEAK  EINT1_IRQHandler
         PUBWEAK  EINT2_IRQHandler
+        PUBWEAK  EINT3_IRQHandler
         PUBWEAK  GPA_IRQHandler
         PUBWEAK  GPB_IRQHandler
         PUBWEAK  GPC_IRQHandler
@@ -333,6 +334,7 @@ WWDT2_IRQHandler
 EINT0_IRQHandler
 EINT1_IRQHandler
 EINT2_IRQHandler
+EINT3_IRQHandler
 GPA_IRQHandler
 GPB_IRQHandler
 GPC_IRQHandler

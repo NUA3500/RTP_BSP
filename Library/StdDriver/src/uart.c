@@ -194,15 +194,7 @@ void UART_Open(UART_T* uart, uint32_t u32baudrate)
     uint32_t u32ClkTbl[4] = {__HXT, 0ul, __LXT, __HIRC};
     uint32_t u32Baud_Div = 0ul;
 
-
-    if(uart==(UART_T*)UART0)
-    {
-        /* Get UART clock source selection */
-        u32UartClkSrcSel = ((uint32_t)(CLK->CLKSEL1 & CLK_CLKSEL1_UART0SEL_Msk)) >> CLK_CLKSEL1_UART0SEL_Pos;
-        /* Get UART clock divider number */
-        u32UartClkDivNum = (CLK->CLKDIV0 & CLK_CLKDIV0_UART0DIV_Msk) >> CLK_CLKDIV0_UART0DIV_Pos;
-    }
-    else if(uart==(UART_T*)UART1)
+    if(uart==(UART_T*)UART1)
     {
         /* Get UART clock source selection */
         u32UartClkSrcSel = (CLK->CLKSEL1 & CLK_CLKSEL1_UART1SEL_Msk) >> CLK_CLKSEL1_UART1SEL_Pos;
@@ -350,15 +342,7 @@ void UART_SetLineConfig(UART_T* uart, uint32_t u32baudrate, uint32_t u32data_wid
     uint32_t u32ClkTbl[4ul] = {__HXT, 0ul, __LXT, __HIRC};
     uint32_t u32Baud_Div = 0ul;
 
-
-    if(uart==(UART_T*)UART0)
-    {
-        /* Get UART clock source selection */
-        u32UartClkSrcSel = (CLK->CLKSEL1 & CLK_CLKSEL1_UART0SEL_Msk) >> CLK_CLKSEL1_UART0SEL_Pos;
-        /* Get UART clock divider number */
-        u32UartClkDivNum = (CLK->CLKDIV0 & CLK_CLKDIV0_UART0DIV_Msk) >> CLK_CLKDIV0_UART0DIV_Pos;
-    }
-    else if(uart==(UART_T*)UART1)
+    if(uart==(UART_T*)UART1)
     {
         /* Get UART clock source selection */
         u32UartClkSrcSel = (CLK->CLKSEL1 & CLK_CLKSEL1_UART1SEL_Msk) >> CLK_CLKSEL1_UART1SEL_Pos;
@@ -466,14 +450,7 @@ void UART_SelectIrDAMode(UART_T* uart, uint32_t u32Buadrate, uint32_t u32Directi
     uart->FUNCSEL = UART_FUNCSEL_IrDA;
 
 
-    if(uart==UART0)
-    {
-        /* Get UART clock source selection */
-        u32UartClkSrcSel = (CLK->CLKSEL1 & CLK_CLKSEL1_UART0SEL_Msk) >> CLK_CLKSEL1_UART0SEL_Pos;
-        /* Get UART clock divider number */
-        u32UartClkDivNum = (CLK->CLKDIV0 & CLK_CLKDIV0_UART0DIV_Msk) >> CLK_CLKDIV0_UART0DIV_Pos;
-    }
-    else if(uart==UART1)
+    if(uart==UART1)
     {
         /* Get UART clock source selection */
         u32UartClkSrcSel = (CLK->CLKSEL1 & CLK_CLKSEL1_UART1SEL_Msk) >> CLK_CLKSEL1_UART1SEL_Pos;
