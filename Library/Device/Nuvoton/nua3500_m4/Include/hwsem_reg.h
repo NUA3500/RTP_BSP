@@ -29,6 +29,7 @@ typedef struct
     __IO uint32_t INTEN_CM4;
     __IO uint32_t INTSTS_CA35;
     __IO uint32_t INTSTS_CM4;
+    __I  uint32_t reserved[3];
     __IO uint32_t SEM[8];
 } HWSEM_T;
 
