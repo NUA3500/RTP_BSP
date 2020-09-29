@@ -55,7 +55,7 @@ extern "C"
   * @return  Latest ADC conversion data
   * \hideinitializer
   */
-#define ADC_GET_CONVERSION_DATA(adc, u32ChNum) (adc->DATA)
+#define ADC_GET_CONVERSION_DATA(adc, u32ChNum) ((adc)->DATA)
 
 /**
   * @brief Return the user-specified interrupt flags
@@ -64,7 +64,7 @@ extern "C"
   * @return  User specified interrupt flags
   * \hideinitializer
   */
-#define ADC_GET_INT_FLAG(adc, u32Mask) (adc->ISR & (u32Mask))
+#define ADC_GET_INT_FLAG(adc, u32Mask) ((adc)->ISR & (u32Mask))
 
 /**
   * @brief This macro clear the selected interrupt status bits
@@ -73,7 +73,7 @@ extern "C"
   * @return  None
   * \hideinitializer
   */
-#define ADC_CLR_INT_FLAG(adc, u32Mask) (adc->ISR = (u32Mask))
+#define ADC_CLR_INT_FLAG(adc, u32Mask) ((adc)->ISR = (u32Mask))
 
 
 /**
@@ -82,7 +82,7 @@ extern "C"
   * @return None
   * \hideinitializer
   */
-#define ADC_POWER_DOWN(adc) (adc->CTL &= ~ADC_CTL_ADEN_Msk)
+#define ADC_POWER_DOWN(adc) ((adc)->CTL &= ~ADC_CTL_ADEN_Msk)
 
 /**
   * @brief Power on ADC module
@@ -90,7 +90,7 @@ extern "C"
   * @return None
   * \hideinitializer
   */
-#define ADC_POWER_ON(adc) (adc->CTL |= ADC_CTL_ADEN_Msk)
+#define ADC_POWER_ON(adc) ((adc)->CTL |= ADC_CTL_ADEN_Msk)
 
 
 /**
@@ -104,12 +104,12 @@ extern "C"
   */
 #define ADC_SET_INPUT_CHANNEL(adc, u32Mask) do {uint32_t u32Ch = 0, i;\
                                                 for(i = 0; i < ADC_CH_NUM; i++) {\
-                                                    if(u32ChMask & (1 << i)) {\
+                                                    if((u32ChMask) & (1 << i)) {\
                                                         u32Ch = i;\
                                                         break;\
                                                     }\
                                                 }\
-                                                adc->CONF = (adc->CONF & ~ADC_CONF_CHSEL_Msk) | (u32Ch << ADC_CONF_CHSEL_Pos);\
+                                                (adc)->CONF = ((adc)->CONF & ~ADC_CONF_CHSEL_Msk) | (u32Ch << ADC_CONF_CHSEL_Pos);\
                                             }while(0)
 
 /**
@@ -118,7 +118,7 @@ extern "C"
   * @return None
   * \hideinitializer
   */
-#define ADC_START_CONV(adc) (adc->CTL |= ADC_CTL_MST_Msk)
+#define ADC_START_CONV(adc) ((adc)->CTL |= ADC_CTL_MST_Msk)
 
 /**
   * @brief Set the reference voltage selection.
@@ -129,7 +129,7 @@ extern "C"
   * @return None
   * \hideinitializer
   */
-#define ADC_SET_REF_VOLTAGE(adc, u32Ref) (adc->CONF = (adc->CONF & ~ADC_CONF_REFSEL_Msk) | u32Ref)
+#define ADC_SET_REF_VOLTAGE(adc, u32Ref) ((adc)->CONF = ((adc)->CONF & ~ADC_CONF_REFSEL_Msk) | (u32Ref))
 
 void ADC_Open(ADC_T *adc,
               uint32_t u32InputMode,

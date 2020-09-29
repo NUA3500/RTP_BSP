@@ -20,14 +20,12 @@
 */
 
 /**
-  * @brief      WHC send
-  *
+  * @brief      Send message through a wormhole channel
   * @param[in]  whc           The pointer of the specified WHC module.
-  *
   * @param[in]  u32Ch         WHC channel, valid channel numbers are 0~3
-  *
   * @param[in]  pu32TxBuf     The buffer holds the data to send
-  *
+  * @retval     0             Success
+  * @retval     -1            Failed. Channel is busy, previous message hasn't been read yet.
   */
 int WHC_Send(WHC_T* whc, uint32_t u32Ch, uint32_t *pu32TxBuf)
 {
@@ -48,14 +46,13 @@ int WHC_Send(WHC_T* whc, uint32_t u32Ch, uint32_t *pu32TxBuf)
 }
 
 /**
-  * @brief      WHC recv
-  *
+  * @brief      Receive message from a wormhole channel
   * @param[in]  whc           The pointer of the specified WHC module.
-  *
   * @param[in]  u32Ch         WHC channel, valid channel numbers are 0~3
-  *
-  * @param[in]  pu32RxBuf     The buffer to hold the receive data
-  *
+  * @param[out] pu32RxBuf     The buffer to hold the receive data
+  * @retval     0             Success
+  * @retval     -1            Failed. Channel is empty and no message is available for read.
+  * @Note       This function send an ACK signal after receive complete
   */
 int WHC_Recv(WHC_T* whc, uint32_t u32Ch, uint32_t *pu32RxBuf)
 {
@@ -73,6 +70,26 @@ int WHC_Recv(WHC_T* whc, uint32_t u32Ch, uint32_t *pu32RxBuf)
 
     }
     return 0;
+}
+
+/**
+  * @brief      Get counter part status
+  * @param[in]  whc           The pointer of the specified WHC module.
+  * @param[in]  u32Core       Core number, valid channel numbers are 0~1
+  * @retval     \ref WHC_RUN_MODE
+  * @retval     \ref WHC_POFF_MODE
+  * @retval     \ref WHC_PD_MODE
+  */
+int WHC_GetCPSts(WHC_T* whc, uint32_t u32Core)
+{
+    if(u32Core == 0)
+    {
+        return (whc->CPSTS & WHC_CPSTS_OPMODE0_Msk) >> WHC_CPSTS_OPMODE0_Pos;
+    }
+    else
+    {
+        return (whc->CPSTS & WHC_CPSTS_OPMODE1_Msk) >> WHC_CPSTS_OPMODE1_Pos;
+    }
 }
 
 /*@}*/ /* end of group WHC_EXPORTED_FUNCTIONS */

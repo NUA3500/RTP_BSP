@@ -221,8 +221,11 @@ typedef struct
 #define WHC_CPSTS_CPULKRF_Pos               (8)
 #define WHC_CPSTS_CPULKRF_Msk               (0x1ul << WHC_CPSTS_CPULKRF_Pos)
 
-#define WHC_CPSTS_OPMODE_Pos                (24)
-#define WHC_CPSTS_OPMODE_Msk                (0xful << WHC_CPSTS_OPMODE_Pos)
+#define WHC_CPSTS_OPMODE0_Pos               (24)
+#define WHC_CPSTS_OPMODE0_Msk               (0xful << WHC_CPSTS_OPMODE0_Pos)
+
+#define WHC_CPSTS_OPMODE1_Pos               (28)
+#define WHC_CPSTS_OPMODE1_Msk               (0xful << WHC_CPSTS_OPMODE1_Pos)
 
 #define WHC_GINTTRG_TRGG0_Pos               (0)
 #define WHC_GINTTRG_TRGG0_Msk               (0x1ul << WHC_GINTTRG_TRGG0_Pos)
