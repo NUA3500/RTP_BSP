@@ -419,9 +419,9 @@ Default_Handler:
 	def_irq_handler	TMR10_IRQHandler
 	def_irq_handler	TMR11_IRQHandler
 	def_irq_handler	BRAKE2_IRQHandler
-	def_irq_handler	EPWM2P0_IRQHandle
-	def_irq_handler	EPWM2P1_IRQHandle
-	def_irq_handler	EPWM2P2_IRQHandle
+	def_irq_handler	EPWM2P0_IRQHandler
+	def_irq_handler	EPWM2P1_IRQHandler
+	def_irq_handler	EPWM2P2_IRQHandler
 	def_irq_handler	QEI2_IRQHandler
 	def_irq_handler	ECAP2_IRQHandler
 	def_irq_handler	SPI2_IRQHandler
