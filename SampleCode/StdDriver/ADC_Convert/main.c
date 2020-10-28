@@ -14,7 +14,7 @@ uint32_t u32Busy = 0;
 void ADC_IRQHandler(void)
 {
     // Clear interrupt flag
-    ADC_CLR_INT_FLAG(ADC0, ADC_IER_MIEN_Msk);
+    ADC_CLR_INT_FLAG(ADC0, ADC_ISR_MF_Msk);
     
     // Get ADC convert result
     printf("Convert result is %x\n", (uint32_t)ADC_GET_CONVERSION_DATA(ADC0, 0));
@@ -49,7 +49,7 @@ void SYS_Init(void)
     /* Set PB.8 to input mode */
     PB->MODE &= ~GPIO_MODE_MODE8_Msk;
     /* Set multi-function pin ADC channel 0 input*/
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB8MFP_Msk) | SYS_GPB_MFPH_PB8MFP_ADC0_CH0;
+    SYS->GPB_MFPH = (SYS->GPB_MFPH & ~SYS_GPB_MFPH_PB8MFP_Msk) | SYS_GPB_MFPH_PB8MFP_ADC0_CH0;
     /* Disable digital input path to prevent leakage */
     GPIO_DISABLE_DIGITAL_PATH(PB, BIT8);
 
@@ -75,7 +75,7 @@ int32_t main (void)
     printf("\nThis sample code demonstrate ADC channel 0 conversion and prints the result on UART\n");
 
     // Enable channel 0
-    ADC_Open(ADC0, 0, ADC_HIGH_SPEED_MODE, ADC_CH_0_MASK);
+    ADC_Open(ADC0, ADC_INPUT_MODE_NORMAL_CONV, ADC_HIGH_SPEED_MODE, ADC_CH_0_MASK);
 
     // Power on ADC
     ADC_POWER_ON(ADC0);

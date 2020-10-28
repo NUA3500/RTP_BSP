@@ -80,17 +80,11 @@ typedef struct
 #define ADC_IER_WKTIEN_Pos          (3)
 #define ADC_IER_WKTIEN_Msk          (0x1ul << ADC_IER_WKTIEN_Pos)
 
-#define ADC_IER_PEUEIEN_Pos         (6)
-#define ADC_IER_PEUEIEN_Msk         (0x1ul << ADC_IER_PEUEIEN_Pos)
-
 #define ADC_ISR_MF_Pos              (0)
 #define ADC_ISR_MF_Msk              (0x1ul << ADC_ISR_MF_Pos)
 
 #define ADC_ISR_PEDEF_Pos           (2)
 #define ADC_ISR_PEDEF_Msk           (0x1ul << ADC_ISR_PEDEF_Pos)
-
-#define ADC_ISR_PEUEF_Pos           (4)
-#define ADC_ISR_PEUEF_Msk           (0x1ul << ADC_ISR_PEUEF_Pos)
 
 #define ADC_ISR_TF_Pos              (8)
 #define ADC_ISR_TF_Msk              (0x1ul << ADC_ISR_TF_Pos)

@@ -10,7 +10,7 @@
       <TargetName>Template</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5040049::V5.04 update 1 (build 49)::ARMCC</pCCUsed>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>M487JIDAE</Device>
@@ -148,7 +148,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>15</TargetSelection>
+          <TargetSelection>19</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -367,11 +367,14 @@
             <v6LangP>1</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
+            <v6Lto>0</v6Lto>
+            <v6WtE>0</v6WtE>
+            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\..\Library\CMSIS\Include;..\..\..\Library\Device\Nuvoton\M480\Include;..\..\..\Library\StdDriver\inc</IncludePath>
+              <IncludePath>..\..\..\Library\CMSIS\Include;..\..\..\Library\Device\Nuvoton\nua3500_m4\Include;..\..\..\Library\StdDriver\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -384,6 +387,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -404,7 +408,7 @@
             <ScatterFile></ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>--map --first='startup_M480.o(RESET)' --datacompressor=off --info=inline --entry Reset_Handler</Misc>
+            <Misc>--map --first='startup_nua3500_m4.o(RESET)' --datacompressor=off --info=inline --entry Reset_Handler</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -415,14 +419,14 @@
           <GroupName>CMSIS</GroupName>
           <Files>
             <File>
-              <FileName>system_M480.c</FileName>
+              <FileName>system_nua3500_m4.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Library\Device\Nuvoton\M480\Source\system_M480.c</FilePath>
+              <FilePath>..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\system_nua3500_m4.c</FilePath>
             </File>
             <File>
-              <FileName>startup_M480.s</FileName>
+              <FileName>startup_nua3500_m4.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\Library\Device\Nuvoton\M480\Source\ARM\startup_M480.s</FilePath>
+              <FilePath>..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\ARM\startup_nua3500_m4.s</FilePath>
             </File>
           </Files>
         </Group>

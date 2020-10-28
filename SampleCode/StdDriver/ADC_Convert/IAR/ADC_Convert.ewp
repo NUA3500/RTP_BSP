@@ -586,7 +586,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>ADC_Covert.bin</state>
+          <state>ADC_Convert.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -640,7 +640,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>ADC_Covert.out</state>
+          <state>ADC_Convert.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>

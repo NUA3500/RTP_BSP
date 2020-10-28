@@ -26,20 +26,23 @@ extern "C"
   @{
 */
 
-#define ADC_CH_0_MASK           (1UL << 0)          /*!< ADC channel 0 mask */
-#define ADC_CH_1_MASK           (1UL << 1)          /*!< ADC channel 1 mask */
-#define ADC_CH_2_MASK           (1UL << 2)          /*!< ADC channel 2 mask */
-#define ADC_CH_3_MASK           (1UL << 3)          /*!< ADC channel 3 mask */
-#define ADC_CH_4_MASK           (1UL << 4)          /*!< ADC channel 4 mask */
-#define ADC_CH_5_MASK           (1UL << 5)          /*!< ADC channel 5 mask */
-#define ADC_CH_6_MASK           (1UL << 6)          /*!< ADC channel 6 mask */
-#define ADC_CH_7_MASK           (1UL << 7)          /*!< ADC channel 7 mask */
+#define ADC_CH_0_MASK           (1UL << 0)          /*!< ADC channel 0 mask \hideinitializer */
+#define ADC_CH_1_MASK           (1UL << 1)          /*!< ADC channel 1 mask \hideinitializer */
+#define ADC_CH_2_MASK           (1UL << 2)          /*!< ADC channel 2 mask \hideinitializer */
+#define ADC_CH_3_MASK           (1UL << 3)          /*!< ADC channel 3 mask \hideinitializer */
+#define ADC_CH_4_MASK           (1UL << 4)          /*!< ADC channel 4 mask \hideinitializer */
+#define ADC_CH_5_MASK           (1UL << 5)          /*!< ADC channel 5 mask \hideinitializer */
+#define ADC_CH_6_MASK           (1UL << 6)          /*!< ADC channel 6 mask \hideinitializer */
+#define ADC_CH_7_MASK           (1UL << 7)          /*!< ADC channel 7 mask \hideinitializer */
 #define ADC_CH_NUM              8                   /*!< Total Channel number \hideinitializer */
 #define ADC_HIGH_SPEED_MODE     ADC_CONF_SPEED_Msk  /*!< ADC working in high speed mode (3.2MHz <= ECLK <= 16MHz) \hideinitializer */
 #define ADC_NORMAL_SPEED_MODE   0                   /*!< ADC working in normal speed mode (ECLK < 3.2MHz) \hideinitializer */
-#define ADC_REFSEL_VREF         0                   /*!< ADC reference voltage source selection set to VREF */
-#define ADC_REFSEL_AVDD         (3UL << ADC_CONF_REFSEL_Pos)  /*!< ADC reference voltage source selection set to AVDD */
+#define ADC_REFSEL_VREF         0                   /*!< ADC reference voltage source selection set to VREF \hideinitializer */
+#define ADC_REFSEL_AVDD         (3UL << ADC_CONF_REFSEL_Pos)  /*!< ADC reference voltage source selection set to AVDD \hideinitializer */
 
+#define ADC_INPUT_MODE_NORMAL_CONV  0   /*!< ADC works in normal conversion mode \hideinitializer */
+#define ADC_INPUT_MODE_4WIRE_TOUCH  1   /*!< ADC works in 4-wire touch screen mode \hideinitializer */
+#define ADC_INPUT_MODE_5WIRE_TOUCH  2   /*!< ADC works in 5-wire touch screen mode \hideinitializer */
 
 /*@}*/ /* end of group ADC_EXPORTED_CONSTANTS */
 
@@ -56,6 +59,38 @@ extern "C"
   * \hideinitializer
   */
 #define ADC_GET_CONVERSION_DATA(adc, u32ChNum) ((adc)->DATA)
+
+/**
+  * @brief Get the latest ADC conversion X data
+  * @param[in] adc Base address of ADC module
+  * @return  Latest ADC conversion X data
+  * \hideinitializer
+  */
+#define ADC_GET_CONVERSION_XDATA(adc) ((adc)->XYDATA & ADC_XYDATA_XDATA_Msk)
+
+/**
+  * @brief Get the latest ADC conversion Y data
+  * @param[in] adc Base address of ADC module
+  * @return  Latest ADC conversion Y data
+  * \hideinitializer
+  */
+#define ADC_GET_CONVERSION_YDATA(adc) ((adc)->XYDATA >> ADC_XYDATA_YDATA_Pos)
+
+/**
+  * @brief Get the latest ADC conversion Z1 data
+  * @param[in] adc Base address of ADC module
+  * @return  Latest ADC conversion Z1 data
+  * \hideinitializer
+  */
+#define ADC_GET_CONVERSION_Z1DATA(adc) ((adc)->DATA & ADC_ZDATA_Z1DATA_Msk)
+
+/**
+  * @brief Get the latest ADC conversion Z2 data
+  * @param[in] adc Base address of ADC module
+  * @return  Latest ADC conversion Z2 data
+  * \hideinitializer
+  */
+#define ADC_GET_CONVERSION_Z2DATA(adc) ((adc)->DATA >> ADC_ZDATA_Z2DATA_Pos)
 
 /**
   * @brief Return the user-specified interrupt flags
@@ -130,6 +165,25 @@ extern "C"
   * \hideinitializer
   */
 #define ADC_SET_REF_VOLTAGE(adc, u32Ref) ((adc)->CONF = ((adc)->CONF & ~ADC_CONF_REFSEL_Msk) | (u32Ref))
+
+/**
+  * @brief Set ADC to convert X/Y coordinate
+  * @param[in] adc Base address of ADC module
+  * @return None
+  * \hideinitializer
+  */
+#define ADC_CONVERT_XY_MODE(adc) do {(adc)->CTL &= ~ADC_CTL_PEDEEN_Msk;\
+                                     (adc)->CONF |= ADC_CONF_TEN_Msk | ADC_CONF_ZEN_Msk;} while(0)
+
+/**
+  * @brief Set ADC to detect pen down event
+  * @param[in] adc Base address of ADC module
+  * @return None
+  * \hideinitializer
+  */
+#define ADC_DETECT_PD_MODE(adc) do {(adc)->CONF &= ~(ADC_CONF_TEN_Msk | ADC_CONF_ZEN_Msk);\
+                                    (adc)->CTL |= ADC_CTL_PEDEEN_Msk} while(0)
+
 
 void ADC_Open(ADC_T *adc,
               uint32_t u32InputMode,

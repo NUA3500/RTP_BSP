@@ -62,11 +62,11 @@ void SYS_Init(void)
 int main()
 {
 
-    SYS_Init();
+    //SYS_Init();
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    //UART_Open(UART1, 115200);
     /* Connect UART to PC, and open a terminal tool to receive following message */
-    printf("Hello World\n");
+    //printf("Hello World\n");
 
     /* Got no where to go, just loop forever */
     while(1);
