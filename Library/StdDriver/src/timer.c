@@ -44,7 +44,7 @@ uint32_t TIMER_Open(TIMER_T *timer, uint32_t u32Mode, uint32_t u32Freq)
     uint32_t u32Cmpr = 0UL, u32Prescale = 0UL;
 
     /* Fastest possible timer working freq is (u32Clk / 2). While cmpr = 2, prescaler = 0. */
-    if(u32Freq > (u32Clk / 2UL))
+    if (u32Freq > (u32Clk / 2UL))
     {
         u32Cmpr = 2UL;
     }
@@ -52,6 +52,7 @@ uint32_t TIMER_Open(TIMER_T *timer, uint32_t u32Mode, uint32_t u32Freq)
     {
         u32Cmpr = u32Clk / u32Freq;
         u32Prescale = (u32Cmpr >> 24);  /* for 24 bits CMPDAT */
+
         if (u32Prescale > 0UL)
             u32Cmpr = u32Cmpr / (u32Prescale + 1UL);
     }
@@ -59,7 +60,7 @@ uint32_t TIMER_Open(TIMER_T *timer, uint32_t u32Mode, uint32_t u32Freq)
     timer->CTL = u32Mode | u32Prescale;
     timer->CMP = u32Cmpr;
 
-    return(u32Clk / (u32Cmpr * (u32Prescale + 1UL)));
+    return (u32Clk / (u32Cmpr * (u32Prescale + 1UL)));
 }
 
 /**
@@ -99,30 +100,32 @@ void TIMER_Delay(TIMER_T *timer, uint32_t u32Usec)
     timer->CTL = 0UL;
     timer->EXTCTL = 0UL;
 
-    if(u32Clk <= 1000000UL)   /* min delay is 1000 us if timer clock source is <= 1 MHz */
+    if (u32Clk <= 1000000UL)  /* min delay is 1000 us if timer clock source is <= 1 MHz */
     {
-        if(u32Usec < 1000UL)
+        if (u32Usec < 1000UL)
         {
             u32Usec = 1000UL;
         }
-        if(u32Usec > 1000000UL)
+
+        if (u32Usec > 1000000UL)
         {
             u32Usec = 1000000UL;
         }
     }
     else
     {
-        if(u32Usec < 100UL)
+        if (u32Usec < 100UL)
         {
             u32Usec = 100UL;
         }
-        if(u32Usec > 1000000UL)
+
+        if (u32Usec > 1000000UL)
         {
             u32Usec = 1000000UL;
         }
     }
 
-    if(u32Clk <= 1000000UL)
+    if (u32Clk <= 1000000UL)
     {
         u32Prescale = 0UL;
         u32NsecPerTick = 1000000000UL / u32Clk;
@@ -132,6 +135,7 @@ void TIMER_Delay(TIMER_T *timer, uint32_t u32Usec)
     {
         u32Cmpr = u32Usec * (u32Clk / 1000000UL);
         u32Prescale = (u32Cmpr >> 24);  /* for 24 bits CMPDAT */
+
         if (u32Prescale > 0UL)
             u32Cmpr = u32Cmpr / (u32Prescale + 1UL);
     }
@@ -141,12 +145,12 @@ void TIMER_Delay(TIMER_T *timer, uint32_t u32Usec)
 
     /* When system clock is faster than timer clock, it is possible timer active bit cannot set in time while we check it.
        And the while loop below return immediately, so put a tiny delay here allowing timer start counting and raise active flag. */
-    for(; delay > 0UL; delay--)
+    for (; delay > 0UL; delay--)
     {
         __NOP();
     }
 
-    while(timer->CTL & TIMER_CTL_ACTSTS_Msk)
+    while (timer->CTL & TIMER_CTL_ACTSTS_Msk)
     {
         ;
     }
@@ -240,33 +244,50 @@ uint32_t TIMER_GetModuleClock(TIMER_T *timer)
     uint32_t u32Src, u32Clk;
     const uint32_t au32Clk[] = {__HXT, __LXT, 0UL, 0UL, 0UL, __LIRC, 0UL, __HIRC};
 
-    if(timer == TIMER0)
-    {
-        u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR0SEL_Msk) >> CLK_CLKSEL1_TMR0SEL_Pos;
-    }
-    else if(timer == TIMER1)
-    {
-        u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR1SEL_Msk) >> CLK_CLKSEL1_TMR1SEL_Pos;
-    }
-    else if(timer == TIMER2)
+    if (timer == TIMER2)
     {
         u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR2SEL_Msk) >> CLK_CLKSEL1_TMR2SEL_Pos;
     }
-    else      /* Timer 3 */
+    else if (timer == TIMER3)
     {
         u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR3SEL_Msk) >> CLK_CLKSEL1_TMR3SEL_Pos;
     }
-
-    if(u32Src == 2UL)
+    else if (timer == TIMER4)
     {
-        if((timer == TIMER0) || (timer == TIMER1))
-        {
-            u32Clk = CLK_GetPCLK0Freq();
-        }
-        else
-        {
-            u32Clk = CLK_GetPCLK1Freq();
-        }
+        u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR4SEL_Msk) >> CLK_CLKSEL1_TMR4SEL_Pos;
+    }
+    else if (timer == TIMER5)
+    {
+        u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR5SEL_Msk) >> CLK_CLKSEL1_TMR5SEL_Pos;
+    }
+    else if (timer == TIMER6)
+    {
+        u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR6SEL_Msk) >> CLK_CLKSEL1_TMR6SEL_Pos;
+    }
+    else if (timer == TIMER7)
+    {
+        u32Src = (CLK->CLKSEL1 & CLK_CLKSEL1_TMR7SEL_Msk) >> CLK_CLKSEL1_TMR7SEL_Pos;
+    }
+    else if (timer == TIMER8)
+    {
+        u32Src = (CLK->CLKSEL2 & CLK_CLKSEL2_TMR8SEL_Msk) >> CLK_CLKSEL2_TMR8SEL_Pos;
+    }
+    else if (timer == TIMER9)
+    {
+        u32Src = (CLK->CLKSEL2 & CLK_CLKSEL2_TMR9SEL_Msk) >> CLK_CLKSEL2_TMR9SEL_Pos;
+    }
+    else if (timer == TIMER10)
+    {
+        u32Src = (CLK->CLKSEL2 & CLK_CLKSEL2_TMR10SEL_Msk) >> CLK_CLKSEL2_TMR10SEL_Pos;
+    }
+    else      /* Timer 11 */
+    {
+        u32Src = (CLK->CLKSEL2 & CLK_CLKSEL2_TMR11SEL_Msk) >> CLK_CLKSEL2_TMR11SEL_Pos;
+    }
+
+    if (u32Src == 2UL)
+    {
+        u32Clk = CLK_GetPCLK3Freq();
     }
     else
     {
@@ -298,7 +319,16 @@ void TIMER_EnableFreqCounter(TIMER_T *timer,
 {
     TIMER_T *t;    /* store the timer base to configure compare value */
 
-    t = (timer == TIMER0) ? TIMER1 : TIMER3;
+    if (timer == TIMER2)
+        t = TIMER3;
+    else if (timer == TIMER4)
+        t = TIMER5;
+    else if (timer == TIMER6)
+        t = TIMER7;
+    else if (timer == TIMER8)
+        t = TIMER9;
+    else if (timer == TIMER10)
+        t = TIMER11;
 
     t->CMP = 0xFFFFFFUL;
     t->EXTCTL = u32EnableInt ? TIMER_EXTCTL_CAPIEN_Msk : 0UL;
