@@ -200,6 +200,7 @@ IRQn_Type;
 #include "timer_reg.h"
 #include "ebi_reg.h"
 #include "epwm_reg.h"
+#include "kpi_reg.h"
 
 /** @addtogroup PERIPHERAL_MEM_MAP Peripheral Memory Base
   Memory Mapped Structure for Peripherals
@@ -332,7 +333,7 @@ IRQn_Type;
 #define EADC0                   ((EADC_T *)  EADC0_BASE)
 #define I2S0                    ((I2S_T *)   I2S0_BASE)
 #define I2S1                    ((I2S_T *)   I2S1_BASE)
-#define KPI                     ((KPI_T *)   KPIBASE)
+#define KPI                     ((KPI_T *)   KPI_BASE)
 #define TIMER2                  ((TIMER_T *) TIMER2_BASE)
 #define TIMER3                  ((TIMER_T *) TIMER3_BASE)
 #define TIMER4                  ((TIMER_T *) TIMER4_BASE)
@@ -612,6 +613,7 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 #include "spi.h"
 #include "qspi.h"
 #include "rtc.h"
+#include "kpi.h"
 
 #ifdef __cplusplus
 }
