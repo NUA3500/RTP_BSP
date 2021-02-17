@@ -35,7 +35,6 @@
 #include "semphr.h"
 
 /* Demo application includes. */
-#include "partest.h"
 #include "flash.h"
 #include "flop.h"
 #include "integer.h"
@@ -98,6 +97,7 @@ information. */
  * Set up the hardware ready to run this demo.
  */
 static void prvSetupHardware( void );
+void vPortSetupTimerInterrupt( void );
 /*-----------------------------------------------------------*/
 
 #ifdef CHECK_TEST
@@ -108,26 +108,17 @@ int main(void)
 {
     /* Configure the hardware ready to run the test. */
     prvSetupHardware();
-
+    vPortSetupTimerInterrupt();
 
 #ifdef CHECK_TEST
     xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 #endif
-
-
-    /* Start standard demo/test application flash tasks.  See the comments at
-    the top of this file.  The LED flash tasks are always created.  The other
-    tasks are only created if mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY is set to
-    0 (at the top of this file).  See the comments at the top of this file for
-    more information. */
-    vStartLEDFlashTasks( mainFLASH_TASK_PRIORITY );
 
     vStartPolledQueueTasks( mainQUEUE_POLL_PRIORITY );
 
     /* The following function will only create more tasks and timers if
     mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY is set to 0 (at the top of this
     file).  See the comments at the top of this file for more information. */
-    //prvOptionallyCreateComprehensveTestApplication();
 
     printf("FreeRTOS is starting ...\n");
 
@@ -148,48 +139,20 @@ static void prvSetupHardware( void )
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Enable External XTAL (4~24 MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
-
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(TMR0_MODULE);
-
+    CLK_EnableModuleClock(UART16_MODULE);
     /* Select IP clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HXT, 0);
-
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
-
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    PH->MODE = (PH->MODE & ~(GPIO_MODE_MODE0_Msk | GPIO_MODE_MODE1_Msk | GPIO_MODE_MODE2_Msk)) |
-               (GPIO_MODE_OUTPUT << GPIO_MODE_MODE0_Pos) |
-               (GPIO_MODE_OUTPUT << GPIO_MODE_MODE1_Pos) |
-               (GPIO_MODE_OUTPUT << GPIO_MODE_MODE2_Pos);  // Set to output mode
-
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
     /* Lock protected registers */
     SYS_LockReg();
-
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 /*-----------------------------------------------------------*/
 

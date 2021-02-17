@@ -18,45 +18,18 @@
  *----------------------------------------------------------------------------*/
 uint32_t SystemCoreClock  = __SYSTEM_CLOCK;    /*!< System Clock Frequency (Core Clock)*/
 uint32_t CyclesPerUs      = (__HSI / 1000000UL); /* Cycles per micro second */
-uint32_t PllClock         = __HSI;             /*!< PLL Output Clock Frequency         */
-uint32_t gau32ClkSrcTbl[] = {__HXT, __LXT, 0UL, __LIRC, 0UL, 0UL, 0UL, __HIRC};
+
 
 /*----------------------------------------------------------------------------
   Clock functions
  *----------------------------------------------------------------------------*/
 void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
 {
-#if 0
-    uint32_t u32Freq, u32ClkSrc;
-    uint32_t u32HclkDiv;
-
-    /* Update PLL Clock */
-    PllClock = CLK_GetPLLClockFreq();
-
-    u32ClkSrc = CLK->CLKSEL0 & CLK_CLKSEL0_HCLKSEL_Msk;
-
-    if(u32ClkSrc == CLK_CLKSEL0_HCLKSEL_PLL)
-    {
-        /* Use PLL clock */
-        u32Freq = PllClock;
-    }
-    else
-    {
-        /* Use the clock sources directly */
-        u32Freq = gau32ClkSrcTbl[u32ClkSrc];
-    }
-
-    u32HclkDiv = (CLK->CLKDIV0 & CLK_CLKDIV0_HCLKDIV_Msk) + 1UL;
 
     /* Update System Core Clock */
-    SystemCoreClock = u32Freq / u32HclkDiv;
-
-
-    //if(SystemCoreClock == 0)
-    //    __BKPT(0);
-
+    SystemCoreClock = 180000000;
     CyclesPerUs = (SystemCoreClock + 500000UL) / 1000000UL;
-#endif
+
 }
 
 /**

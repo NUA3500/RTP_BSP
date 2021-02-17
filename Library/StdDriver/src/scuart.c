@@ -48,43 +48,25 @@ static uint32_t SCUART_GetClock(SC_T *sc)
     {
         u32Num = 0UL;
     }
-    else if(sc == SC1)
+    else
     {
         u32Num = 1UL;
     }
-    else
-    {
-        u32Num = 2UL;
-    }
 
-    u32ClkSrc = (CLK->CLKSEL3 >> (2UL * u32Num)) & CLK_CLKSEL3_SC0SEL_Msk;
+    u32ClkSrc = CLK->CLKSEL4 >> (u32Num + CLK_CLKSEL4_SC0SEL_Msk);
 
     /* Get smartcard module clock */
     if(u32ClkSrc == 0UL)
     {
         u32Clk = __HXT;
     }
-    else if(u32ClkSrc == 1UL)
-    {
-        u32Clk = CLK_GetPLLClockFreq();
-    }
-    else if(u32ClkSrc == 2UL)
-    {
-        if(u32Num == 1UL)
-        {
-            u32Clk = CLK_GetPCLK1Freq();
-        }
-        else
-        {
-            u32Clk = CLK_GetPCLK0Freq();
-        }
-    }
     else
     {
-        u32Clk = __HIRC;
+      u32Clk = CLK_GetPCLK3Freq();
     }
 
-    u32Clk /= (((CLK->CLKDIV1 >> (8UL * u32Num)) & CLK_CLKDIV1_SC0DIV_Msk) + 1UL);
+
+    u32Clk /= (((CLK->CLKDIV1 >> (4UL * u32Num)) & CLK_CLKDIV1_SC0DIV_Msk) + 1UL);
 
 
     return u32Clk;

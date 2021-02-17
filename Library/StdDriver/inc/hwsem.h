@@ -26,8 +26,9 @@ extern "C"
   @{
 */
 #define HWSEM_CNT               8ul     /*!<HWSEM count \hideinitializer */
-#define HWSEM_LOCK_BY_M4        1ul     /*!<Semaphore lock by M4 \hideinitializer */
-#define HWSEM_LOCK_BY_A35       2ul     /*!<Semaphore lock by A35 \hideinitializer */
+#define HWSEM_LOCK_BY_A35       1ul     /*!<Semaphore lock by A35 \hideinitializer */
+#define HWSEM_LOCK_BY_M4        2ul     /*!<Semaphore lock by M4 \hideinitializer */
+
 
 /*@}*/ /* end of group HWSEM_EXPORTED_CONSTANTS */
 

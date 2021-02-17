@@ -2,8 +2,9 @@
  * @file     system_nua3500_m4.h
  * @brief    CMSIS Cortex-M4 Core Peripheral Access Layer Header File
  *
+ * SPDX-License-Identifier: Apache-2.0
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/
+ *****************************************************************************/
 
 #ifndef __SYSTEM_NUA3500_M4_H__
 #define __SYSTEM_NUA3500_M4_H__
@@ -19,11 +20,11 @@ extern "C" {
   Define clocks
  *----------------------------------------------------------------------------*/
 
-#define __HSI       (12000000UL)    /*!< PLL default output is 50MHz */
-#define __HXT       (12000000UL)    /*!< External Crystal Clock Frequency     */
+#define __HSI       (24000000UL)    /*!< PLL default output is 50MHz */
+#define __HXT       (24000000UL)    /*!< External Crystal Clock Frequency     */
 #define __LXT       (32768UL)       /*!< External Crystal Clock Frequency 32.768KHz */
 #define __HIRC      (12000000UL)    /*!< Internal 12M RC Oscillator Frequency */
-#define __LIRC      (10000UL)       /*!< Internal 10K RC Oscillator Frequency */
+#define __LIRC      (30000UL)       /*!< Internal 10K RC Oscillator Frequency */
 #define __SYS_OSC_CLK     (    ___HSI)    /* Main oscillator frequency        */
 
 

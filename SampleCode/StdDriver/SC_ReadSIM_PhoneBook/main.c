@@ -205,47 +205,27 @@ void SYS_Init(void)
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Enable External XTAL (4~24 MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
-
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART0_MODULE);
     CLK_EnableModuleClock(SC0_MODULE);
-
-
+    CLK_EnableModuleClock(UART16_MODULE);
     /* Select IP clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
     // Valid smartcard clock rate is from 1MHz to 4MHz, we set it to 4MHz
-    CLK_SetModuleClock(SC0_MODULE, CLK_CLKSEL3_SC0SEL_HXT, CLK_CLKDIV1_SC0(3));
-
+    CLK_SetModuleClock(SC0_MODULE, CLK_CLKSEL4_SC0SEL_HXT, CLK_CLKDIV1_SC0(6));
+    /* Select UART clock source from HXT */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
 
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-    /* Set PA0~4 for SC0 interface */
-    SYS->GPA_MFPL |= SYS_GPA_MFPL_PA0MFP_SC0_CLK |
-                     SYS_GPA_MFPL_PA1MFP_SC0_DAT |
-                     SYS_GPA_MFPL_PA2MFP_SC0_RST |
-                     SYS_GPA_MFPL_PA3MFP_SC0_PWR |
-                     SYS_GPA_MFPL_PA4MFP_SC0_nCD;
-
-
+    /* Set MFP for SC0 interface */
+    SYS->GPF_MFPH |= SYS_GPF_MFPH_PF10MFP_SC0_CLK |
+                     SYS_GPF_MFPH_PF11MFP_SC0_DAT |
+                     SYS_GPF_MFPH_PF12MFP_SC0_RST |
+                     SYS_GPF_MFPH_PF13MFP_SC0_PWR;
+    SYS->GPI_MFPH |= SYS_GPI_MFPL_PI0MFP_SC0_nCD;
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
     /* Lock protected registers */
     SYS_LockReg();
 }
@@ -284,10 +264,8 @@ int main(void)
        protected register, please issue SYS_UnlockReg()
        to unlock protected register if necessary */
     SYS_Init();
-
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
-
+    UART_Open(UART16, 115200);
     printf("\nThis sample code reads phone book from SIM card\n");
 
     // Open smartcard interface 1. CD pin state low indicates card insert and PWR pin high raise VCC pin to card

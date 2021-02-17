@@ -9,7 +9,7 @@
 
 /* Below are variables used locally by SC driver and does not want to parse by doxygen unless HIDDEN_SYMBOLS is defined */
 /** @cond HIDDEN_SYMBOLS */
-static uint32_t u32CardStateIgnore[SC_INTERFACE_NUM] = {0UL, 0UL, 0UL};
+static uint32_t u32CardStateIgnore[SC_INTERFACE_NUM] = {0UL, 0UL};
 
 /** @endcond HIDDEN_SYMBOLS */
 
@@ -44,10 +44,6 @@ uint32_t SC_IsCardInserted(SC_T *sc)
         ret = (uint32_t)TRUE;
     }
     else if((sc == SC1) && (u32CardStateIgnore[1] == 1UL))
-    {
-        ret = (uint32_t)TRUE;
-    }
-    else if((sc == SC2) && (u32CardStateIgnore[2] == 1UL))
     {
         ret = (uint32_t)TRUE;
     }
@@ -117,13 +113,9 @@ void SC_Open(SC_T *sc, uint32_t u32CardDet, uint32_t u32PWR)
     {
         u32Intf = 0UL;
     }
-    else if(sc == SC1)
-    {
-        u32Intf = 1UL;
-    }
     else
     {
-        u32Intf = 2UL;
+        u32Intf = 1UL;
     }
 
     if(u32CardDet != SC_PIN_STATE_IGNORE)
@@ -156,13 +148,9 @@ void SC_ResetReader(SC_T *sc)
     {
         u32Intf = 0UL;
     }
-    else if(sc == SC1)
-    {
-        u32Intf = 1UL;
-    }
     else
     {
-        u32Intf = 2UL;
+        u32Intf = 1UL;
     }
 
     /* Reset FIFO, enable auto de-activation while card removal */
@@ -350,43 +338,26 @@ uint32_t SC_GetInterfaceClock(SC_T *sc)
     {
         u32Num = 0UL;
     }
-    else if(sc == SC1)
+    else
     {
         u32Num = 1UL;
     }
-    else
-    {
-        u32Num = 2UL;
-    }
 
-    u32ClkSrc = (CLK->CLKSEL3 >> (2UL * u32Num)) & CLK_CLKSEL3_SC0SEL_Msk;
+    u32ClkSrc = CLK->CLKSEL4 >> (u32Num + CLK_CLKSEL4_SC0SEL_Msk);
 
     /* Get smartcard module clock */
     if(u32ClkSrc == 0UL)
     {
         u32Clk = __HXT;
     }
-    else if(u32ClkSrc == 1UL)
-    {
-        u32Clk = CLK_GetPLLClockFreq();
-    }
-    else if(u32ClkSrc == 2UL)
-    {
-        if(u32Num == 1UL)
-        {
-            u32Clk = CLK_GetPCLK1Freq();
-        }
-        else
-        {
-            u32Clk = CLK_GetPCLK0Freq();
-        }
-    }
     else
     {
-        u32Clk = __HIRC;
+      u32Clk = CLK_GetPCLK3Freq();
     }
 
-    u32Clk /= (((CLK->CLKDIV1 >> (8UL * u32Num)) & CLK_CLKDIV1_SC0DIV_Msk) + 1UL) * 1000UL;
+
+    u32Clk /= (((CLK->CLKDIV1 >> (4UL * u32Num)) & CLK_CLKDIV1_SC0DIV_Msk) + 1UL);
+
     return u32Clk;
 }
 

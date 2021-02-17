@@ -9,10 +9,19 @@
 #ifndef __ADC_REG_H__
 #define __ADC_REG_H__
 
-#ifdef __cplusplus
-extern "C"
-{
+#if defined ( __CC_ARM   )
+#pragma anon_unions
 #endif
+
+/**
+   @addtogroup REGISTER Control Register
+   @{
+*/
+
+/**
+    @addtogroup ADC Analog to Digital Converter(ADC)
+    Memory Mapped Structure for ADC Controller
+@{ */
 
 
 typedef struct
@@ -31,6 +40,10 @@ typedef struct
     __IO uint32_t ZSORT[4];
 } ADC_T;
 
+/**
+    @addtogroup ADC_CONST ADC Bit Field Definition
+    Constant Definitions for ADC Controller
+@{ */
 
 #define ADC_CTL_ADEN_Pos            (0)
 #define ADC_CTL_ADEN_Msk            (0x1ul << ADC_CTL_ADEN_Pos)
@@ -116,8 +129,12 @@ typedef struct
 #define ADC_DATA_ADCDATA_Pos        (0)
 #define ADC_DATA_ADCDATA_Msk        (0xFFFul << ADC_DATA_ADCDATA_Pos)
 
-#ifdef __cplusplus
-}
+/**@}*/ /* ADC_CONST */
+/**@}*/ /* end of ADC register group */
+/**@}*/ /* end of REGISTER group */
+
+#if defined ( __CC_ARM   )
+#pragma no_anon_unions
 #endif
 
 #endif  //__ADC_REG_H__

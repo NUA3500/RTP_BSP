@@ -50,7 +50,7 @@ void MemManage_Handler(void)
     // Clear Fault status register
     SCB->CFSR = 0x000000BB;
 
-    printf("\n Memory Fault !!");
+    printf("Memory Fault !!\n");
 }
 
 void SYS_Init(void)
@@ -58,42 +58,24 @@ void SYS_Init(void)
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Enable External XTAL (4~24 MHz) */
-    CLK->PWRCTL |= CLK_PWRCTL_HXTEN_Msk; // XTAL12M (HXT) Enabled
-
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
-
-    /* Switch HCLK clock source to XTAL */
-    CLK->CLKSEL0 &= ~CLK_CLKSEL0_HCLKSEL_Msk;
-    CLK->CLKSEL0 |= CLK_CLKSEL0_HCLKSEL_HXT;
-
     /* Enable UART clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART clock source from HXT */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
 
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
     /* Lock protected registers */
     SYS_LockReg();
 }
 
-void UART0_Init()
-{
-    UART_Open(UART0, 115200);
-}
 
 void MPU_Test(void)
 {
@@ -103,68 +85,66 @@ void MPU_Test(void)
     // Configure MPU memory regions
     //------------------------------
 
-    // Region 1 (Flash Memory Space)
+    // Region 1
     // Start address = 0x0
     // Permission = Full access
-    // Size = 128KB
+    // Size = 64KB
 
     // Base address = Base address :OR: Region number :OR: VALID bit
     MPU->RBAR = ((0x00000000 & MPU_RBAR_ADDR_Msk) | (0x1 & MPU_RBAR_REGION_Msk) | MPU_RBAR_VALID_Msk);
-    // Attribute = Full access :OR: SRD = 0 :OR: Size = 128KB :OR: ENABLE
-    MPU->RASR = ((AP_Pri_RW_User_RW << MPU_RASR_AP_Pos)| ( Region_Size_128K << MPU_RASR_SIZE_Pos) | MPU_RASR_ENABLE_Msk);
+    // Attribute = Full access :OR: SRD = 0 :OR: Size = 64KB :OR: ENABLE
+    MPU->RASR = ((AP_Pri_RW_User_RW << MPU_RASR_AP_Pos)| ( Region_Size_64K << MPU_RASR_SIZE_Pos) | MPU_RASR_ENABLE_Msk);
 
-    // Region 2 (SRAM Memory Space)
-    // Start address = 0x20000000
+    // Region 2
+    // Start address = 0x00010000
     // Permission = Full access
-    // Size = 16KB
+    // Size = 32KB
 
     // Base address = Base address :OR: Region number :OR: VALID bit
-    MPU->RBAR = ((0x20000000 & MPU_RBAR_ADDR_Msk) | (0x2 & MPU_RBAR_REGION_Msk) | MPU_RBAR_VALID_Msk);
-    // Attribute = Full access :OR: SRD = 0 :OR: Size = 16KB :OR: ENABLE
-    MPU->RASR = ((AP_Pri_RW_User_RW << MPU_RASR_AP_Pos)| ( Region_Size_16K << MPU_RASR_SIZE_Pos) | MPU_RASR_ENABLE_Msk);
+    MPU->RBAR = ((0x00010000 & MPU_RBAR_ADDR_Msk) | (0x2 & MPU_RBAR_REGION_Msk) | MPU_RBAR_VALID_Msk);
+    // Attribute = Full access :OR: SRD = 0 :OR: Size = 32KB :OR: ENABLE
+    MPU->RASR = ((AP_Pri_RW_User_RW << MPU_RASR_AP_Pos)| ( Region_Size_32K << MPU_RASR_SIZE_Pos) | MPU_RASR_ENABLE_Msk);
 
-    // Region 3 (Test Memory Space)
-    // Start address = 0x20004000
+    // Region 3
+    // Start address = 0x00018000
     // Permission = No Access
-    // Size = 1KB
+    // Size = 16KB (Leave room for stack. GCC link script uses end of SRAM space as stack)
 
     // Base address = Base address :OR: Region number :OR: VALID bit
-    MPU->RBAR = ((0x20004000 & MPU_RBAR_ADDR_Msk) | (0x3 & MPU_RBAR_REGION_Msk) | MPU_RBAR_VALID_Msk);
-    // Attribute = No Access :OR: SRD = 0 :OR: Size = 1KB :OR: ENABLE
-    MPU->RASR = ((AP_No_Access << MPU_RASR_AP_Pos)| ( Region_Size_1K << MPU_RASR_SIZE_Pos) | MPU_RASR_ENABLE_Msk);
+    MPU->RBAR = ((0x00018000 & MPU_RBAR_ADDR_Msk) | (0x3 & MPU_RBAR_REGION_Msk) | MPU_RBAR_VALID_Msk);
+    // Attribute = No Access :OR: SRD = 0 :OR: Size = 16KB :OR: ENABLE
+    MPU->RASR = ((AP_No_Access << MPU_RASR_AP_Pos)| ( Region_Size_16K << MPU_RASR_SIZE_Pos) | MPU_RASR_ENABLE_Msk);
 
     // Enable MemFault enable bit
     SCB->SHCSR = SCB_SHCSR_MEMFAULTENA_Msk;
     // Enable MPU
     MPU->CTRL |= MPU_CTRL_PRIVDEFENA_Msk | MPU_CTRL_ENABLE_Msk;
 
-    printf("\n Please Press '1' to read memory from region 1 (Flash Memory)");
+    printf("Please Press '1' to read memory from region 1\n");
 
     while(u8TestItem != '1') u8TestItem = getchar();
 
     ReadMemCore(0x00000000);
 
-    printf("\n Please Press '2' to read memory from region 2 (SRAM)");
+    printf("Please Press '2' to read memory from region 2\n");
 
     while(u8TestItem != '2') u8TestItem = getchar();
 
-    ReadMemCore(0x20000000);
+    ReadMemCore(0x00010000);
 
-    printf("\n Please Press '3' to read memory from region 3 (Test Memory)");
+    printf("Please Press '3' to read memory from region 3\n");
 
     while(u8TestItem != '3') u8TestItem = getchar();
 
-    ReadMemCore(0x20004000);
+    ReadMemCore(0x00018000);
 }
 
 int main()
 {
     /* Init System, IP clock and multi-function I/O */
     SYS_Init();
-
-    /* Init UART0 for printf */
-    UART0_Init();
-
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
     printf("\n Start MPU test: \n");
 
     MPU_Test();

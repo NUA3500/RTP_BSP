@@ -113,7 +113,7 @@ typedef struct
 #define HWSEM_SEM_ID_Pos                     (0)
 #define HWSEM_SEM_ID_Msk                     (0xful << HWSEM_SEM_ID_Pos)
 
-#define HWSEM_SEM_KEY_Pos                    (16)
+#define HWSEM_SEM_KEY_Pos                    (8)
 #define HWSEM_SEM_KEY_Msk                    (0xfful << HWSEM_SEM_KEY_Pos)
 
 /**@}*/ /* HWSEM_CONST */

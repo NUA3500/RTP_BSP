@@ -25,7 +25,7 @@ extern "C"
 /** @addtogroup SC_EXPORTED_CONSTANTS SC Exported Constants
   @{
 */
-#define SC_INTERFACE_NUM        3                /*!< Smartcard interface numbers \hideinitializer */
+#define SC_INTERFACE_NUM        2                /*!< Smartcard interface numbers \hideinitializer */
 #define SC_PIN_STATE_HIGH       1                /*!< Smartcard pin status high   \hideinitializer */
 #define SC_PIN_STATE_LOW        0                /*!< Smartcard pin status low    \hideinitializer */
 #define SC_PIN_STATE_IGNORE     0xFFFFFFFF       /*!< Ignore pin status           \hideinitializer */

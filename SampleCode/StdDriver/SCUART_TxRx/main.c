@@ -23,7 +23,7 @@ void SC0_IRQHandler(void)
     // Print SCUART received data to UART port
     // Data length here is short, so we're not care about UART FIFO over flow.
     while(!SCUART_GET_RX_EMPTY(SC0))
-        UART_WRITE(UART0, SCUART_READ(SC0));
+        putchar(SCUART_READ(SC0));
 
     // RDA is the only interrupt enabled in this sample, this status bit
     // automatically cleared after Rx FIFO empty. So no need to clear interrupt
@@ -37,41 +37,22 @@ void SYS_Init(void)
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Enable External XTAL (4~24 MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
-
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART0_MODULE);
     CLK_EnableModuleClock(SC0_MODULE);
-
+    CLK_EnableModuleClock(UART16_MODULE);
     /* Select IP clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-    CLK_SetModuleClock(SC0_MODULE, CLK_CLKSEL3_SC0SEL_HXT, CLK_CLKDIV1_SC0(1));
-
+    CLK_SetModuleClock(SC0_MODULE, CLK_CLKSEL4_SC0SEL_HXT, CLK_CLKDIV1_SC0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    /* Set PA.0 and PA.1 pin for SC UART mode */
+    /* Set PF.6 and PF.7 pin for SC UART mode */
     /* Smartcard CLK pin is used for TX, and DAT pin is used for Rx */
-    SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA0MFP_SC0_CLK | SYS_GPA_MFPL_PA1MFP_SC0_DAT);
-
+    SYS->GPF_MFPL |= (SYS_GPF_MFPL_PF6MFP_SC0_CLK | SYS_GPF_MFPL_PF7MFP_SC0_DAT);
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
     /* Lock protected registers */
     SYS_LockReg();
 }
@@ -84,12 +65,10 @@ int main(void)
        protected register, please issue SYS_UnlockReg()
        to unlock protected register if necessary */
     SYS_Init();
-
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
-
+    UART_Open(UART16, 115200);
     printf("This sample code demos smartcard interface UART mode\n");
-    printf("Please connect SC0 CLK pin(PA.0) with SC0 DAT pin(PA.1)\n");
+    printf("Please connect SC0 CLK pin(PF.6) with SC0 DAT pin(PF.7)\n");
     printf("Hit any key to continue\n");
     getchar();
 

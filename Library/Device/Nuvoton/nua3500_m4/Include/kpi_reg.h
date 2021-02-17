@@ -3,13 +3,15 @@
  * @version  V1.00
  * @brief    KPI register definition header file
  *
+ * SPDX-License-Identifier: Apache-2.0
  * @copyright (C) 20 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #ifndef __KPI_REG_H__
 #define __KPI_REG_H__
 
-#if defined ( __CC_ARM   )
-#pragma anon_unions
+#ifdef __cplusplus
+extern "C"
+{
 #endif
 
 /**
@@ -459,15 +461,8 @@ typedef struct
 #define KPI_KPIPRESCALDIV_PRESCALDIV_Msk   (0xfful << KPI_KPIPRESCALDIV_PRESCALDIV_Pos)        /*!< KPI_T::KPIPRESCALDIV: PRESCALDIV Mask                 */
 
 
+#ifdef __cplusplus
+}
+#endif
 
-
-
-
-
-
-
-
-
-
-
-
+#endif  //__KPI_REG_H__
