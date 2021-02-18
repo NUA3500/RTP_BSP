@@ -2,6 +2,7 @@
  * @file     system_nua3500_m4.c
  * @brief    CMSIS Cortex-M4 Core Peripheral Access Layer Source File
  *
+ * SPDX-License-Identifier: Apache-2.0
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 

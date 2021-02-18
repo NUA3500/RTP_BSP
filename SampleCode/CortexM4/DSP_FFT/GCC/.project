@@ -47,17 +47,12 @@
 		<link>
 			<name>CMSIS/CMSIS</name>
 			<type>2</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Library/Device/Nuvoton/M480/Source</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/Library/Device/Nuvoton/nua3500_m4/Source</locationURI>
 		</link>
 		<link>
-			<name>DSP_Lib/arm_cortexM4lf_math.lib</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Library/CMSIS/Lib/ARM/arm_cortexM4lf_math.lib</locationURI>
-		</link>
-		<link>
-			<name>Library/Include</name>
+			<name>DSP_Lib/Source</name>
 			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC../Library/CMSIS/DSP_Lib/Source</locationURI>
 		</link>
 		<link>
 			<name>Library/Library</name>
@@ -70,24 +65,96 @@
 			<locationURI>PARENT-1-PROJECT_LOC/arm_fft_bin_data.c</locationURI>
 		</link>
 		<link>
+			<name>User/gcc_arm.ld</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC../gcc_arm.ld</locationURI>
+		</link>
+		<link>
 			<name>User/main.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/main.c</locationURI>
 		</link>
-		<link>
-			<name>Library/Include/Include</name>
-			<type>2</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Library/CMSIS/Lib/GCC</locationURI>
-		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1505201487327</id>
+			<id>1613400983451</id>
 			<name>CMSIS/CMSIS</name>
 			<type>9</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-GCC</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361172</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-ARM</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361182</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-GCC</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361191</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-BasicMathFunctions</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361200</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-ControllerFunctions</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361210</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-FastMathFunctions</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361220</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-FilteringFunctions</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361229</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-MatrixFunctions</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609361238</id>
+			<name>DSP_Lib/Source</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-SupportFunctions</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -127,12 +194,57 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1505201672589</id>
-			<name>Library/Include/Include</name>
+			<id>1613609160683</id>
+			<name>DSP_Lib/Source/CommonTables</name>
 			<type>5</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-libarm_cortexM4lf_math.a</arguments>
+				<arguments>1.0-name-matches-false-false-arm_common_tables.c</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609189428</id>
+			<name>DSP_Lib/Source/ComplexMathFunctions</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-arm_cmplx_mag_f32.c</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609137641</id>
+			<name>DSP_Lib/Source/StatisticsFunctions</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-arm_max_f32.c</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609435089</id>
+			<name>DSP_Lib/Source/TransformFunctions</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-arm_bitreversal.c</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609435100</id>
+			<name>DSP_Lib/Source/TransformFunctions</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-arm_cfft_radix4_f32.c</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1613609435109</id>
+			<name>DSP_Lib/Source/TransformFunctions</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-arm_cfft_radix4_init_f32.c</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

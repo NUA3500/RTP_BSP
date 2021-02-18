@@ -222,7 +222,7 @@ void SYS_Init(void)
                      SYS_GPF_MFPH_PF11MFP_SC0_DAT |
                      SYS_GPF_MFPH_PF12MFP_SC0_RST |
                      SYS_GPF_MFPH_PF13MFP_SC0_PWR;
-    SYS->GPI_MFPH |= SYS_GPI_MFPL_PI0MFP_SC0_nCD;
+    SYS->GPI_MFPL |= SYS_GPI_MFPL_PI0MFP_SC0_nCD;
     /* Set multi-function pins for UART */
     SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
     SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);

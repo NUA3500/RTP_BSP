@@ -65,7 +65,7 @@
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
@@ -302,7 +302,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\M480\Include</state>
+          <state>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\Library\CMSIS\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\Library\StdDriver\inc</state>
         </option>
@@ -701,11 +701,11 @@
         </option>
         <option>
           <name>IlinkIcfOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\generic_cortex.icf</state>
+          <state>$PROJ_DIR$\dsp_fft.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -753,7 +753,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$PROJ_DIR$\..\..\..\..\Library\CMSIS\Lib\ARM\arm_cortexM4lf_math.lib</state>
+          <state></state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -940,22 +940,34 @@
   <group>
     <name>CMSIS</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\M480\Source\IAR\startup_M480.s</name>
+      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\IAR\startup_nua3500_m4.s</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\M480\Source\system_M480.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\system_nua3500_m4.c</name>
     </file>
   </group>
   <group>
     <name>Library</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\CMSIS\Lib\ARM\arm_cortexM4lf_math.lib</name>
+      <name>$PROJ_DIR$\..\..\..\..\Library\CMSIS\DSP_Lib\Source\TransformFunctions\arm_bitreversal.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Library\CMSIS\DSP_Lib\Source\TransformFunctions\arm_cfft_radix4_f32.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Library\CMSIS\DSP_Lib\Source\TransformFunctions\arm_cfft_radix4_init_f32.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Library\CMSIS\DSP_Lib\Source\ComplexMathFunctions\arm_cmplx_mag_f32.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Library\CMSIS\DSP_Lib\Source\CommonTables\arm_common_tables.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Library\CMSIS\DSP_Lib\Source\StatisticsFunctions\arm_max_f32.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Library\StdDriver\src\clk.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\StdDriver\src\fmc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Library\StdDriver\src\retarget.c</name>
