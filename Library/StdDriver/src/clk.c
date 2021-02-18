@@ -1054,9 +1054,8 @@ uint32_t CLK_GetPLLClockFreq(uint32_t u32PllIdx)
 
     u32Mode = CLK_GetPLLOpMode(u32PllIdx);
 
-    u32CTLVal0 = (CLK->PLL0CTL0 + (0x10 * (u32PllIdx)));
-    u32CTLVal1 = (CLK->PLL0CTL1 + (0x10 * (u32PllIdx)));
-    //u32CTLVal2 = (CLK->PLL0CTL2+(0x10*(u32PllIdx)));
+    u32CTLVal0 = *(volatile uint32_t *)(CLK_BASE + 0x60 + (0x10 * (u32PllIdx)));
+    u32CTLVal1 = *(volatile uint32_t *)(CLK_BASE + 0x64 + (0x10 * (u32PllIdx)));
 
     if (u32Mode == 0)
     {

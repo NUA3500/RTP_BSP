@@ -1616,6 +1616,18 @@ typedef struct
 #define CLK_CLKSEL4_I2S1SEL_Pos          (14)                                              /*!< CLK_T::CLKSEL4: I2S1SEL Position       */
 #define CLK_CLKSEL4_I2S1SEL_Msk          (0x3ul << CLK_CLKSEL4_I2S1SEL_Pos)                /*!< CLK_T::CLKSEL4: I2S1SEL Mask           */
 
+#define CLK_CLKSEL4_CAN0SEL_Pos          (16)                                              /*!< CLK_T::CLKSEL4: CAN0SEL Position       */
+#define CLK_CLKSEL4_CAN0SEL_Msk          (0x1ul << CLK_CLKSEL4_CAN0SEL_Pos)                /*!< CLK_T::CLKSEL4: CAN0SEL Mask           */
+
+#define CLK_CLKSEL4_CAN1SEL_Pos          (17)                                              /*!< CLK_T::CLKSEL4: CAN1SEL Position       */
+#define CLK_CLKSEL4_CAN1SEL_Msk          (0x1ul << CLK_CLKSEL4_CAN1SEL_Pos)                /*!< CLK_T::CLKSEL4: CAN1SEL Mask           */
+
+#define CLK_CLKSEL4_CAN2SEL_Pos          (18)                                              /*!< CLK_T::CLKSEL4: CAN2SEL Position       */
+#define CLK_CLKSEL4_CAN2SEL_Msk          (0x1ul << CLK_CLKSEL4_CAN2SEL_Pos)                /*!< CLK_T::CLKSEL4: CAN2SEL Mask           */
+
+#define CLK_CLKSEL4_CAN3SEL_Pos          (19)                                              /*!< CLK_T::CLKSEL4: CAN3SEL Position       */
+#define CLK_CLKSEL4_CAN3SEL_Msk          (0x1ul << CLK_CLKSEL4_CAN3SEL_Pos)                /*!< CLK_T::CLKSEL4: CAN3SEL Mask           */
+
 #define CLK_CLKSEL4_CLKOSEL_Pos          (24)                                              /*!< CLK_T::CLKSEL4: CLKOSEL Position       */
 #define CLK_CLKSEL4_CLKOSEL_Msk          (0xFul << CLK_CLKSEL4_CLKOSEL_Pos)                /*!< CLK_T::CLKSEL4: CLKOSEL Mask           */
 

@@ -78,8 +78,8 @@ extern "C"
 #define UART5_RST           ((4UL<<24) | SYS_IPRST1_UART5RST_Pos)       /*!< Reset UART5 \hideinitializer */
 #define UART6_RST           ((4UL<<24) | SYS_IPRST1_UART6RST_Pos)       /*!< Reset UART6 \hideinitializer */
 #define UART7_RST           ((4UL<<24) | SYS_IPRST1_UART7RST_Pos)       /*!< Reset UART7 \hideinitializer */
-#define MCAN0_RST           ((4UL<<24) | SYS_IPRST1_MCAN0RST_Pos)       /*!< Reset MCAN0 \hideinitializer */
-#define MCAN1_RST           ((4UL<<24) | SYS_IPRST1_MCAN1RST_Pos)       /*!< Reset MCAN1 \hideinitializer */
+#define CANFD0_RST          ((4UL<<24) | SYS_IPRST1_CANFD0RST_Pos)       /*!< Reset MCAN0 \hideinitializer */
+#define CANFD1_RST          ((4UL<<24) | SYS_IPRST1_CANFD1RST_Pos)       /*!< Reset MCAN1 \hideinitializer */
 #define EADC0_RST           ((4UL<<24) | SYS_IPRST1_EADC0RST_Pos)       /*!< Reset EADC0 \hideinitializer */
 #define I2S0_RST            ((4UL<<24) | SYS_IPRST1_I2S0RST_Pos)        /*!< Reset I2S0 \hideinitializer */
 
@@ -93,7 +93,7 @@ extern "C"
 #define QEI1_RST            ((8UL<<24) | SYS_IPRST2_QEI1RST_Pos)        /*!< Reset QEI1 \hideinitializer */
 #define ECAP0_RST           ((8UL<<24) | SYS_IPRST2_ECAP0RST_Pos)       /*!< Reset ECAP0 \hideinitializer */
 #define ECAP1_RST           ((8UL<<24) | SYS_IPRST2_ECAP1RST_Pos)       /*!< Reset ECAP1 \hideinitializer */
-#define MCAN2_RST           ((8UL<<24) | SYS_IPRST2_MCAN2RST_Pos)       /*!< Reset MCAN2 \hideinitializer */
+#define CANFD2_RST          ((8UL<<24) | SYS_IPRST2_CANFD2RST_Pos)      /*!< Reset CANFD2 \hideinitializer */
 #define ADC0_RST            ((8UL<<24) | SYS_IPRST2_ADC0RST_Pos)        /*!< Reset ADC0 \hideinitializer */
 
 #define TMR4_RST            ((16UL<<24) | SYS_IPRST3_TMR4RST_Pos)       /*!< Reset TMR4 \hideinitializer */

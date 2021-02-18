@@ -9,9 +9,8 @@
 #ifndef __KPI_REG_H__
 #define __KPI_REG_H__
 
-#ifdef __cplusplus
-extern "C"
-{
+#if defined ( __CC_ARM   )
+#pragma anon_unions
 #endif
 
 /**
@@ -461,8 +460,6 @@ typedef struct
 #define KPI_KPIPRESCALDIV_PRESCALDIV_Msk   (0xfful << KPI_KPIPRESCALDIV_PRESCALDIV_Pos)        /*!< KPI_T::KPIPRESCALDIV: PRESCALDIV Mask                 */
 
 
-#ifdef __cplusplus
-}
 #endif
 
-#endif  //__KPI_REG_H__
+

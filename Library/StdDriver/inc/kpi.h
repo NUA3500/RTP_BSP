@@ -103,7 +103,7 @@ extern "C"
  *    @details      The function is used to enable KPI specified interrupt.
  *    \hideinitializer
  */
-#define KPI_ENABLE_INT(kpi,u32InterruptFlag)   (kpi->KPICONF |=  u32IntSel)
+#define KPI_ENABLE_INT(kpi,u32InterruptFlag)   (kpi->KPICONF |=  u32InterruptFlag)
 
 /**
  *    @brief        Disable KPI specified interrupt
@@ -149,7 +149,6 @@ void KPI_Close(KPI_T* kpi);
 void KPI_ConfigKeyScanTiming(KPI_T* kpi, uint32_t u32PreScale, uint32_t u32Debounce, uint32_t u32ScanDelay);
 void KPI_Set3KeyReset(KPI_T* kpi, uint32_t u32Key1, uint32_t u32Key2, uint32_t u32Key3, uint32_t u32RstCnt);
 
-#endif
 
 /*@}*/ /* end of group KPI_EXPORTED_FUNCTIONS */
 
