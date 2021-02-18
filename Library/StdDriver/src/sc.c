@@ -343,7 +343,7 @@ uint32_t SC_GetInterfaceClock(SC_T *sc)
         u32Num = 1UL;
     }
 
-    u32ClkSrc = CLK->CLKSEL4 >> (u32Num + CLK_CLKSEL4_SC0SEL_Msk);
+    u32ClkSrc = CLK->CLKSEL4 >> (u32Num + CLK_CLKSEL4_SC0SEL_Pos);
 
     /* Get smartcard module clock */
     if(u32ClkSrc == 0UL)
@@ -355,8 +355,7 @@ uint32_t SC_GetInterfaceClock(SC_T *sc)
       u32Clk = CLK_GetPCLK3Freq();
     }
 
-
-    u32Clk /= (((CLK->CLKDIV1 >> (4UL * u32Num)) & CLK_CLKDIV1_SC0DIV_Msk) + 1UL);
+    u32Clk /= (((CLK->CLKDIV1 >> (4UL * u32Num)) & CLK_CLKDIV1_SC0DIV_Msk) + 1UL) * 1000UL;;
 
     return u32Clk;
 }

@@ -2,6 +2,7 @@
 ; * @file     startup_nua3500_m4.s
 ; * @brief    CMSIS Cortex-M4 Core Device Startup File
 ; *
+; * SPDX-License-Identifier: Apache-2.0
 ; * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 ;*****************************************************************************/
 ;/*
