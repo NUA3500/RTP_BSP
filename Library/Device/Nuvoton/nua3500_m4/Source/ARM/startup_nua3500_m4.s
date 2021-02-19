@@ -2,6 +2,7 @@
 ; * @file     startup_nua3500_m4.s
 ; * @brief    CMSIS Cortex-M4 Core Device Startup File
 ; *
+; * SPDX-License-Identifier: Apache-2.0
 ; * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 ;*****************************************************************************/
 ;/*
@@ -112,7 +113,7 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 DCD     Default_Handler           ; 44
                 DCD     I2C1_IRQHandler           ; 45
                 DCD     I2S0_IRQHandler           ; 46
-                DCD     MCAN00_IRQHandler         ; 47
+                DCD     CANFD00_IRQHandler        ; 47
                 DCD     SC0_IRQHandler            ; 48
                 DCD     GPE_IRQHandler            ; 49
                 DCD     GPF_IRQHandler            ; 50
@@ -143,7 +144,7 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 DCD     I2C2_IRQHandler           ; 75
                 DCD     I2C3_IRQHandler           ; 76
                 DCD     I2S1_IRQHandler           ; 77
-                DCD     MACN10_IRQHandler         ; 78
+                DCD     CANFD10_IRQHandler        ; 78
                 DCD     SC1_IRQHandler            ; 79
                 DCD     GPK_IRQHandler            ; 80
                 DCD     GPL_IRQHandler            ; 81
@@ -168,13 +169,13 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 DCD     UART16_IRQHandler         ; 100
                 DCD     I2C4_IRQHandler           ; 101
                 DCD     I2C5_IRQHandler           ; 102
-                DCD     MCAN20_IRQHandler         ; 103
-                DCD     MCAN30_IRQHandler         ; 104
+                DCD     CANFD20_IRQHandler        ; 103
+                DCD     CANFD30_IRQHandler        ; 104
                 DCD     KPI_IRQHandler            ; 105
-                DCD     MCAN01_IRQHandler         ; 106
-                DCD     MCAN11_IRQHandler         ; 107
-                DCD     MCAN21_IRQHandler         ; 108
-                DCD     MCAN31_IRQHandler         ; 109
+                DCD     CANFD01_IRQHandler        ; 106
+                DCD     CANFD11_IRQHandler        ; 107
+                DCD     CANFD21_IRQHandler        ; 108
+                DCD     CANFD31_IRQHandler        ; 109
                 DCD     ADC0_IRQHandler           ; 110
 __Vectors_End
 
@@ -284,7 +285,7 @@ Default_Handler PROC
                 EXPORT  EADC03_IRQHandler       [WEAK]
                 EXPORT  I2C1_IRQHandler         [WEAK]
                 EXPORT  I2S0_IRQHandler         [WEAK]
-                EXPORT  MCAN00_IRQHandler       [WEAK]
+                EXPORT  CANFD00_IRQHandler      [WEAK]
                 EXPORT  SC0_IRQHandler          [WEAK]
                 EXPORT  GPE_IRQHandler          [WEAK]
                 EXPORT  GPF_IRQHandler          [WEAK]
@@ -315,7 +316,7 @@ Default_Handler PROC
                 EXPORT  I2C2_IRQHandler         [WEAK]
                 EXPORT  I2C3_IRQHandler         [WEAK]
                 EXPORT  I2S1_IRQHandler         [WEAK]
-                EXPORT  MACN10_IRQHandler       [WEAK]
+                EXPORT  CANFD10_IRQHandler      [WEAK]
                 EXPORT  SC1_IRQHandler          [WEAK]
                 EXPORT  GPK_IRQHandler          [WEAK]
                 EXPORT  GPL_IRQHandler          [WEAK]
@@ -340,13 +341,13 @@ Default_Handler PROC
                 EXPORT  UART16_IRQHandler       [WEAK]
                 EXPORT  I2C4_IRQHandler         [WEAK]
                 EXPORT  I2C5_IRQHandler         [WEAK]
-                EXPORT  MCAN20_IRQHandler       [WEAK]
-                EXPORT  MCAN30_IRQHandler       [WEAK]
+                EXPORT  CANFD20_IRQHandler      [WEAK]
+                EXPORT  CANFD30_IRQHandler      [WEAK]
                 EXPORT  KPI_IRQHandler          [WEAK]
-                EXPORT  MCAN01_IRQHandler       [WEAK]
-                EXPORT  MCAN11_IRQHandler       [WEAK]
-                EXPORT  MCAN21_IRQHandler       [WEAK]
-                EXPORT  MCAN31_IRQHandler       [WEAK]
+                EXPORT  CANFD01_IRQHandler      [WEAK]
+                EXPORT  CANFD11_IRQHandler      [WEAK]
+                EXPORT  CANFD21_IRQHandler      [WEAK]
+                EXPORT  CANFD31_IRQHandler      [WEAK]
                 EXPORT  ADC0_IRQHandler         [WEAK]
 
 LVD_IRQHandler
@@ -386,7 +387,7 @@ EADC02_IRQHandler
 EADC03_IRQHandler
 I2C1_IRQHandler
 I2S0_IRQHandler
-MCAN00_IRQHandler
+CANFD00_IRQHandler
 SC0_IRQHandler
 GPE_IRQHandler
 GPF_IRQHandler
@@ -417,7 +418,7 @@ UART11_IRQHandler
 I2C2_IRQHandler
 I2C3_IRQHandler
 I2S1_IRQHandler
-MACN10_IRQHandler
+CANFD10_IRQHandler
 SC1_IRQHandler
 GPK_IRQHandler
 GPL_IRQHandler
@@ -442,13 +443,13 @@ UART15_IRQHandler
 UART16_IRQHandler
 I2C4_IRQHandler
 I2C5_IRQHandler
-MCAN20_IRQHandler
-MCAN30_IRQHandler
+CANFD20_IRQHandler
+CANFD30_IRQHandler
 KPI_IRQHandler
-MCAN01_IRQHandler
-MCAN11_IRQHandler
-MCAN21_IRQHandler
-MCAN31_IRQHandler
+CANFD01_IRQHandler
+CANFD11_IRQHandler
+CANFD21_IRQHandler
+CANFD31_IRQHandler
 ADC0_IRQHandler
 
                 B       .

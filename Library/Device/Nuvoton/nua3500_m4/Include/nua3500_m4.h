@@ -115,7 +115,7 @@ typedef enum IRQn
     EADC03_IRQn                   = 43,
     I2C1_IRQn                     = 45,
     I2S0_IRQn                     = 46,
-    MACN00_IRQn                   = 47,
+    CANFD00_IRQn                  = 47,
     SC0_IRQn                      = 48,
     GPE_IRQn                      = 49,
     GPF_IRQn                      = 50,
@@ -146,7 +146,7 @@ typedef enum IRQn
     I2C2_IRQn                     = 75,
     I2C3_IRQn                     = 76,
     I2S1_IRQn                     = 77,
-    MCAN10_IRQn                   = 78,
+    CANFD10_IRQn                  = 78,
     SC1_IRQn                      = 79,
     GPK_IRQn                      = 80,
     GPL_IRQn                      = 81,
@@ -171,13 +171,13 @@ typedef enum IRQn
     UART16_IRQn                   = 100,
     I2C4_IRQn                     = 101,
     I2C5_IRQn                     = 102,
-    MCAN20_IRQn                   = 103,
-    MCAN30_IRQn                   = 104,
+    CANFD20_IRQn                  = 103,
+    CANFD30_IRQn                  = 104,
     KPI_IRQn                      = 105,
-    MCAN01_IRQn                   = 106,
-    MCAN11_IRQn                   = 107,
-    MCAN21_IRQn                   = 108,
-    MCAN31_IRQn                   = 109,
+    CANFD01_IRQn                  = 106,
+    CANFD11_IRQn                  = 107,
+    CANFD21_IRQn                  = 108,
+    CANFD31_IRQn                  = 109,
     ADC0_IRQn                     = 110,
 }
 IRQn_Type;
@@ -241,6 +241,7 @@ IRQn_Type;
 #include "ebi_reg.h"
 #include "epwm_reg.h"
 //#include "kpi_reg.h"
+#include "canfd_reg.h"
 
 /** @addtogroup PERIPHERAL_MEM_MAP Peripheral Memory Base
   Memory Mapped Structure for Peripherals
@@ -332,7 +333,10 @@ IRQn_Type;
 #define ECAP0_BASE              (0x40B40000UL)
 #define ECAP1_BASE              (0x40B50000UL)
 #define ECAP2_BASE              (0x40B60000UL)
-
+#define CANFD0_BASE             (0x403C0000UL)
+#define CANFD1_BASE             (0x403D0000UL)
+#define CANFD2_BASE             (0x403E0000UL)
+#define CANFD3_BASE             (0x403F0000UL)
 
 
 /*@}*/ /* end of group PERIPHERAL_MEM_MAP */
@@ -423,6 +427,10 @@ IRQn_Type;
 #define ECAP0                   ((ECAP_T *)  ECAP0_BASE)
 #define ECAP1                   ((ECAP_T *)  ECAP1_BASE)
 #define ECAP2                   ((ECAP_T *)  ECAP2_BASE)
+#define CANFD0                  ((CANFD_T*)  CANFD0_BASE)
+#define CANFD1                  ((CANFD_T*)  CANFD1_BASE)
+#define CANFD2                  ((CANFD_T*)  CANFD2_BASE)
+#define CANFD3                  ((CANFD_T*)  CANFD3_BASE)
 
 /*@}*/ /* end of group ERIPHERAL_DECLARATION */
 
@@ -654,6 +662,7 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 #include "qspi.h"
 //#include "rtc.h"
 //#include "kpi.h"
+#include "canfd.h"
 
 #ifdef __cplusplus
 }

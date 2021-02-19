@@ -284,14 +284,14 @@ extern "C"
 #define CLK_CLKSEL4_I2S1SEL_APLL           (0x1UL<<CLK_CLKSEL4_I2S1SEL_Pos)         /*!< Select I2S1 clock source from APLL \hideinitializer */
 #define CLK_CLKSEL4_I2S1SEL_PCLK2          (0x2UL<<CLK_CLKSEL4_I2S1SEL_Pos)         /*!< Select I2S1 clock source from PCLK2 \hideinitializer */
 #define CLK_CLKSEL4_I2S1SEL_HIRC           (0x3UL<<CLK_CLKSEL4_I2S1SEL_Pos)         /*!< Select I2S1 clock source from high speed oscillator \hideinitializer */
-#define CLK_CLKSEL4_CAN0SEL_VPLL           (0x0UL<<CLK_CLKSEL4_CAN0SEL_Pos)         /*!< Select CAN0 clock source from VPLL \hideinitializer */
-#define CLK_CLKSEL4_CAN0SEL_APLL           (0x1UL<<CLK_CLKSEL4_CAN0SEL_Pos)         /*!< Select CAN0 clock source from APLL \hideinitializer */
-#define CLK_CLKSEL4_CAN1SEL_VPLL           (0x0UL<<CLK_CLKSEL4_CAN1SEL_Pos)         /*!< Select CAN1 clock source from VPLL \hideinitializer */
-#define CLK_CLKSEL4_CAN1SEL_APLL           (0x1UL<<CLK_CLKSEL4_CAN1SEL_Pos)         /*!< Select CAN1 clock source from APLL \hideinitializer */
-#define CLK_CLKSEL4_CAN2SEL_VPLL           (0x0UL<<CLK_CLKSEL4_CAN2SEL_Pos)         /*!< Select CAN2 clock source from VPLL \hideinitializer */
-#define CLK_CLKSEL4_CAN2SEL_APLL           (0x1UL<<CLK_CLKSEL4_CAN2SEL_Pos)         /*!< Select CAN2 clock source from APLL \hideinitializer */
-#define CLK_CLKSEL4_CAN3SEL_VPLL           (0x0UL<<CLK_CLKSEL4_CAN3SEL_Pos)         /*!< Select CAN3 clock source from VPLL \hideinitializer */
-#define CLK_CLKSEL4_CAN3SEL_APLL           (0x1UL<<CLK_CLKSEL4_CAN3SEL_Pos)         /*!< Select CAN3 clock source from APLL \hideinitializer */
+#define CLK_CLKSEL4_CAN0SEL_APLL           (0x0UL<<CLK_CLKSEL4_CAN0SEL_Pos)         /*!< Select CAN0 clock source from VPLL \hideinitializer */
+#define CLK_CLKSEL4_CAN0SEL_VPLL           (0x1UL<<CLK_CLKSEL4_CAN0SEL_Pos)         /*!< Select CAN0 clock source from APLL \hideinitializer */
+#define CLK_CLKSEL4_CAN1SEL_APLL           (0x0UL<<CLK_CLKSEL4_CAN1SEL_Pos)         /*!< Select CAN1 clock source from VPLL \hideinitializer */
+#define CLK_CLKSEL4_CAN1SEL_VPLL           (0x1UL<<CLK_CLKSEL4_CAN1SEL_Pos)         /*!< Select CAN1 clock source from APLL \hideinitializer */
+#define CLK_CLKSEL4_CAN2SEL_APLL           (0x0UL<<CLK_CLKSEL4_CAN2SEL_Pos)         /*!< Select CAN2 clock source from VPLL \hideinitializer */
+#define CLK_CLKSEL4_CAN2SEL_VPLL           (0x1UL<<CLK_CLKSEL4_CAN2SEL_Pos)         /*!< Select CAN2 clock source from APLL \hideinitializer */
+#define CLK_CLKSEL4_CAN3SEL_APLL           (0x0UL<<CLK_CLKSEL4_CAN3SEL_Pos)         /*!< Select CAN3 clock source from VPLL \hideinitializer */
+#define CLK_CLKSEL4_CAN3SEL_VPLL           (0x1UL<<CLK_CLKSEL4_CAN3SEL_Pos)         /*!< Select CAN3 clock source from APLL \hideinitializer */
 #define CLK_CLKSEL4_CKOSEL_HXT             (0x0UL<<CLK_CLKSEL4_CKOSEL_Pos)          /*!< Select CKO clock source from high speed crystal \hideinitializer */
 #define CLK_CLKSEL4_CKOSEL_LXT             (0x1UL<<CLK_CLKSEL4_CKOSEL_Pos)          /*!< Select CKO clock source from low speed crystal \hideinitializer */
 #define CLK_CLKSEL4_CKOSEL_HIRC            (0x2UL<<CLK_CLKSEL4_CKOSEL_Pos)          /*!< Select CKO clock source from high speed oscillator \hideinitializer */
@@ -331,6 +331,19 @@ extern "C"
 #define CLK_CLKDIV1_UART1(x)               (((x) - 1UL) << CLK_CLKDIV1_UART1DIV_Pos)  /*!< CLKDIV1 Setting for UART1 clock divider. It could be 1~16 \hideinitializer */
 #define CLK_CLKDIV1_UART2(x)               (((x) - 1UL) << CLK_CLKDIV1_UART2DIV_Pos)  /*!< CLKDIV1 Setting for UART2 clock divider. It could be 1~16 \hideinitializer */
 #define CLK_CLKDIV1_UART3(x)               (((x) - 1UL) << CLK_CLKDIV1_UART3DIV_Pos)  /*!< CLKDIV1 Setting for UART3 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART4(x)               (((x) - 1UL) << CLK_CLKDIV2_UART4DIV_Pos)  /*!< CLKDIV2 Setting for UART4 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART5(x)               (((x) - 1UL) << CLK_CLKDIV2_UART5DIV_Pos)  /*!< CLKDIV2 Setting for UART5 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART6(x)               (((x) - 1UL) << CLK_CLKDIV2_UART6DIV_Pos)  /*!< CLKDIV2 Setting for UART6 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART7(x)               (((x) - 1UL) << CLK_CLKDIV2_UART7DIV_Pos)  /*!< CLKDIV2 Setting for UART7 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART8(x)               (((x) - 1UL) << CLK_CLKDIV2_UART8DIV_Pos)  /*!< CLKDIV2 Setting for UART8 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART9(x)               (((x) - 1UL) << CLK_CLKDIV2_UART9DIV_Pos)  /*!< CLKDIV2 Setting for UART9 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART10(x)              (((x) - 1UL) << CLK_CLKDIV2_UART10DIV_Pos) /*!< CLKDIV2 Setting for UART10 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART11(x)              (((x) - 1UL) << CLK_CLKDIV2_UART11DIV_Pos) /*!< CLKDIV2 Setting for UART11 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART12(x)              (((x) - 1UL) << CLK_CLKDIV3_UART12DIV_Pos) /*!< CLKDIV3 Setting for UART12 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART13(x)              (((x) - 1UL) << CLK_CLKDIV3_UART13DIV_Pos) /*!< CLKDIV3 Setting for UART13 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART14(x)              (((x) - 1UL) << CLK_CLKDIV3_UART14DIV_Pos) /*!< CLKDIV3 Setting for UART14 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART15(x)              (((x) - 1UL) << CLK_CLKDIV3_UART15DIV_Pos) /*!< CLKDIV3 Setting for UART15 clock divider. It could be 1~16 \hideinitializer */
+#define CLK_CLKDIV1_UART16(x)              (((x) - 1UL) << CLK_CLKDIV3_UART16DIV_Pos) /*!< CLKDIV3 Setting for UART16 clock divider. It could be 1~16 \hideinitializer */
 #define CLK_CLKDIV1_SC1(x)                 (((x) - 1UL) << CLK_CLKDIV1_SC1DIV_Pos)    /*!< CLKDIV1 Setting for SC1 clock divider. It could be 1~16 \hideinitializer */
 #define CLK_CLKDIV1_SC0(x)                 (((x) - 1UL) << CLK_CLKDIV1_SC0DIV_Pos)    /*!< CLKDIV1 Setting for SC0 clock divider. It could be 1~16 \hideinitializer */
 
