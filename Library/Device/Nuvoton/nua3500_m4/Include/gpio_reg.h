@@ -244,7 +244,9 @@ typedef struct
     __I  uint32_t RESERVE0[1];
     /// @endcond //HIDDEN_SYMBOLS
     __IO uint32_t PUSEL;         /* Offset: 0x30/0x70/0xB0/0xF0/0x130/0x170/0x1B0/0x1F0  Port A-H Pull-up and Pull-down Enable Register  */
-
+    __IO uint32_t DBCTL;         /* Offset: 0x34/0x74/0xB4/0xF4/0x134/0x174/0x1B4/0x1F4  Port A-H Interrupt De-bounce Control Register   */
+    __IO uint32_t DS;            /* Offset: 0x38/0x78/0xB8/0xF8/0x138/0x178/0x1B8/0x1F8  Port A-H Driver Strength Control Register       */
+    __IO uint32_t UDS;           /* Offset: 0x3c/0x7C/0xBC/0xFC/0x13C/0x17C/0x1BC/0x1FC  Port A-H Ultra Driver Strength Control Register */
 } GPIO_T;
 
 typedef struct

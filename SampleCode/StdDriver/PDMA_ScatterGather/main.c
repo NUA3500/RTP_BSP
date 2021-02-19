@@ -1,15 +1,13 @@
 /**************************************************************************//**
  * @file     main.c
  * @brief
- *           Use PDMA channel 5 to transfer data from memory to memory by scatter-gather mode.
+ *           Use PDMA2 channel 5 to transfer data from memory to memory by scatter-gather mode.
  *
  *
- * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ * @copyright (C) 2021 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #include <stdio.h>
 #include "NuMicro.h"
-
-#define PLL_CLOCK           192000000
 
 uint32_t PDMA_TEST_LENGTH = 64;
 #ifdef __ICCARM__
@@ -42,47 +40,39 @@ DMA_DESC_T DMA_DESC[2];
  *
  * @details     The DMA default IRQ.
  */
-void PDMA_IRQHandler(void)
+void PDMA2_IRQHandler(void)
 {
 }
 
 void SYS_Init(void)
 {
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for HXT clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(PLL_CLOCK);
-
-    /* Set PCLK0/PCLK1 to HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
+    CLK_EnableModuleClock(PDMA3_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    /* Select UART clock source from HXT */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void UART0_Init(void)
+void UART16_Init()
 {
-    /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
 }
 
 int main(void)
@@ -100,7 +90,7 @@ int main(void)
     SYS_LockReg();
 
     /* Init UART for printf */
-    UART0_Init();
+    UART16_Init();
 
     printf("\n\nCPU @ %dHz\n", SystemCoreClock);
     printf("+-----------------------------------------------------------------------+ \n");
@@ -114,7 +104,7 @@ int main(void)
     /* This sample will transfer data by finished two descriptor table in sequence.(descriptor table 1 -> descriptor table 2) */
 
     /*----------------------------------------------------------------------------------
-      PDMA transfer configuration:
+      PDMA2 transfer configuration:
 
         Channel = 4
         Operation mode = scatter-gather mode
@@ -132,10 +122,10 @@ int main(void)
     ----------------------------------------------------------------------------------*/
 
     /* Open Channel 4 */
-    PDMA_Open(PDMA,1 << 4);
+    PDMA_Open(PDMA2,1 << 4);
     /* Enable Scatter Gather mode, assign the first scatter-gather descriptor table is table 1,
        and set transfer mode as memory to memory */
-    PDMA_SetTransferMode(PDMA,4, PDMA_MEM, 1, (uint32_t)&DMA_DESC[0]);
+    PDMA_SetTransferMode(PDMA2,4, PDMA_MEM, 1, (uint32_t)&DMA_DESC[0]);
 
     /*------------------------------------------------------------------------------------------------------
 
@@ -181,7 +171,7 @@ int main(void)
     /* Configure destination address */
     DMA_DESC[0].dest = u32Dst0;
     /* Configure next descriptor table address */
-    DMA_DESC[0].offset = (uint32_t)&DMA_DESC[1] - (PDMA->SCATBA); /* next descriptor table is table 2 */
+    DMA_DESC[0].offset = (uint32_t)&DMA_DESC[1]; /* next descriptor table is table 2 */
 
 
     /*------------------------------------------------------------------------------------------------------
@@ -226,16 +216,16 @@ int main(void)
     DMA_DESC[1].offset = 0; /* No next operation table. No effect in basic mode */
 
 
-    /* Generate a software request to trigger transfer with PDMA channel 4 */
-    PDMA_Trigger(PDMA,4);
+    /* Generate a software request to trigger transfer with PDMA2 channel 4 */
+    PDMA_Trigger(PDMA2,4);
 
     /* Waiting for transfer done */
-    while(PDMA_IS_CH_BUSY(PDMA,4));
+    while(PDMA_IS_CH_BUSY(PDMA2,4));
 
     printf("test done...\n");
 
     /* Close Channel 4 */
-    PDMA_Close(PDMA);
+    PDMA_Close(PDMA2);
 
     while(1);
 }

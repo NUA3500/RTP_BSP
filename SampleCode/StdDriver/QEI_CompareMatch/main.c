@@ -4,18 +4,14 @@
  * @brief
  *           Show the usage of QEI compare function.
  *
- * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ * @copyright (C) 2021 Nuvoton Technology Corp. All rights reserved.
  *
  ******************************************************************************/
 #include <stdio.h>
 #include "NuMicro.h"
 
-#define PLL_CLOCK       192000000
-
-
 #define QEI0A   PA0
 #define QEI0B   PA1
-
 
 void QEI0_IRQHandler(void)
 {
@@ -34,44 +30,36 @@ void QEI0_IRQHandler(void)
 
 void SYS_Init(void)
 {
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
 
-    /* Enable external XTAL 12MHz clock */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Waiting for external XTAL clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(PLL_CLOCK);
-
-    /* Set PCLK0/PCLK1 to HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
-    /* Enable UART0 and QEI0 module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    /* Enable IP clock */
+    CLK_EnableModuleClock(GPA_MODULE);
     CLK_EnableModuleClock(QEI0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Select UART module clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    /* Select UART clock source from HXT */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
+    SystemCoreClockUpdate();
 
-    /* Set PA multi-function pins for QEI0_A, QEI0_B, QEI0_INDEX */
-    SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA4MFP_Msk | SYS_GPA_MFPL_PA3MFP_Msk | SYS_GPA_MFPL_PA5MFP_Msk);
-    SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA4MFP_QEI0_A | SYS_GPA_MFPL_PA3MFP_QEI0_B | SYS_GPA_MFPL_PA5MFP_QEI0_INDEX);
+    /* Set multi-function pins */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
+    SYS->GPG_MFPL &= ~(SYS_GPG_MFPL_PG0MFP_Msk | SYS_GPG_MFPL_PG1MFP_Msk | SYS_GPG_MFPL_PG2MFP_Msk);
+    SYS->GPG_MFPL |= (SYS_GPG_MFPL_PG0MFP_QEI0_INDEX | SYS_GPG_MFPL_PG1MFP_QEI0_B | SYS_GPG_MFPL_PG2MFP_QEI0_A);
 
-
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void UART0_Init()
+void UART16_Init()
 {
-
-    /* Configure UART0 and set UART0 Baudrate */
-    UART_Open(UART0, 115200);
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
 }
 
 int32_t main(void)
@@ -86,16 +74,16 @@ int32_t main(void)
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Init UART0 for printf */
-    UART0_Init();
+    /* Init UART16 for printf */
+    UART16_Init();
 
     printf("\n\nCPU @ %dHz\n", SystemCoreClock);
 
     printf("+--------------------------------------+\n");
     printf("|          QEI Driver Sample Code      |\n");
     printf("+--------------------------------------+\n\n");
-    printf("  >> Please connect PA.0 and PA.4 << \n");
-    printf("  >> Please connect PA.1 and PA.3 << \n");
+    printf("  >> Please connect PA.0 and PG.2 << \n");
+    printf("  >> Please connect PA.1 and PG.1 << \n");
     printf("     Press any key to start test\n\n");
     getchar();
 

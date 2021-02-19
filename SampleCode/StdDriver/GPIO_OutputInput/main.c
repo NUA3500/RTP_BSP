@@ -2,50 +2,53 @@
  * @file     main.c
  * @brief    Show how to set GPIO pin mode and use pin data input/output control.
  *
- * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ * @copyright (C) 2021 Nuvoton Technology Corp. All rights reserved.
  *
  ******************************************************************************/
 #include "stdio.h"
 #include "NuMicro.h"
 
-
-#define PLL_CLOCK       192000000
-
-
 void SYS_Init(void)
 {
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Enable IP clock */
+    CLK_EnableModuleClock(GPA_MODULE);
+    CLK_EnableModuleClock(GPB_MODULE);
+    CLK_EnableModuleClock(GPC_MODULE);
+    CLK_EnableModuleClock(GPD_MODULE);
+    CLK_EnableModuleClock(GPE_MODULE);
+    CLK_EnableModuleClock(GPF_MODULE);
+    CLK_EnableModuleClock(GPG_MODULE);
+    CLK_EnableModuleClock(GPH_MODULE);
+    CLK_EnableModuleClock(GPI_MODULE);
+    CLK_EnableModuleClock(GPJ_MODULE);
+    CLK_EnableModuleClock(GPK_MODULE);
+    CLK_EnableModuleClock(GPL_MODULE);
+    CLK_EnableModuleClock(GPM_MODULE);
+    CLK_EnableModuleClock(GPN_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Wait for HXT clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
+    /* Select UART clock source from HXT */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(PLL_CLOCK);
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
+    SystemCoreClockUpdate();
 
-    /* Set PCLK0/PCLK1 to HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
-    /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-
-    /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void UART0_Init()
+void UART16_Init()
 {
-    /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
 }
 
 int32_t main(void)
@@ -62,32 +65,32 @@ int32_t main(void)
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Init UART0 for printf */
-    UART0_Init();
+    /* Init UART16 for printf */
+    UART16_Init();
 
     printf("\n\nCPU @ %dHz\n", SystemCoreClock);
 
     printf("+-------------------------------------------------+\n");
-    printf("|    PB.3(Output) and PD.8(Input) Sample Code     |\n");
+    printf("|    PA.3(Output) and PD.8(Input) Sample Code     |\n");
     printf("+-------------------------------------------------+\n\n");
 
     /*-----------------------------------------------------------------------------------------------------*/
     /* GPIO Basic Mode Test --- Use Pin Data Input/Output to control GPIO pin                              */
     /*-----------------------------------------------------------------------------------------------------*/
-    printf("  >> Please connect PB.3 and PD.8 first << \n");
+    printf("  >> Please connect PA.3 and PD.8 first << \n");
     printf("     Press any key to start test by using [Pin Data Input/Output Control] \n\n");
     getchar();
 
-    /* Configure PB.3 as Output mode and PD.8 as Input mode then close it */
-    GPIO_SetMode(PB, BIT3, GPIO_MODE_OUTPUT);
+    /* Configure PA.3 as Output mode and PD.8 as Input mode then close it */
+    GPIO_SetMode(PA, BIT3, GPIO_MODE_OUTPUT);
     GPIO_SetMode(PD, BIT8, GPIO_MODE_INPUT);
 
     i32Err = 0;
-    printf("GPIO PB.3(output mode) connect to PD.8(input mode) ......");
+    printf("GPIO PA.3(output mode) connect to PD.8(input mode) ......");
 
     /* Use Pin Data Input/Output Control to pull specified I/O or get I/O pin status */
-    /* Set PB.3 output pin value is low */
-    PB3 = 0;
+    /* Set PA.3 output pin value is low */
+    PA3 = 0;
 
     /* Set time out counter */
     i32TimeOutCnt = 100;
@@ -106,8 +109,8 @@ int32_t main(void)
         }
     }
 
-    /* Set PB.3 output pin value is high */
-    PB3 = 1;
+    /* Set PA.3 output pin value is high */
+    PA3 = 1;
 
     /* Set time out counter */
     i32TimeOutCnt = 100;
@@ -136,8 +139,8 @@ int32_t main(void)
         printf("  [OK].\n");
     }
 
-    /* Configure PB.3 and PD.8 to default Quasi-bidirectional mode */
-    GPIO_SetMode(PB, BIT3, GPIO_MODE_QUASI);
+    /* Configure PA.3 and PD.8 to default Quasi-bidirectional mode */
+    GPIO_SetMode(PA, BIT3, GPIO_MODE_QUASI);
     GPIO_SetMode(PD, BIT8, GPIO_MODE_QUASI);
 
     while(1);

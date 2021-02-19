@@ -2,37 +2,32 @@
  * @file     main.c
  * @brief    Show the usage of GPIO interrupt function.
  *
- * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ * @copyright (C) 2021 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #include <stdio.h>
 #include "NuMicro.h"
 
-
-
-#define PLL_CLOCK       192000000
-
-
 /**
- * @brief       GPIO PB IRQ
+ * @brief       GPIO PA IRQ
  *
  * @param       None
  *
  * @return      None
  *
- * @details     The PB default IRQ.
+ * @details     The PA default IRQ.
  */
-void GPB_IRQHandler(void)
+void GPA_IRQHandler(void)
 {
-    /* To check if PB.2 interrupt occurred */
-    if(GPIO_GET_INT_FLAG(PB, BIT2))
+    /* To check if PA.2 interrupt occurred */
+    if(GPIO_GET_INT_FLAG(PA, BIT2))
     {
-        GPIO_CLR_INT_FLAG(PB, BIT2);
-        printf("PB.2 INT occurred.\n");
+        GPIO_CLR_INT_FLAG(PA, BIT2);
+        printf("PA.2 INT occurred.\n");
     }
     else
     {
-        /* Un-expected interrupt. Just clear all PB interrupts */
-        PB->INTSRC = PB->INTSRC;
+        /* Un-expected interrupt. Just clear all PA interrupts */
+        PA->INTSRC = PA->INTSRC;
         printf("Un-expected interrupts.\n");
     }
 }
@@ -65,37 +60,46 @@ void GPC_IRQHandler(void)
 void SYS_Init(void)
 {
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Enable IP clock */
+    CLK_EnableModuleClock(GPA_MODULE);
+    CLK_EnableModuleClock(GPB_MODULE);
+    CLK_EnableModuleClock(GPC_MODULE);
+    CLK_EnableModuleClock(GPD_MODULE);
+    CLK_EnableModuleClock(GPE_MODULE);
+    CLK_EnableModuleClock(GPF_MODULE);
+    CLK_EnableModuleClock(GPG_MODULE);
+    CLK_EnableModuleClock(GPH_MODULE);
+    CLK_EnableModuleClock(GPI_MODULE);
+    CLK_EnableModuleClock(GPJ_MODULE);
+    CLK_EnableModuleClock(GPK_MODULE);
+    CLK_EnableModuleClock(GPL_MODULE);
+    CLK_EnableModuleClock(GPM_MODULE);
+    CLK_EnableModuleClock(GPN_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Wait for HXT clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
+    /* Select UART clock source from HXT */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(PLL_CLOCK);
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
+    SystemCoreClockUpdate();
 
-    /* Set PCLK0/PCLK1 to HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
-    /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-
-    /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
+    /* Set multi-function pins */
+    SYS->GPC_MFPL &= ~SYS_GPC_MFPL_PC5MFP_Msk;
+    SYS->GPA_MFPL &= ~SYS_GPA_MFPL_PA2MFP_Msk;
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void UART0_Init()
+void UART16_Init()
 {
-    /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
 }
 
 int main(void)
@@ -109,32 +113,33 @@ int main(void)
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Init UART0 for printf */
-    UART0_Init();
+    /* Init UART16 for printf */
+    UART16_Init();
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
     printf("+------------------------------------------------+\n");
-    printf("|    GPIO PB.2 and PC.5 Interrupt Sample Code    |\n");
+    printf("|    GPIO PA.2 and PC.5 Interrupt Sample Code    |\n");
     printf("+------------------------------------------------+\n\n");
 
     /*-----------------------------------------------------------------------------------------------------*/
     /* GPIO Interrupt Function Test                                                                        */
     /*-----------------------------------------------------------------------------------------------------*/
-    printf("PB.2 and PC.5 are used to test interrupt ......\n");
+    printf("PA.2 and PC.5 are used to test interrupt ......\n");
 
-    /* Configure PB.2 as Input mode and enable interrupt by rising edge trigger */
-    GPIO_SetMode(PB, BIT2, GPIO_MODE_INPUT);
-    GPIO_EnableInt(PB, 2, GPIO_INT_RISING);
-    NVIC_EnableIRQ(GPB_IRQn);
+    /* Configure PA.2 as Input mode and enable interrupt by rising edge trigger */
+    GPIO_SetMode(PA, BIT2, GPIO_MODE_INPUT);
+    GPIO_EnableInt(PA, 2, GPIO_INT_RISING);
+    NVIC_EnableIRQ(GPA_IRQn);
 
     /* Configure PC.5 as Quasi-bidirection mode and enable interrupt by falling edge trigger */
     GPIO_SetMode(PC, BIT5, GPIO_MODE_QUASI);
     GPIO_EnableInt(PC, 5, GPIO_INT_FALLING);
     NVIC_EnableIRQ(GPC_IRQn);
 
-    /* Enable interrupt de-bounce function and select de-bounce sampling cycle time is 1024 clocks of LIRC clock */
-    GPIO_SET_DEBOUNCE_TIME(GPIO_DBCTL_DBCLKSRC_LIRC, GPIO_DBCTL_DBCLKSEL_1024);
-    GPIO_ENABLE_DEBOUNCE(PB, BIT2);
+    /* Enable interrupt de-bounce function and select de-bounce sampling cycle time is 1024 clocks of HXT clock */
+    GPIO_SET_DEBOUNCE_TIME(PA, GPIO_DBCTL_DBCLKSRC_HXT, GPIO_DBCTL_DBCLKSEL_1024);
+    GPIO_SET_DEBOUNCE_TIME(PC, GPIO_DBCTL_DBCLKSRC_HXT, GPIO_DBCTL_DBCLKSEL_1024);
+    GPIO_ENABLE_DEBOUNCE(PA, BIT2);
     GPIO_ENABLE_DEBOUNCE(PC, BIT5);
 
     /* Waiting for interrupts */
