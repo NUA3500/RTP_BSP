@@ -77,7 +77,7 @@ extern "C"
 #define GPIO_DBCTL_ICLK_OFF           0x00000000UL /*!< GPIO_DBCTL setting for edge detection circuit is active only if IO pin corresponding GPIOx_IEN bit is set to 1 \hideinitializer */
 
 #define GPIO_DBCTL_DBCLKSRC_LIRC      0x00000010UL /*!< GPIO_DBCTL setting for de-bounce counter clock source is the internal 10 kHz \hideinitializer */
-#define GPIO_DBCTL_DBCLKSRC_HCLK      0x00000000UL /*!< GPIO_DBCTL setting for de-bounce counter clock source is the HCLK \hideinitializer */
+#define GPIO_DBCTL_DBCLKSRC_HXT       0x00000000UL /*!< GPIO_DBCTL setting for de-bounce counter clock source is the HCLK \hideinitializer */
 
 #define GPIO_DBCTL_DBCLKSEL_1         0x00000000UL /*!< GPIO_DBCTL setting for sampling cycle = 1 clocks \hideinitializer */
 #define GPIO_DBCTL_DBCLKSEL_2         0x00000001UL /*!< GPIO_DBCTL setting for sampling cycle = 2 clocks \hideinitializer */
@@ -230,7 +230,106 @@ extern "C"
 #define PH9             GPIO_PIN_DATA(7, 9 ) /*!< Specify PH.9 Pin Data Input/Output \hideinitializer */
 #define PH10            GPIO_PIN_DATA(7, 10) /*!< Specify PH.10 Pin Data Input/Output \hideinitializer */
 #define PH11            GPIO_PIN_DATA(7, 11) /*!< Specify PH.11 Pin Data Input/Output \hideinitializer */
-
+#define PH12            GPIO_PIN_DATA(7, 12) /*!< Specify PH.12 Pin Data Input/Output \hideinitializer */
+#define PH13            GPIO_PIN_DATA(7, 13) /*!< Specify PH.13 Pin Data Input/Output \hideinitializer */
+#define PH14            GPIO_PIN_DATA(7, 14) /*!< Specify PH.14 Pin Data Input/Output \hideinitializer */
+#define PH15            GPIO_PIN_DATA(7, 15) /*!< Specify PH.15 Pin Data Input/Output \hideinitializer */
+#define PI0             GPIO_PIN_DATA(8, 0 ) /*!< Specify PI.0 Pin Data Input/Output \hideinitializer */
+#define PI1             GPIO_PIN_DATA(8, 1 ) /*!< Specify PI.1 Pin Data Input/Output \hideinitializer */
+#define PI2             GPIO_PIN_DATA(8, 2 ) /*!< Specify PI.2 Pin Data Input/Output \hideinitializer */
+#define PI3             GPIO_PIN_DATA(8, 3 ) /*!< Specify PI.3 Pin Data Input/Output \hideinitializer */
+#define PI4             GPIO_PIN_DATA(8, 4 ) /*!< Specify PI.4 Pin Data Input/Output \hideinitializer */
+#define PI5             GPIO_PIN_DATA(8, 5 ) /*!< Specify PI.5 Pin Data Input/Output \hideinitializer */
+#define PI6             GPIO_PIN_DATA(8, 6 ) /*!< Specify PI.6 Pin Data Input/Output \hideinitializer */
+#define PI7             GPIO_PIN_DATA(8, 7 ) /*!< Specify PI.7 Pin Data Input/Output \hideinitializer */
+#define PI8             GPIO_PIN_DATA(8, 8 ) /*!< Specify PI.8 Pin Data Input/Output \hideinitializer */
+#define PI9             GPIO_PIN_DATA(8, 9 ) /*!< Specify PI.9 Pin Data Input/Output \hideinitializer */
+#define PI10            GPIO_PIN_DATA(8, 10) /*!< Specify PI.10 Pin Data Input/Output \hideinitializer */
+#define PI11            GPIO_PIN_DATA(8, 11) /*!< Specify PI.11 Pin Data Input/Output \hideinitializer */
+#define PI12            GPIO_PIN_DATA(8, 12) /*!< Specify PI.12 Pin Data Input/Output \hideinitializer */
+#define PI13            GPIO_PIN_DATA(8, 13) /*!< Specify PI.13 Pin Data Input/Output \hideinitializer */
+#define PI14            GPIO_PIN_DATA(8, 14) /*!< Specify PI.14 Pin Data Input/Output \hideinitializer */
+#define PI15            GPIO_PIN_DATA(8, 15) /*!< Specify PI.15 Pin Data Input/Output \hideinitializer */
+#define PJ0             GPIO_PIN_DATA(9, 0 ) /*!< Specify PJ.0 Pin Data Input/Output \hideinitializer */
+#define PJ1             GPIO_PIN_DATA(9, 1 ) /*!< Specify PJ.1 Pin Data Input/Output \hideinitializer */
+#define PJ2             GPIO_PIN_DATA(9, 2 ) /*!< Specify PJ.2 Pin Data Input/Output \hideinitializer */
+#define PJ3             GPIO_PIN_DATA(9, 3 ) /*!< Specify PJ.3 Pin Data Input/Output \hideinitializer */
+#define PJ4             GPIO_PIN_DATA(9, 4 ) /*!< Specify PJ.4 Pin Data Input/Output \hideinitializer */
+#define PJ5             GPIO_PIN_DATA(9, 5 ) /*!< Specify PJ.5 Pin Data Input/Output \hideinitializer */
+#define PJ6             GPIO_PIN_DATA(9, 6 ) /*!< Specify PJ.6 Pin Data Input/Output \hideinitializer */
+#define PJ7             GPIO_PIN_DATA(9, 7 ) /*!< Specify PJ.7 Pin Data Input/Output \hideinitializer */
+#define PJ8             GPIO_PIN_DATA(9, 8 ) /*!< Specify PJ.8 Pin Data Input/Output \hideinitializer */
+#define PJ9             GPIO_PIN_DATA(9, 9 ) /*!< Specify PJ.9 Pin Data Input/Output \hideinitializer */
+#define PJ10            GPIO_PIN_DATA(9, 10) /*!< Specify PJ.10 Pin Data Input/Output \hideinitializer */
+#define PJ11            GPIO_PIN_DATA(9, 11) /*!< Specify PJ.11 Pin Data Input/Output \hideinitializer */
+#define PJ12            GPIO_PIN_DATA(9, 12) /*!< Specify PJ.12 Pin Data Input/Output \hideinitializer */
+#define PJ13            GPIO_PIN_DATA(9, 13) /*!< Specify PJ.13 Pin Data Input/Output \hideinitializer */
+#define PJ14            GPIO_PIN_DATA(9, 14) /*!< Specify PJ.14 Pin Data Input/Output \hideinitializer */
+#define PJ15            GPIO_PIN_DATA(9, 15) /*!< Specify PJ.15 Pin Data Input/Output \hideinitializer */
+#define PK0             GPIO_PIN_DATA(10 , 0 ) /*!< Specify PK.0 Pin Data Input/Output \hideinitializer */
+#define PK1             GPIO_PIN_DATA(10 , 1 ) /*!< Specify PK.1 Pin Data Input/Output \hideinitializer */
+#define PK2             GPIO_PIN_DATA(10 , 2 ) /*!< Specify PK.2 Pin Data Input/Output \hideinitializer */
+#define PK3             GPIO_PIN_DATA(10 , 3 ) /*!< Specify PK.3 Pin Data Input/Output \hideinitializer */
+#define PK4             GPIO_PIN_DATA(10 , 4 ) /*!< Specify PK.4 Pin Data Input/Output \hideinitializer */
+#define PK5             GPIO_PIN_DATA(10 , 5 ) /*!< Specify PK.5 Pin Data Input/Output \hideinitializer */
+#define PK6             GPIO_PIN_DATA(10 , 6 ) /*!< Specify PK.6 Pin Data Input/Output \hideinitializer */
+#define PK7             GPIO_PIN_DATA(10 , 7 ) /*!< Specify PK.7 Pin Data Input/Output \hideinitializer */
+#define PK8             GPIO_PIN_DATA(10 , 8 ) /*!< Specify PK.8 Pin Data Input/Output \hideinitializer */
+#define PK9             GPIO_PIN_DATA(10 , 9 ) /*!< Specify PK.9 Pin Data Input/Output \hideinitializer */
+#define PK10            GPIO_PIN_DATA(10 , 10) /*!< Specify PK.10 Pin Data Input/Output \hideinitializer */
+#define PK11            GPIO_PIN_DATA(10 , 11) /*!< Specify PK.11 Pin Data Input/Output \hideinitializer */
+#define PK12            GPIO_PIN_DATA(10 , 12) /*!< Specify PK.12 Pin Data Input/Output \hideinitializer */
+#define PK13            GPIO_PIN_DATA(10 , 13) /*!< Specify PK.13 Pin Data Input/Output \hideinitializer */
+#define PK14            GPIO_PIN_DATA(10 , 14) /*!< Specify PK.14 Pin Data Input/Output \hideinitializer */
+#define PK15            GPIO_PIN_DATA(10 , 15) /*!< Specify PK.15 Pin Data Input/Output \hideinitializer */
+#define PL0             GPIO_PIN_DATA(11, 0 ) /*!< Specify PL.0 Pin Data Input/Output \hideinitializer */
+#define PL1             GPIO_PIN_DATA(11, 1 ) /*!< Specify PL.1 Pin Data Input/Output \hideinitializer */
+#define PL2             GPIO_PIN_DATA(11, 2 ) /*!< Specify PL.2 Pin Data Input/Output \hideinitializer */
+#define PL3             GPIO_PIN_DATA(11, 3 ) /*!< Specify PL.3 Pin Data Input/Output \hideinitializer */
+#define PL4             GPIO_PIN_DATA(11, 4 ) /*!< Specify PL.4 Pin Data Input/Output \hideinitializer */
+#define PL5             GPIO_PIN_DATA(11, 5 ) /*!< Specify PL.5 Pin Data Input/Output \hideinitializer */
+#define PL6             GPIO_PIN_DATA(11, 6 ) /*!< Specify PL.6 Pin Data Input/Output \hideinitializer */
+#define PL7             GPIO_PIN_DATA(11, 7 ) /*!< Specify PL.7 Pin Data Input/Output \hideinitializer */
+#define PL8             GPIO_PIN_DATA(11, 8 ) /*!< Specify PL.8 Pin Data Input/Output \hideinitializer */
+#define PL9             GPIO_PIN_DATA(11, 9 ) /*!< Specify PL.9 Pin Data Input/Output \hideinitializer */
+#define PL10            GPIO_PIN_DATA(11, 10) /*!< Specify PL.10 Pin Data Input/Output \hideinitializer */
+#define PL11            GPIO_PIN_DATA(11, 11) /*!< Specify PL.11 Pin Data Input/Output \hideinitializer */
+#define PL12            GPIO_PIN_DATA(11, 12) /*!< Specify PL.12 Pin Data Input/Output \hideinitializer */
+#define PL13            GPIO_PIN_DATA(11, 13) /*!< Specify PL.13 Pin Data Input/Output \hideinitializer */
+#define PL14            GPIO_PIN_DATA(11, 14) /*!< Specify PL.14 Pin Data Input/Output \hideinitializer */
+#define PL15            GPIO_PIN_DATA(11, 15) /*!< Specify PL.15 Pin Data Input/Output \hideinitializer */
+#define PM0             GPIO_PIN_DATA(12, 0 ) /*!< Specify PH.0 Pin Data Input/Output \hideinitializer */
+#define PM1             GPIO_PIN_DATA(12, 1 ) /*!< Specify PH.1 Pin Data Input/Output \hideinitializer */
+#define PM2             GPIO_PIN_DATA(12, 2 ) /*!< Specify PH.2 Pin Data Input/Output \hideinitializer */
+#define PM3             GPIO_PIN_DATA(12, 3 ) /*!< Specify PH.3 Pin Data Input/Output \hideinitializer */
+#define PM4             GPIO_PIN_DATA(12, 4 ) /*!< Specify PH.4 Pin Data Input/Output \hideinitializer */
+#define PM5             GPIO_PIN_DATA(12, 5 ) /*!< Specify PH.5 Pin Data Input/Output \hideinitializer */
+#define PM6             GPIO_PIN_DATA(12, 6 ) /*!< Specify PH.6 Pin Data Input/Output \hideinitializer */
+#define PM7             GPIO_PIN_DATA(12, 7 ) /*!< Specify PH.7 Pin Data Input/Output \hideinitializer */
+#define PM8             GPIO_PIN_DATA(12, 8 ) /*!< Specify PH.8 Pin Data Input/Output \hideinitializer */
+#define PM9             GPIO_PIN_DATA(12, 9 ) /*!< Specify PH.9 Pin Data Input/Output \hideinitializer */
+#define PM10            GPIO_PIN_DATA(12, 10) /*!< Specify PH.10 Pin Data Input/Output \hideinitializer */
+#define PM11            GPIO_PIN_DATA(12, 11) /*!< Specify PH.11 Pin Data Input/Output \hideinitializer */
+#define PM12            GPIO_PIN_DATA(12, 12) /*!< Specify PH.12 Pin Data Input/Output \hideinitializer */
+#define PM13            GPIO_PIN_DATA(12, 13) /*!< Specify PH.13 Pin Data Input/Output \hideinitializer */
+#define PM14            GPIO_PIN_DATA(12, 14) /*!< Specify PH.14 Pin Data Input/Output \hideinitializer */
+#define PM15            GPIO_PIN_DATA(12, 15) /*!< Specify PH.15 Pin Data Input/Output \hideinitializer */
+#define PN0             GPIO_PIN_DATA(13, 0 ) /*!< Specify PH.0 Pin Data Input/Output \hideinitializer */
+#define PN1             GPIO_PIN_DATA(13, 1 ) /*!< Specify PH.1 Pin Data Input/Output \hideinitializer */
+#define PN2             GPIO_PIN_DATA(13, 2 ) /*!< Specify PH.2 Pin Data Input/Output \hideinitializer */
+#define PN3             GPIO_PIN_DATA(13, 3 ) /*!< Specify PH.3 Pin Data Input/Output \hideinitializer */
+#define PN4             GPIO_PIN_DATA(13, 4 ) /*!< Specify PH.4 Pin Data Input/Output \hideinitializer */
+#define PN5             GPIO_PIN_DATA(13, 5 ) /*!< Specify PH.5 Pin Data Input/Output \hideinitializer */
+#define PN6             GPIO_PIN_DATA(13, 6 ) /*!< Specify PH.6 Pin Data Input/Output \hideinitializer */
+#define PN7             GPIO_PIN_DATA(13, 7 ) /*!< Specify PH.7 Pin Data Input/Output \hideinitializer */
+#define PN8             GPIO_PIN_DATA(13, 8 ) /*!< Specify PH.8 Pin Data Input/Output \hideinitializer */
+#define PN9             GPIO_PIN_DATA(13, 9 ) /*!< Specify PH.9 Pin Data Input/Output \hideinitializer */
+#define PN10            GPIO_PIN_DATA(13, 10) /*!< Specify PH.10 Pin Data Input/Output \hideinitializer */
+#define PN11            GPIO_PIN_DATA(13, 11) /*!< Specify PH.11 Pin Data Input/Output \hideinitializer */
+#define PN12            GPIO_PIN_DATA(13, 12) /*!< Specify PH.12 Pin Data Input/Output \hideinitializer */
+#define PN13            GPIO_PIN_DATA(13, 13) /*!< Specify PH.13 Pin Data Input/Output \hideinitializer */
+#define PN14            GPIO_PIN_DATA(13, 14) /*!< Specify PH.14 Pin Data Input/Output \hideinitializer */
+#define PN15            GPIO_PIN_DATA(13, 15) /*!< Specify PH.15 Pin Data Input/Output \hideinitializer */
 
 /*@}*/ /* end of group GPIO_EXPORTED_CONSTANTS */
 
@@ -242,7 +341,7 @@ extern "C"
 /**
  * @brief       Clear GPIO Pin Interrupt Flag
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -258,7 +357,7 @@ extern "C"
 /**
  * @brief       Disable Pin De-bounce Function
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -289,7 +388,7 @@ extern "C"
 /**
  * @brief       Disable I/O Digital Input Path
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -321,7 +420,7 @@ extern "C"
 /**
  * @brief       Disable I/O DOUT mask
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -353,7 +452,7 @@ extern "C"
 /**
  * @brief       Get GPIO Pin Interrupt Flag
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32PinMask  The single or multiple pins of specified GPIO port.
  *                          It could be BIT0 ~ BIT15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be BIT0 ~ BIT13 for PE GPIO port.
@@ -370,7 +469,8 @@ extern "C"
 /**
  * @brief       Set De-bounce Sampling Cycle Time
  *
- * @param[in]   u32ClkSrc   The de-bounce counter clock source. It could be GPIO_DBCTL_DBCLKSRC_HCLK or GPIO_DBCTL_DBCLKSRC_LIRC.
+ * @param[in]   u32Port     GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
+ * @param[in]   u32ClkSrc   The de-bounce counter clock source. It could be GPIO_DBCTL_DBCLKSRC_HXT or GPIO_DBCTL_DBCLKSRC_LIRC.
  * @param[in]   u32ClkSel   The de-bounce sampling cycle selection. It could be
  *                            - \ref GPIO_DBCTL_DBCLKSEL_1
  *                            - \ref GPIO_DBCTL_DBCLKSEL_2
@@ -398,12 +498,12 @@ extern "C"
  *              and system will sampling interrupt input once per 00 us.
  * \hideinitializer
  */
-#define GPIO_SET_DEBOUNCE_TIME(u32ClkSrc, u32ClkSel)    (GPIO->DBCTL = (GPIO_DBCTL_ICLKON_Msk | (u32ClkSrc) | (u32ClkSel)))
+#define GPIO_SET_DEBOUNCE_TIME(u32Port, u32ClkSrc, u32ClkSel)    (u32Port->DBCTL = (GPIO_DBCTL_ICLKON_Msk | (u32ClkSrc) | (u32ClkSel)))
 
 /**
  * @brief       Get GPIO Port IN Data
  *
-* @param[in]    port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  *
  * @return      The specified port data
  *
@@ -415,7 +515,7 @@ extern "C"
 /**
  * @brief       Set GPIO Port OUT Data
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32Data     GPIO port data.
  *
  * @return      None
@@ -441,7 +541,7 @@ extern "C"
 /**
  * @brief       Enable External GPIO interrupt
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32Pin      The pin of specified GPIO port.
  *                          It could be 0 ~ 15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be 0 ~ 13 for PE GPIO port.
@@ -459,7 +559,7 @@ extern "C"
 /**
  * @brief       Disable External GPIO interrupt
  *
- * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG or PH.
+ * @param[in]   port        GPIO port. It could be PA, PB, PC, PD, PE, PF, PG, PH, PI, PJ, PK,PL, PM and PN.
  * @param[in]   u32Pin      The pin of specified GPIO port.
  *                          It could be 0 ~ 15 for PA, PB, PC, PD, PF and PH GPIO port.
  *                          It could be 0 ~ 13 for PE GPIO port.

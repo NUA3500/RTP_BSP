@@ -240,12 +240,9 @@ extern "C"
   * @brief This macro is used to set event to clear capture counter
   * @param[in] ecap      Specify ECAP port
   * @param[in] u32Event The input channel number
-  *                  - \ref ECAP_CTL0_CMPCLREN_Msk
-  *                  - \ref ECAP_CTL1_CAP0RLDEN_Msk
-  *                  - \ref ECAP_CTL1_CAP1RLDEN_Msk
-  *                  - \ref ECAP_CTL1_CAP2RLDEN_Msk
-  *                  - \ref ECAP_CTL1_OVRLDEN_Msk
-
+  *                  - \ref ECAP_CTL1_CAP0CLREN_Msk
+  *                  - \ref ECAP_CTL1_CAP1CLREN_Msk
+  *                  - \ref ECAP_CTL1_CAP2CLREN_Msk
   * @return None
   * @details This macro will enable and select compare or capture event that can clear capture counter.
   * \hideinitializer
@@ -255,7 +252,7 @@ extern "C"
     (ecap)->CTL0 |= ECAP_CTL0_CMPCLREN_Msk; \
   else \
     (ecap)->CTL0 &= ~ECAP_CTL0_CMPCLREN_Msk; \
-  (ecap)->CTL1 = ((ecap)->CTL1 &~0xF00) | ((u32Event) & 0xF00); \
+  (ecap)->CTL1 = ((ecap)->CTL1 &~0x700000) | ((u32Event) & 0x700000); \
   }while(0);
 
 /**

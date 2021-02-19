@@ -7,11 +7,6 @@
 #include <stdio.h>
 #include "NuMicro.h"
 
-
-
-#define PLL_CLOCK       192000000
-
-
 /**
  * @brief       External INT0 IRQ
  *
@@ -23,19 +18,19 @@
  */
 void EINT0_IRQHandler(void)
 {
-
+    printf("EINT0_IRQHandler..........\n");
     /* To check if PA.6 external interrupt occurred */
-    if(GPIO_GET_INT_FLAG(PA, BIT6))
+    if(GPIO_GET_INT_FLAG(PG, BIT0))
     {
-        GPIO_CLR_INT_FLAG(PA, BIT6);
-        printf("PA.6 EINT0 occurred.\n");
+        GPIO_CLR_INT_FLAG(PG, BIT0);
+        printf("PG.0 EINT0 occurred.\n");
     }
 
-    /* To check if PB.5 external interrupt occurred */
-    if(GPIO_GET_INT_FLAG(PB, BIT5))
+    /* To check if PI.4 external interrupt occurred */
+    if(GPIO_GET_INT_FLAG(PI, BIT4))
     {
-        GPIO_CLR_INT_FLAG(PB, BIT5);
-        printf("PB.5 EINT0 occurred.\n");
+        GPIO_CLR_INT_FLAG(PI, BIT4);
+        printf("PI.4 EINT0 occurred.\n");
     }
 
 }
@@ -52,58 +47,66 @@ void EINT0_IRQHandler(void)
 void EINT1_IRQHandler(void)
 {
 
-    /* To check if PA.7 external interrupt occurred */
-    if(GPIO_GET_INT_FLAG(PA, BIT7))
+    /* To check if PB.10 external interrupt occurred */
+    if(GPIO_GET_INT_FLAG(PB, BIT10))
     {
-        GPIO_CLR_INT_FLAG(PA, BIT7);
-        printf("PA.7 EINT1 occurred.\n");
+        GPIO_CLR_INT_FLAG(PB, BIT10);
+        printf("PB.10 EINT1 occurred.\n");
     }
 
 }
 
 void SYS_Init(void)
 {
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Wait for HXT clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
+    /* Enable IP clock */
+    CLK_EnableModuleClock(GPA_MODULE);
+    CLK_EnableModuleClock(GPB_MODULE);
+    CLK_EnableModuleClock(GPC_MODULE);
+    CLK_EnableModuleClock(GPD_MODULE);
+    CLK_EnableModuleClock(GPE_MODULE);
+    CLK_EnableModuleClock(GPF_MODULE);
+    CLK_EnableModuleClock(GPG_MODULE);
+    CLK_EnableModuleClock(GPH_MODULE);
+    CLK_EnableModuleClock(GPI_MODULE);
+    CLK_EnableModuleClock(GPJ_MODULE);
+    CLK_EnableModuleClock(GPK_MODULE);
+    CLK_EnableModuleClock(GPL_MODULE);
+    CLK_EnableModuleClock(GPM_MODULE);
+    CLK_EnableModuleClock(GPN_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(PLL_CLOCK);
+    /* Select UART clock source from HXT */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
-    /* Set PCLK0/PCLK1 to HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
+    SystemCoreClockUpdate();
 
-    /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-
-    /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    /* Set PA multi-function pin for EINT0(PA.6) */
-    SYS->GPA_MFPL = SYS->GPA_MFPL & (~SYS_GPA_MFPL_PA6MFP_Msk) | SYS_GPA_MFPL_PA6MFP_INT0;
-
-    /* Set PB multi-function pin for EINT0(PB.5) */
-    SYS->GPB_MFPL = SYS->GPB_MFPL & (~SYS_GPB_MFPL_PB5MFP_Msk) | SYS_GPB_MFPL_PB5MFP_INT0;
-
-    /* Set PA multi-function pin for EINT1(PA.7) */
-    SYS->GPA_MFPL = SYS->GPA_MFPL & (~SYS_GPA_MFPL_PA7MFP_Msk) | SYS_GPA_MFPL_PA7MFP_INT1;
-
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
+    
+    /* Set multi-function pins for EINT0/EINT1 */
+    SYS->GPG_MFPL &= ~(SYS_GPG_MFPL_PG0MFP_Msk);
+    SYS->GPI_MFPL &= ~(SYS_GPI_MFPL_PI4MFP_Msk);
+    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB10MFP_Msk);
+    SYS->GPG_MFPL |= SYS_GPG_MFPL_PG0MFP_INT0;
+    SYS->GPI_MFPL |= SYS_GPI_MFPL_PI4MFP_INT0;
+    SYS->GPB_MFPH |= SYS_GPB_MFPH_PB10MFP_INT1;
+    
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void UART0_Init()
+void UART16_Init()
 {
 
-    /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
 }
 
 int main(void)
@@ -117,8 +120,8 @@ int main(void)
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Init UART0 for printf */
-    UART0_Init();
+    /* Init UART16 for printf */
+    UART16_Init();
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
     printf("+------------------------------------------------------------+\n");
@@ -128,27 +131,29 @@ int main(void)
     /*-----------------------------------------------------------------------------------------------------*/
     /* GPIO External Interrupt Function Test                                                               */
     /*-----------------------------------------------------------------------------------------------------*/
-    printf("EINT0(PA.6 and PB.5) and EINT1(PA.7) are used to test interrupt\n");
+    printf("EINT0(PG.0 and PI.4) and EINT1(PB.10) are used to test interrupt\n");
 
-    /* Configure PA.6 as EINT0 pin and enable interrupt by falling edge trigger */
-    GPIO_SetMode(PA, BIT6, GPIO_MODE_INPUT);
-    GPIO_EnableInt(PA, 6, GPIO_INT_FALLING);
+    /* Configure PG.0 as EINT0 pin and enable interrupt by falling edge trigger */
+    GPIO_SetMode(PG, BIT0, GPIO_MODE_INPUT);
+    GPIO_EnableInt(PG, 0, GPIO_INT_FALLING);
 
-    /* Configure PB.5 as EINT0 pin and enable interrupt by rising edge trigger */
-    GPIO_SetMode(PB, BIT5, GPIO_MODE_INPUT);
-    GPIO_EnableInt(PB, 5, GPIO_INT_RISING);
+    /* Configure PI.4 as EINT0 pin and enable interrupt by rising edge trigger */
+    GPIO_SetMode(PI, BIT4, GPIO_MODE_INPUT);
+    GPIO_EnableInt(PI, 4, GPIO_INT_RISING);
     NVIC_EnableIRQ(EINT0_IRQn);
 
-    /* Configure PA.7 as EINT1 pin and enable interrupt by falling and rising edge trigger */
-    GPIO_SetMode(PA, BIT7, GPIO_MODE_INPUT);
-    GPIO_EnableInt(PA, 7, GPIO_INT_BOTH_EDGE);
+    /* Configure PB.10 as EINT1 pin and enable interrupt by falling and rising edge trigger */
+    GPIO_SetMode(PB, BIT10, GPIO_MODE_INPUT);
+    GPIO_EnableInt(PB, 10, GPIO_INT_BOTH_EDGE);
     NVIC_EnableIRQ(EINT1_IRQn);
 
-    /* Enable interrupt de-bounce function and select de-bounce sampling cycle time is 1024 clocks of LIRC clock */
-    GPIO_SET_DEBOUNCE_TIME(GPIO_DBCTL_DBCLKSRC_LIRC, GPIO_DBCTL_DBCLKSEL_1024);
-    GPIO_ENABLE_DEBOUNCE(PA, BIT6);
-    GPIO_ENABLE_DEBOUNCE(PB, BIT5);
-    GPIO_ENABLE_DEBOUNCE(PA, BIT7);
+    /* Enable interrupt de-bounce function and select de-bounce sampling cycle time is 1024 clocks of HXT clock */
+    GPIO_SET_DEBOUNCE_TIME(PB, GPIO_DBCTL_DBCLKSRC_HXT, GPIO_DBCTL_DBCLKSEL_1024);
+    GPIO_SET_DEBOUNCE_TIME(PG, GPIO_DBCTL_DBCLKSRC_HXT, GPIO_DBCTL_DBCLKSEL_1024);
+    GPIO_SET_DEBOUNCE_TIME(PI, GPIO_DBCTL_DBCLKSRC_HXT, GPIO_DBCTL_DBCLKSEL_1024);
+    GPIO_ENABLE_DEBOUNCE(PG, BIT0);
+    GPIO_ENABLE_DEBOUNCE(PI, BIT4);
+    GPIO_ENABLE_DEBOUNCE(PB, BIT10);
 
     /* Waiting for interrupts */
     while(1);
