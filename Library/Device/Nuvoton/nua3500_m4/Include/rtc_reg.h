@@ -746,27 +746,33 @@ typedef struct
     __IO uint32_t TAMSK;                 /*!< [0x0034] RTC Time Alarm Mask Register                                     */
     __IO uint32_t CAMSK;                 /*!< [0x0038] RTC Calendar Alarm Mask Register                                 */
     __IO uint32_t SPRCTL;                /*!< [0x003c] RTC Spare Functional Control Register                            */
-    __IO uint32_t SPR[20];               /*!< [0x0040] ~ [0x008c] RTC Spare Register 0 ~ 19                             */
+    __IO uint32_t SPR[16];               /*!< [0x0040] ~ [0x007c] RTC Spare Register 0 ~ 16                             */
     /// @cond HIDDEN_SYMBOLS
-    __I  uint32_t RESERVE0[28];
+    __I  uint32_t RESERVE0[7];
+    __IO uint32_t TALM_M;                /*!< [0x009c] RTC Time Alarm Register(SubM)                                    */
+    __IO uint32_t CALM_M;                /*!< [0x00a0] RTC Calendar Alarm Register(SubM)                                */
+    /// @cond HIDDEN_SYMBOLS
+    __I  uint32_t RESERVE1[1];
+    __IO uint32_t INTEN_M;               /*!< [0x00a8] RTC Interrupt Enable Register(SubM)                              */
+    __IO uint32_t INTSTS_M;              /*!< [0x00ac] RTC Interrupt Status Register(SubM)                              */
+    __IO uint32_t TICK_M;                /*!< [0x00b0] RTC Time Tick Register(SubM)                                     */
+    __IO uint32_t TAMSK_M;               /*!< [0x00b4] RTC Time Alarm Mask Register(SubM)                               */
+    __IO uint32_t CAMSK_M;               /*!< [0x00b8] RTC Calendar Alarm Mask Register(SubM)                           */
+    /// @cond HIDDEN_SYMBOLS
+    __I  uint32_t RESERVE2[17];
     /// @endcond //HIDDEN_SYMBOLS
     __IO uint32_t LXTCTL;                /*!< [0x0100] RTC 32.768 kHz Oscillator Control Register                       */
     __IO uint32_t GPIOCTL0;              /*!< [0x0104] RTC GPIO Control 0 Register                                      */
-    __IO uint32_t GPIOCTL1;              /*!< [0x0108] RTC GPIO Control 1 Register                                      */
     /// @cond HIDDEN_SYMBOLS
-    __I  uint32_t RESERVE1[1];
-    /// @endcond //HIDDEN_SYMBOLS
-    __IO uint32_t DSTCTL;                /*!< [0x0110] RTC Daylight Saving Time Control Register                        */
-    /// @cond HIDDEN_SYMBOLS
-    __I  uint32_t RESERVE2[3];
+    __I  uint32_t RESERVE3[6];
     /// @endcond //HIDDEN_SYMBOLS
     __IO uint32_t TAMPCTL;               /*!< [0x0120] RTC Tamper Pin Control Register                                  */
     /// @cond HIDDEN_SYMBOLS
-    __I  uint32_t RESERVE3[1];
+    __I  uint32_t RESERVE4[1];
     /// @endcond //HIDDEN_SYMBOLS
     __IO uint32_t TAMPSEED;              /*!< [0x0128] RTC Tamper Dynamic Seed Register                                 */
     /// @cond HIDDEN_SYMBOLS
-    __I  uint32_t RESERVE4[1];
+    __I  uint32_t RESERVE5[1];
     /// @endcond //HIDDEN_SYMBOLS
     __I  uint32_t TAMPTIME;              /*!< [0x0130] RTC Tamper Time Register                                         */
     __I  uint32_t TAMPCAL;               /*!< [0x0134] RTC Tamper Calendar Register                                     */
