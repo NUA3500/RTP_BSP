@@ -252,17 +252,17 @@ uint32_t CLK_GetCPUFreq(void)
 
 /**
   * @brief      Set HCLK frequency
-  * @param[in]  u32Hclk is HCLK frequency. The range of u32Hclk is running up to 192MHz.
+  * @param[in]  u32Hclk is HCLK frequency. The range of u32Hclk is running up to 180MHz.
   * @return     HCLK frequency
   * @details    This function is used to set HCLK frequency. The frequency unit is Hz. \n
   *             The register write-protection function should be disabled before using this function.
   */
 uint32_t CLK_SetCoreClock(uint32_t u32Hclk)
 {
-    /* The range of u32Hclk is running up to 189 MHz */
-    if (u32Hclk > FREQ_189MHZ)
+    /* The range of u32Hclk is running up to 180 MHz */
+    if (u32Hclk > FREQ_180MHZ)
     {
-        u32Hclk = FREQ_189MHZ;
+        u32Hclk = FREQ_180MHZ;
     }
 
 #if 0

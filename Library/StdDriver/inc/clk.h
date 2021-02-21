@@ -27,8 +27,7 @@ extern "C"
 */
 
 
-#define FREQ_85MHZ         85700000UL   /*!< 85.7 MHz \hideinitializer */
-#define FREQ_189MHZ        189000000UL  /*!< 189  MHz \hideinitializer */
+#define FREQ_180MHZ        180000000UL  /*!< 180  MHz \hideinitializer */
 
 #define CAPLL    (0x0UL)
 #define SYSPLL   (0x1UL)
