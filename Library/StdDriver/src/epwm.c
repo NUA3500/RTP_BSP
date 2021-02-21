@@ -33,38 +33,13 @@
  */
 uint32_t EPWM_ConfigCaptureChannel(EPWM_T *epwm, uint32_t u32ChannelNum, uint32_t u32UnitTimeNsec, uint32_t u32CaptureEdge)
 {
-    uint32_t u32Src;
     uint32_t u32EPWMClockSrc;
     uint32_t u32NearestUnitTimeNsec;
     uint32_t u16Prescale = 1U, u16CNR = 0xFFFFU;
 
-    if(epwm == EPWM0)
-    {
-        u32Src = CLK->CLKSEL2 & CLK_CLKSEL2_EPWM0SEL_Msk;
-    }
-    else     /* (epwm == EPWM1) */
-    {
-        u32Src = CLK->CLKSEL2 & CLK_CLKSEL2_EPWM1SEL_Msk;
-    }
-
-    if(u32Src == 0U)
-    {
-        /* clock source is from PLL clock */
-        u32EPWMClockSrc = CLK_GetPLLClockFreq();
-    }
-    else
-    {
-        /* clock source is from PCLK */
-        SystemCoreClockUpdate();
-        if(epwm == EPWM0)
-        {
-            u32EPWMClockSrc = CLK_GetPCLK0Freq();
-        }
-        else     /* (epwm == EPWM1) */
-        {
-            u32EPWMClockSrc = CLK_GetPCLK1Freq();
-        }
-    }
+    /* clock source is from PCLK */
+    SystemCoreClockUpdate();
+    u32EPWMClockSrc = CLK_GetPCLK0Freq();
 
     u32EPWMClockSrc /= 1000U;
     for(u16Prescale = 1U; u16Prescale <= 0x1000U; u16Prescale++)
@@ -131,38 +106,13 @@ uint32_t EPWM_ConfigCaptureChannel(EPWM_T *epwm, uint32_t u32ChannelNum, uint32_
  */
 uint32_t EPWM_ConfigOutputChannel(EPWM_T *epwm, uint32_t u32ChannelNum, uint32_t u32Frequency, uint32_t u32DutyCycle)
 {
-    uint32_t u32Src;
     uint32_t u32EPWMClockSrc;
     uint32_t i;
     uint32_t u32Prescale = 1U, u32CNR = 0xFFFFU;
 
-    if(epwm == EPWM0)
-    {
-        u32Src = CLK->CLKSEL2 & CLK_CLKSEL2_EPWM0SEL_Msk;
-    }
-    else     /* (epwm == EPWM1) */
-    {
-        u32Src = CLK->CLKSEL2 & CLK_CLKSEL2_EPWM1SEL_Msk;
-    }
-
-    if(u32Src == 0U)
-    {
-        /* clock source is from PLL clock */
-        u32EPWMClockSrc = CLK_GetPLLClockFreq();
-    }
-    else
-    {
-        /* clock source is from PCLK */
-        SystemCoreClockUpdate();
-        if(epwm == EPWM0)
-        {
-            u32EPWMClockSrc = CLK_GetPCLK0Freq();
-        }
-        else     /* (epwm == EPWM1) */
-        {
-            u32EPWMClockSrc = CLK_GetPCLK1Freq();
-        }
-    }
+    /* clock source is from PCLK */
+    SystemCoreClockUpdate();
+    u32EPWMClockSrc = CLK_GetPCLK0Freq();
 
     for(u32Prescale = 1U; u32Prescale < 0xFFFU; u32Prescale++)   /* prescale could be 0~0xFFF */
     {

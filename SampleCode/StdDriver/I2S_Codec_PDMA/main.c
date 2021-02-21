@@ -12,7 +12,8 @@
 #include "NuMicro.h"
 #include "config.h"
 
-#define NAU8822     0
+#define NAU8822     1
+#define PLL_CLOCK   192000000
 
 uint32_t PcmRxBuff[2][BUFF_LEN] = {0};
 uint32_t PcmTxBuff[2][BUFF_LEN] = {0};
@@ -23,24 +24,24 @@ extern volatile uint8_t u8CopyData;
 volatile uint8_t u8TxIdx=0, u8RxIdx=0;
 volatile uint8_t u8CopyData = 0;
 
-void PDMA_IRQHandler(void)
+void PDMA2_IRQHandler(void)
 {
-    uint32_t u32Status = PDMA_GET_INT_STATUS(PDMA);
+    uint32_t u32Status = PDMA_GET_INT_STATUS(PDMA2);
 
     if (u32Status & 0x2)
     {
-        if (PDMA_GET_TD_STS(PDMA) & 0x4)            /* channel 2 done */
+        if (PDMA_GET_TD_STS(PDMA2) & 0x4)            /* channel 2 done */
         {
             /* Copy RX data to TX buffer */
             u8CopyData = 1;
             u8RxIdx ^= 1;
-            PDMA_CLR_TD_FLAG(PDMA,PDMA_TDSTS_TDIF2_Msk);
+            PDMA_CLR_TD_FLAG(PDMA2,PDMA_TDSTS_TDIF2_Msk);
         }
 
-        if (PDMA_GET_TD_STS(PDMA) & 0x2)            /* channel 1 done */
+        if (PDMA_GET_TD_STS(PDMA2) & 0x2)            /* channel 1 done */
         {
             u8TxIdx ^= 1;
-            PDMA_CLR_TD_FLAG(PDMA,PDMA_TDSTS_TDIF1_Msk);
+            PDMA_CLR_TD_FLAG(PDMA2,PDMA_TDSTS_TDIF1_Msk);
         }
     }
     else
@@ -78,7 +79,7 @@ void I2C_WriteNAU8822(uint8_t u8addr, uint16_t u16data)
 /*---------------------------------------------------------------------------------------------------------*/
 void NAU8822_Setup()
 {
-    printf("\nConfigure NAU8822 ...");
+    printf("\nConfigure NAU88C22 ...");
 
     I2C_WriteNAU8822(0,  0x000);   /* Reset all registers */
     CLK_SysTickDelay(10000);
@@ -249,26 +250,20 @@ void NAU88L25_Setup(void)
 
 void SYS_Init(void)
 {
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
     /* Enable External XTAL (4~24 MHz) */
     CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
 
     /* Waiting for 12MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
-    /* Switch HCLK clock source to HXT */
-    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT,CLK_CLKDIV0_HCLK(1));
-
     /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
+    CLK_SetCoreClock(PLL_CLOCK);
 
     /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
+
+    /* Select UART module clock source as HXT and UART module clock divider as 1 */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Enable I2S0 module clock */
     CLK_EnableModuleClock(I2S0_MODULE);
@@ -277,24 +272,23 @@ void SYS_Init(void)
     CLK_EnableModuleClock(I2C2_MODULE);
 
     /* Enable PDMA module clock */
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
 
-    /* Select UART module clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    /* Enable GPIOD module clock */
+    CLK_EnableModuleClock(GPD_MODULE);
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-    SYS->GPF_MFPL = (SYS->GPF_MFPL & ~(SYS_GPF_MFPL_PF6MFP_Msk|SYS_GPF_MFPL_PF7MFP_Msk)) |
-                    (SYS_GPF_MFPL_PF6MFP_I2S0_LRCK|SYS_GPF_MFPL_PF7MFP_I2S0_DO);
-    SYS->GPF_MFPH = (SYS->GPF_MFPH & ~(SYS_GPF_MFPH_PF8MFP_Msk|SYS_GPF_MFPH_PF9MFP_Msk|SYS_GPF_MFPH_PF10MFP_Msk)) |
-                    (SYS_GPF_MFPH_PF8MFP_I2S0_DI|SYS_GPF_MFPH_PF9MFP_I2S0_MCLK|SYS_GPF_MFPH_PF10MFP_I2S0_BCLK );
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    SYS->GPD_MFPL &= ~(SYS_GPD_MFPL_PD0MFP_Msk | SYS_GPD_MFPL_PD1MFP_Msk);
-    SYS->GPD_MFPL |= (SYS_GPD_MFPL_PD0MFP_I2C2_SDA | SYS_GPD_MFPL_PD1MFP_I2C2_SCL);
+    /* PB8: I2C2_SDA; PB9: I2C2_SCL */
+    SYS->GPB_MFPH = (SYS->GPB_MFPH & (~(SYS_GPB_MFPH_PB8MFP_Msk|SYS_GPB_MFPH_PB9MFP_Msk))) | SYS_GPB_MFPH_PB8MFP_I2C2_SDA | SYS_GPB_MFPH_PB9MFP_I2C2_SCL;
 
-    PF->SMTEN |= GPIO_SMTEN_SMTEN10_Msk;
-    PD->SMTEN |= GPIO_SMTEN_SMTEN1_Msk;
+    /* PK.12(I2S0_LRCK),PK.13(I2S0_BCLK),PK.14(I2S0_DI),PK.15(I2S0_DO), PN.15(I2S0_MCLK) */
+    SYS->GPK_MFPH &= ~(SYS_GPK_MFPH_PK12MFP_Msk | SYS_GPK_MFPH_PK13MFP_Msk | SYS_GPK_MFPH_PK14MFP_Msk | SYS_GPK_MFPH_PK15MFP_Msk);
+    SYS->GPK_MFPH |= (SYS_GPK_MFPH_PK12MFP_I2S0_LRCK | SYS_GPK_MFPH_PK13MFP_I2S0_BCLK | SYS_GPK_MFPH_PK14MFP_I2S0_DI | SYS_GPK_MFPH_PK15MFP_I2S0_DO);
+    /* PN.15(I2S0_MCLK) */
+    SYS->GPN_MFPH = (SYS->GPN_MFPH & (~SYS_GPN_MFPH_PN15MFP_Msk)) | SYS_GPN_MFPH_PN15MFP_I2S0_MCLK;
 }
 
 // Configure PDMA to Scatter Gather mode */
@@ -304,36 +298,36 @@ void PDMA_Init(void)
     DMA_TXDESC[0].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_TXDESC[0].src = (uint32_t)&PcmTxBuff[0];
     DMA_TXDESC[0].dest = (uint32_t)&I2S0->TXFIFO;
-    DMA_TXDESC[0].offset = (uint32_t)&DMA_TXDESC[1] - (PDMA->SCATBA);
+    DMA_TXDESC[0].offset = (uint32_t)&DMA_TXDESC[1] - (PDMA2->SCATBA);
 
     DMA_TXDESC[1].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_TXDESC[1].src = (uint32_t)&PcmTxBuff[1];
     DMA_TXDESC[1].dest = (uint32_t)&I2S0->TXFIFO;
-    DMA_TXDESC[1].offset = (uint32_t)&DMA_TXDESC[0] - (PDMA->SCATBA);   //link to first description
+    DMA_TXDESC[1].offset = (uint32_t)&DMA_TXDESC[0] - (PDMA2->SCATBA);   //link to first description
 
     /* Rx description */
     DMA_RXDESC[0].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_RXDESC[0].src = (uint32_t)&I2S0->RXFIFO;
     DMA_RXDESC[0].dest = (uint32_t)&PcmRxBuff[0];
-    DMA_RXDESC[0].offset = (uint32_t)&DMA_RXDESC[1] - (PDMA->SCATBA);
+    DMA_RXDESC[0].offset = (uint32_t)&DMA_RXDESC[1] - (PDMA2->SCATBA);
 
     DMA_RXDESC[1].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_RXDESC[1].src = (uint32_t)&I2S0->RXFIFO;
     DMA_RXDESC[1].dest = (uint32_t)&PcmRxBuff[1];
-    DMA_RXDESC[1].offset = (uint32_t)&DMA_RXDESC[0] - (PDMA->SCATBA);   //link to first description
+    DMA_RXDESC[1].offset = (uint32_t)&DMA_RXDESC[0] - (PDMA2->SCATBA);   //link to first description
 
     /* Open PDMA channel 1 for I2S TX and channel 2 for I2S RX */
-    PDMA_Open(PDMA,0x3 << 1);
+    PDMA_Open(PDMA2,0x3 << 1);
 
     /* Configure PDMA transfer mode */
-    PDMA_SetTransferMode(PDMA,1, PDMA_I2S0_TX, 1, (uint32_t)&DMA_TXDESC[0]);
-    PDMA_SetTransferMode(PDMA,2, PDMA_I2S0_RX, 1, (uint32_t)&DMA_RXDESC[0]);
+    PDMA_SetTransferMode(PDMA2,1, PDMA_I2S0_TX, 1, (uint32_t)&DMA_TXDESC[0]);
+    PDMA_SetTransferMode(PDMA2,2, PDMA_I2S0_RX, 1, (uint32_t)&DMA_RXDESC[0]);
 
     /* Enable PDMA channel 1&2 interrupt */
-    PDMA_EnableInt(PDMA,1, 0);
-    PDMA_EnableInt(PDMA,2, 0);
+    PDMA_EnableInt(PDMA2,1, 0);
+    PDMA_EnableInt(PDMA2,2, 0);
 
-    NVIC_EnableIRQ(PDMA_IRQn);
+    NVIC_EnableIRQ(PDMA2_IRQn);
 }
 
 /* Init I2C interface */
@@ -356,12 +350,12 @@ int32_t main (void)
     SYS_Init();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     printf("+------------------------------------------------------------------------+\n");
-    printf("|                   I2S Driver Sample Code with NAU88L25                 |\n");
+    printf("|                   I2S Driver Sample Code with NAU88C22                 |\n");
     printf("+------------------------------------------------------------------------+\n");
-    printf("  NOTE: This sample code needs to work with NAU88L25.\n");
+    printf("  NOTE: This sample code needs to work with NAU88C22.\n");
 
     /* Init I2C2 to access NAU8822 */
     I2C2_Init();
@@ -374,13 +368,14 @@ int32_t main (void)
     /* Open I2S0 interface and set to slave mode, stereo channel, I2S format */
     I2S_Open(I2S0, I2S_MODE_SLAVE, 16000, I2S_DATABIT_16, I2S_DISABLE_MONO, I2S_FORMAT_I2S);
 
-    /* Set PE.13 low to enable phone jack on NuMaker board. */
-    SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE13MFP_Msk);
-    GPIO_SetMode(PE, BIT13, GPIO_MODE_OUTPUT);
-    PE13 = 0;
+    /* Set PD.13 low to enable phone jack on DEV board. */
+    /* PD.13(AUDIO_JKEN : keep output low) */
+    SYS->GPD_MFPH = (SYS->GPD_MFPH & ~(SYS_GPD_MFPH_PD13MFP_Msk));
+    GPIO_SetMode(PD, BIT13, GPIO_MODE_OUTPUT);
+    PD13 = 0;
 
     // select source from HXT(12MHz)
-    CLK_SetModuleClock(I2S0_MODULE, CLK_CLKSEL3_I2S0SEL_HXT, 0);
+    CLK_SetModuleClock(I2S0_MODULE, CLK_CLKSEL4_I2S0SEL_HXT, 0);
 
     /* Set MCLK and enable MCLK */
     I2S_EnableMCLK(I2S0, 12000000);

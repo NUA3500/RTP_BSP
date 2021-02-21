@@ -12,6 +12,7 @@
 #include <string.h>
 #include "NuMicro.h"
 
+#define PLL_CLOCK   192000000
 volatile uint32_t g_u32TxValue;
 volatile uint32_t g_u32DataCount;
 
@@ -31,7 +32,7 @@ int32_t main(void)
     SYS_LockReg();
 
     /* Init UART0 to 115200-8n1 for printing messages */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     printf("+-----------------------------------------------------------+\n");
     printf("|            SPII2S Driver Sample Code (master mode)        |\n");
@@ -43,8 +44,8 @@ int32_t main(void)
     printf("      I2S format\n");
     printf("      TX value: 0x55005501, 0x55025503, ..., 0x55FE55FF, wraparound\n");
     printf("  The I/O connection for I2S1 (SPI1):\n");
-    printf("      I2S1_LRCLK (PH7)\n      I2S1_BCLK(PH6)\n");
-    printf("      I2S1_DI (PH4)\n      I2S1_DO (PH5)\n\n");
+    printf("      I2S1_LRCLK (PC8)\n      I2S1_BCLK(PC9)\n");
+    printf("      I2S1_DI (PC11)\n      I2S1_DO (PC10)\n\n");
     printf("  NOTE: Connect with a I2S slave device.\n");
     printf("        This sample code will transmit a TX value 50000 times, and then change to the next TX value.\n");
     printf("        When TX value or the received value changes, the new TX value or the current TX value and the new received value will be printed.\n");
@@ -101,39 +102,34 @@ void SYS_Init(void)
     /* Waiting for 12MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
-    /* Switch HCLK clock source to HXT */
-    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT,CLK_CLKDIV0_HCLK(1));
-
     /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
+    CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
+    /* Enable UART module clock */
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
-    /* Select PCLK0 as the clock source of SPI1 */
-    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL2_SPI1SEL_PCLK0, MODULE_NoMsk);
+    /* Select clock source of SPI1 */
+    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL4_SPI1SEL_HXT, MODULE_NoMsk);
 
     /* Enable peripheral clock */
-    CLK_EnableModuleClock(UART0_MODULE);
     CLK_EnableModuleClock(SPI1_MODULE);
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
     SystemCoreClockUpdate();
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
     /* Configure SPI1 related multi-function pins. */
-    /* GPH[7:4] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
-    SYS->GPH_MFPL &= ~(SYS_GPH_MFPL_PH4MFP_Msk | SYS_GPH_MFPL_PH5MFP_Msk | SYS_GPH_MFPL_PH6MFP_Msk | SYS_GPH_MFPL_PH7MFP_Msk);
-    SYS->GPH_MFPL |= (SYS_GPH_MFPL_PH4MFP_SPI1_MISO | SYS_GPH_MFPL_PH5MFP_SPI1_MOSI | SYS_GPH_MFPL_PH6MFP_SPI1_CLK | SYS_GPH_MFPL_PH7MFP_SPI1_SS);
-    PH->SMTEN |= GPIO_SMTEN_SMTEN6_Msk;
+    /* GPC[11:8] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
+    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC8MFP_Msk | SYS_GPC_MFPH_PC9MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk | SYS_GPC_MFPH_PC11MFP_Msk);
+    SYS->GPC_MFPH |= SYS_GPC_MFPH_PC8MFP_SPI1_SS0 | SYS_GPC_MFPH_PC9MFP_SPI1_CLK | SYS_GPC_MFPH_PC10MFP_SPI1_MOSI | SYS_GPC_MFPH_PC11MFP_SPI1_MISO;
 }
 
 void SPI1_IRQHandler()

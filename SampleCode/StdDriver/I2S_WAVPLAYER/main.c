@@ -16,6 +16,8 @@
 #include "diskio.h"
 #include "ff.h"
 
+#define PLL_CLOCK   192000000
+
 #define NAU8822_ADDR        0x1A                /* NAU8822 Device ID */
 
 DMA_DESC_T DMA_DESC[2];
@@ -80,17 +82,17 @@ uint32_t get_ticks()
 void delay_us(int usec)
 {
     /*
-     *  Configure Timer0, clock source from XTL_12M. Prescale 12
+     *  Configure Timer2, clock source from XTL_12M. Prescale 12
      */
-    /* TIMER0 clock from HXT */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_TMR0SEL_Msk)) | CLK_CLKSEL1_TMR0SEL_HXT;
-    CLK->APBCLK0 |= CLK_APBCLK0_TMR0CKEN_Msk;
-    TIMER0->CTL = 0;        /* disable timer */
-    TIMER0->INTSTS = 0x3;   /* write 1 to clear for safety */
-    TIMER0->CMP = usec;
-    TIMER0->CTL = (11 << TIMER_CTL_PSC_Pos) | TIMER_ONESHOT_MODE | TIMER_CTL_CNTEN_Msk;
+    /* TIMER2 clock from HXT */
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_TMR2SEL_Msk)) | CLK_CLKSEL1_TMR2SEL_HXT;
+    CLK->APBCLK0 |= CLK_APBCLK0_TMR2CKEN_Msk;
+    TIMER2->CTL = 0;        /* disable timer */
+    TIMER2->INTSTS = 0x3;   /* write 1 to clear for safety */
+    TIMER2->CMP = usec;
+    TIMER2->CTL = (11 << TIMER_CTL_PSC_Pos) | TIMER_ONESHOT_MODE | TIMER_CTL_CNTEN_Msk;
 
-    while (!TIMER0->INTSTS);
+    while (!TIMER2->INTSTS);
 }
 
 uint8_t I2cWrite_MultiByteforNAU88L25(uint8_t chipadd,uint16_t subaddr, const uint8_t *p,uint32_t len)
@@ -392,44 +394,41 @@ void SYS_Init(void)
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
     /* Enable External XTAL (4~24 MHz) */
     CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
 
     /* Waiting for 12MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
-    /* Switch HCLK clock source to HXT */
-    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT,CLK_CLKDIV0_HCLK(1));
-
     /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
+    CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
+    /* Enable UART module clock */
+    CLK_EnableModuleClock(UART16_MODULE);
+
+    /* Select UART module clock source as HXT and UART module clock divider as 1 */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
     CLK_EnableModuleClock(I2C2_MODULE);
     CLK_EnableModuleClock(I2S0_MODULE);
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Enable GPIOD module clock */
+    CLK_EnableModuleClock(GPD_MODULE);
 
-    SYS->GPF_MFPL = (SYS->GPF_MFPL & ~(SYS_GPF_MFPL_PF6MFP_Msk|SYS_GPF_MFPL_PF7MFP_Msk)) |
-                    (SYS_GPF_MFPL_PF6MFP_I2S0_LRCK|SYS_GPF_MFPL_PF7MFP_I2S0_DO);
-    SYS->GPF_MFPH = (SYS->GPF_MFPH & ~(SYS_GPF_MFPH_PF8MFP_Msk|SYS_GPF_MFPH_PF9MFP_Msk|SYS_GPF_MFPH_PF10MFP_Msk)) |
-                    (SYS_GPF_MFPH_PF8MFP_I2S0_DI|SYS_GPF_MFPH_PF9MFP_I2S0_MCLK|SYS_GPF_MFPH_PF10MFP_I2S0_BCLK );
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    SYS->GPD_MFPL &= ~(SYS_GPD_MFPL_PD0MFP_Msk | SYS_GPD_MFPL_PD1MFP_Msk);
-    SYS->GPD_MFPL |= (SYS_GPD_MFPL_PD0MFP_I2C2_SDA | SYS_GPD_MFPL_PD1MFP_I2C2_SCL);
+    /* PB8: I2C2_SDA; PB9: I2C2_SCL */
+    SYS->GPB_MFPH = (SYS->GPB_MFPH & (~(SYS_GPB_MFPH_PB8MFP_Msk|SYS_GPB_MFPH_PB9MFP_Msk))) | SYS_GPB_MFPH_PB8MFP_I2C2_SDA | SYS_GPB_MFPH_PB9MFP_I2C2_SCL;
 
-    PF->SMTEN |= GPIO_SMTEN_SMTEN10_Msk;
-    PD->SMTEN |= GPIO_SMTEN_SMTEN1_Msk;
+    /* PK.12(I2S0_LRCK),PK.13(I2S0_BCLK),PK.14(I2S0_DI),PK.15(I2S0_DO), PN.15(I2S0_MCLK) */
+    SYS->GPK_MFPH &= ~(SYS_GPK_MFPH_PK12MFP_Msk | SYS_GPK_MFPH_PK13MFP_Msk | SYS_GPK_MFPH_PK14MFP_Msk | SYS_GPK_MFPH_PK15MFP_Msk);
+    SYS->GPK_MFPH |= (SYS_GPK_MFPH_PK12MFP_I2S0_LRCK | SYS_GPK_MFPH_PK13MFP_I2S0_BCLK | SYS_GPK_MFPH_PK14MFP_I2S0_DI | SYS_GPK_MFPH_PK15MFP_I2S0_DO);
+    /* PN.15(I2S0_MCLK) */
+    SYS->GPN_MFPH = (SYS->GPN_MFPH & (~SYS_GPN_MFPH_PN15MFP_Msk)) | SYS_GPN_MFPH_PN15MFP_I2S0_MCLK;
 }
 
 void I2C2_Init(void)
@@ -446,18 +445,18 @@ void PDMA_Init(void)
     DMA_DESC[0].ctl = ((PCM_BUFFER_SIZE-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_DESC[0].endsrc = (uint32_t)&aPCMBuffer[0][0];
     DMA_DESC[0].enddest = (uint32_t)&I2S0->TXFIFO;
-    DMA_DESC[0].offset = (uint32_t)&DMA_DESC[1] - (PDMA->SCATBA);
+    DMA_DESC[0].offset = (uint32_t)&DMA_DESC[1] - (PDMA2->SCATBA);
 
     DMA_DESC[1].ctl = ((PCM_BUFFER_SIZE-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_DESC[1].endsrc = (uint32_t)&aPCMBuffer[1][0];
     DMA_DESC[1].enddest = (uint32_t)&I2S0->TXFIFO;
-    DMA_DESC[1].offset = (uint32_t)&DMA_DESC[0] - (PDMA->SCATBA);
+    DMA_DESC[1].offset = (uint32_t)&DMA_DESC[0] - (PDMA2->SCATBA);
 
-    PDMA_Open(PDMA,1 << 2);
-    PDMA_SetTransferMode(PDMA,2, PDMA_I2S0_TX, 1, (uint32_t)&DMA_DESC[0]);
+    PDMA_Open(PDMA2,1 << 2);
+    PDMA_SetTransferMode(PDMA2,2, PDMA_I2S0_TX, 1, (uint32_t)&DMA_DESC[0]);
 
-    PDMA_EnableInt(PDMA,2, 0);
-    NVIC_EnableIRQ(PDMA_IRQn);
+    PDMA_EnableInt(PDMA2,2, 0);
+    NVIC_EnableIRQ(PDMA2_IRQn);
 }
 
 
@@ -472,7 +471,7 @@ int32_t main (void)
     SD_Inits();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     printf("+------------------------------------------------------------------------+\n");
     printf("|                   I2S Driver Sample Code with WAU88L25                 |\n");
@@ -486,8 +485,8 @@ int32_t main (void)
     /* Init I2C2 to access NAU8822 */
     I2C2_Init();
 
-    /* select source from HXT(12MHz) */
-    CLK_SetModuleClock(I2S0_MODULE, CLK_CLKSEL3_I2S0SEL_HXT, 0);
+    /* select source from HXT(24MHz) */
+    CLK_SetModuleClock(I2S0_MODULE, CLK_CLKSEL4_I2S0SEL_HXT, 0);
 
     /* Reset NAU88L25 codec */
     NAU88L25_Reset();
@@ -495,10 +494,11 @@ int32_t main (void)
     /* Configure as I2S slave */
     I2S_Open(I2S0, I2S_MODE_SLAVE, 16000, I2S_DATABIT_16, I2S_DISABLE_MONO, I2S_FORMAT_I2S);
 
-    /* Set PE.13 low to enable phone jack on NuMaker board. */
-    SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE13MFP_Msk);
-    GPIO_SetMode(PE, BIT13, GPIO_MODE_OUTPUT);
-    PE13 = 0;
+    /* Set PD.13 low to enable phone jack on DEV board. */
+    /* PD.13(AUDIO_JKEN : keep output low) */
+    SYS->GPD_MFPH = (SYS->GPD_MFPH & ~(SYS_GPD_MFPH_PD13MFP_Msk));
+    GPIO_SetMode(PD, BIT13, GPIO_MODE_OUTPUT);
+    PD13 = 0;
 
     /* Initialize NAU88L25 codec */
     CLK_SysTickDelay(20000);

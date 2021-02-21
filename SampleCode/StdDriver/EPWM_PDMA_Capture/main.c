@@ -40,21 +40,21 @@ void EPWM1P1_IRQHandler(void)
  *
  * @details     ISR to handle PDMA interrupt event
  */
-void PDMA_IRQHandler(void)
+void PDMA2_IRQHandler(void)
 {
-    uint32_t status = PDMA_GET_INT_STATUS(PDMA);
+    uint32_t status = PDMA_GET_INT_STATUS(PDMA2);
 
     if(status & PDMA_INTSTS_ABTIF_Msk)    /* abort */
     {
-        if(PDMA_GET_ABORT_STS(PDMA) & PDMA_ABTSTS_ABTIF0_Msk)
+        if(PDMA_GET_ABORT_STS(PDMA2) & PDMA_ABTSTS_ABTIF0_Msk)
             g_u32IsTestOver = 2;
-        PDMA_CLR_ABORT_FLAG(PDMA,PDMA_ABTSTS_ABTIF0_Msk);
+        PDMA_CLR_ABORT_FLAG(PDMA2,PDMA_ABTSTS_ABTIF0_Msk);
     }
     else if(status & PDMA_INTSTS_TDIF_Msk)      /* done */
     {
-        if(PDMA_GET_TD_STS(PDMA) & PDMA_TDSTS_TDIF0_Msk)
+        if(PDMA_GET_TD_STS(PDMA2) & PDMA_TDSTS_TDIF0_Msk)
             g_u32IsTestOver = 1;
-        PDMA_CLR_TD_FLAG(PDMA,PDMA_TDSTS_TDIF0_Msk);
+        PDMA_CLR_TD_FLAG(PDMA2,PDMA_TDSTS_TDIF0_Msk);
     }
     else
         printf("unknown interrupt !!\n");
@@ -91,13 +91,8 @@ void CalPeriodTime(EPWM_T *EPWM, uint32_t u32Ch)
 
     u16TotalPeriod = 0x10000 - g_u32Count[2];
 
-    printf("\nEPWM generate: \nHigh Period=19199 ~ 19201, Low Period=44799 ~ 44801, Total Period=63999 ~ 64001\n");
     printf("\nCapture Result: Rising Time = %d, Falling Time = %d \nHigh Period = %d, Low Period = %d, Total Period = %d.\n\n",
            u16RisingTime, u16FallingTime, u16HighPeriod, u16LowPeriod, u16TotalPeriod);
-    if((u16HighPeriod < 19199) || (u16HighPeriod > 19201) || (u16LowPeriod < 44799) || (u16LowPeriod > 44801) || (u16TotalPeriod < 63999) || (u16TotalPeriod > 64001))
-        printf("Capture Test Fail!!\n");
-    else
-        printf("Capture Test Pass!!\n");
 }
 
 void SYS_Init(void)
@@ -115,39 +110,33 @@ void SYS_Init(void)
     /* Set core clock as PLL_CLOCK from PLL */
     CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set PCLK0 = PCLK1 = HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
     /* Enable IP module clock */
     CLK_EnableModuleClock(EPWM1_MODULE);
 
-    /* EPWM clock frequency is set double to PCLK: select EPWM module clock source as PLL */
-    CLK_SetModuleClock(EPWM1_MODULE, CLK_CLKSEL2_EPWM1SEL_PLL, (uint32_t)NULL);
-
     /* Enable PDMA module clock */
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
 
     /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Update System Core Clock */
     SystemCoreClockUpdate();
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    /* Set PC multi-function pins for EPWM1 Channel 0,2 */
-    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC12MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk);
-    SYS->GPC_MFPH |= (SYS_GPC_MFPH_PC12MFP_EPWM1_CH0 | SYS_GPC_MFPH_PC10MFP_EPWM1_CH2);
+    /* Set PL multi-function pins for EPWM1 Channel 0 and 2 */
+    SYS->GPL_MFPL &= ~(SYS_GPL_MFPL_PL0MFP_Msk | SYS_GPL_MFPL_PL2MFP_Msk);
+    SYS->GPL_MFPL |= (SYS_GPL_MFPL_PL0MFP_EPWM1_CH0 | SYS_GPL_MFPL_PL2MFP_EPWM1_CH2);
 }
 
 void UART0_Init()
 {
     /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 int32_t main(void)
@@ -170,8 +159,6 @@ int32_t main(void)
     /* Init UART to 115200-8n1 for print message */
     UART0_Init();
 
-    printf("\n\nCPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock);
-    printf("EPWM1 clock is from %s\n", (CLK->CLKSEL2 & CLK_CLKSEL2_EPWM1SEL_Msk) ? "CPU" : "PLL");
     printf("+------------------------------------------------------------------------+\n");
     printf("|                          EPWM Driver Sample Code                        |\n");
     printf("|                                                                        |\n");
@@ -179,8 +166,8 @@ int32_t main(void)
     printf("  This sample code will use EPWM1 channel 2 to capture the signal from EPWM1 channel 0.\n");
     printf("  And the captured data is transferred by PDMA channel 0.\n");
     printf("  I/O configuration:\n");
-    printf("    EPWM1 channel 2(PC.10) <--> EPWM1 channel 0(PC.12)\n\n");
-    printf("Use EPWM1 Channel 2(PC.10) to capture the EPWM1 Channel 0(PC.12) Waveform\n");
+    printf("    EPWM1 channel 2(PL.2) <--> EPWM1 channel 0(PL.0)\n\n");
+    printf("Use EPWM1 Channel 2(PL.2) to capture the EPWM1 Channel 0(PL.0) Waveform\n");
 
     while(1)
     {
@@ -190,20 +177,6 @@ int32_t main(void)
         /*--------------------------------------------------------------------------------------*/
         /* Set the EPWM1 Channel 0 as EPWM output function.                                       */
         /*--------------------------------------------------------------------------------------*/
-
-        /* Assume EPWM output frequency is 250Hz and duty ratio is 30%, user can calculate EPWM settings by follows.
-           duty ratio = (CMR+1)/(CNR+1)
-           cycle time = CNR+1
-           High level = CMR+1
-           EPWM clock source frequency = PLL = 192000000
-           (CNR+1) = EPWM clock source frequency/prescaler/EPWM output frequency
-                   = 192000000/10/300 = 64000
-           (Note: CNR is 16 bits, so if calculated value is larger than 65536, user should increase prescale value.)
-           CNR = 63999
-           duty ratio = 30% ==> (CMR+1)/(CNR+1) = 30%
-           CMR = 19199
-           Prescale value is 9 : prescaler= 10
-        */
 
         /* Set EPWM1 channel 0 output configuration */
         EPWM_ConfigOutputChannel(EPWM1, 0, 300, 30);
@@ -218,22 +191,22 @@ int32_t main(void)
         /* Configure PDMA peripheral mode form EPWM to memory                                    */
         /*--------------------------------------------------------------------------------------*/
         /* Open Channel 0 */
-        PDMA_Open(PDMA,BIT0);
+        PDMA_Open(PDMA2,BIT0);
 
         /* Transfer width is half word(16 bit) and transfer count is 4 */
-        PDMA_SetTransferCnt(PDMA,0, PDMA_WIDTH_16, 4);
+        PDMA_SetTransferCnt(PDMA2,0, PDMA_WIDTH_16, 4);
 
         /* Set source address as EPWM capture channel PDMA register(no increment) and destination address as g_u32Count array(increment) */
-        PDMA_SetTransferAddr(PDMA,0, (uint32_t)&(EPWM1->PDMACAP[1]), PDMA_SAR_FIX, (uint32_t)&g_u32Count[0], PDMA_DAR_INC);
+        PDMA_SetTransferAddr(PDMA2,0, (uint32_t)&(EPWM1->PDMACAP[1]), PDMA_SAR_FIX, (uint32_t)&g_u32Count[0], PDMA_DAR_INC);
 
         /* Select PDMA request source as EPWM RX(EPWM1 channel 2 should be EPWM1 pair 2) */
-        PDMA_SetTransferMode(PDMA,0, PDMA_EPWM1_P2_RX, FALSE, 0);
+        PDMA_SetTransferMode(PDMA2,0, PDMA_EPWM1_P2_RX, FALSE, 0);
 
         /* Set PDMA as single request type for EPWM */
-        PDMA_SetBurstType(PDMA,0, PDMA_REQ_SINGLE, PDMA_BURST_4);
+        PDMA_SetBurstType(PDMA2,0, PDMA_REQ_SINGLE, PDMA_BURST_4);
 
-        PDMA_EnableInt(PDMA,0, PDMA_INT_TRANS_DONE);
-        NVIC_EnableIRQ(PDMA_IRQn);
+        PDMA_EnableInt(PDMA2,0, PDMA_INT_TRANS_DONE);
+        NVIC_EnableIRQ(PDMA2_IRQn);
 
         /* Enable PDMA for EPWM1 channel 2 capture function, and set capture order as falling first, */
         /* And select capture mode as both rising and falling to do PDMA transfer. */
@@ -242,18 +215,6 @@ int32_t main(void)
         /*--------------------------------------------------------------------------------------*/
         /* Set the EPWM1 channel 2 for capture function                                          */
         /*--------------------------------------------------------------------------------------*/
-
-        /* If input minimum frequency is 300Hz, user can calculate capture settings by follows.
-           Capture clock source frequency = PCLK = 96000000 in the sample code.
-           (CNR+1) = Capture clock source frequency/prescaler/minimum input frequency
-                   = 192000000/5/300 = 64000
-           (Note: CNR is 16 bits, so if calculated value is larger than 65536, user should increase prescale value.)
-           CNR = 0xFFFF
-           (Note: In capture mode, user should set CNR to 0xFFFF to increase capture frequency range.)
-
-           Capture unit time = 1/Capture clock source frequency/prescaler
-           52ns = 1/192000000/10
-        */
 
         /* Set EPWM1 channel 2 capture configuration */
         EPWM_ConfigCaptureChannel(EPWM1, 2, 52, 0);
@@ -310,9 +271,9 @@ int32_t main(void)
         EPWM_ClearCaptureIntFlag(EPWM1, 2, EPWM_CAPTURE_INT_FALLING_LATCH);
 
         /* Disable PDMA NVIC */
-        NVIC_DisableIRQ(PDMA_IRQn);
+        NVIC_DisableIRQ(PDMA2_IRQn);
 
-        PDMA_Close(PDMA);
+        PDMA_Close(PDMA2);
     }
 }
 
