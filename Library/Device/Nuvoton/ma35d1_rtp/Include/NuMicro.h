@@ -8,7 +8,7 @@
 #ifndef __NUMICRO_H__
 #define __NUMICRO_H__
 
-#include "nua3500_m4.h"
+#include "ma35d1_rtp.h"
 
 #endif  /* __NUMICRO_H__ */
 

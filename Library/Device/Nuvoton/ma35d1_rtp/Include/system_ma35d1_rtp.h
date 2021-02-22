@@ -1,13 +1,13 @@
 /**************************************************************************//**
- * @file     system_nua3500_m4.h
+ * @file     system_ma35d1_rtp.h
  * @brief    CMSIS Cortex-M4 Core Peripheral Access Layer Header File
  *
  * SPDX-License-Identifier: Apache-2.0
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
-#ifndef __SYSTEM_NUA3500_M4_H__
-#define __SYSTEM_NUA3500_M4_H__
+#ifndef __SYSTEM_MA35D1_RTP_H__
+#define __SYSTEM_MA35D1_RTP_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,5 +61,5 @@ extern void SystemCoreClockUpdate (void);
 }
 #endif
 
-#endif /* __SYSTEM_NUA3500_M4_H__ */
+#endif /* __SYSTEM_MA35D1_RTP_H__ */
 

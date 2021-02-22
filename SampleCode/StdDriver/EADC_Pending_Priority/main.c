@@ -79,7 +79,7 @@ void EADC_FunctionTest()
 
     printf("\n");
     printf("+----------------------------------------------------------------------+\n");
-    printf("|                NUA3500 EADC Pending Priority sample code             |\n");
+    printf("|                 EADC Pending Priority sample code                    |\n");
     printf("+----------------------------------------------------------------------+\n");
 
     /* Set the EADC and enable the A/D converter */

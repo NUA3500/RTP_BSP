@@ -20,7 +20,7 @@
 #define OPENAMP_destroy_ept rpmsg_destroy_ept
 
 /* Initialize the openamp framework*/
-int NUA3500_OpenAMP_Init(int RPMsgRole, rpmsg_ns_bind_cb ns_bind_cb);
+int MA35D1_OpenAMP_Init(int RPMsgRole, rpmsg_ns_bind_cb ns_bind_cb);
 
 /* Deinitialize the openamp framework*/
 void OPENAMP_DeInit(void);

@@ -377,7 +377,7 @@
               <MiscControls>--diag_suppress=1254,111</MiscControls>
               <Define>NO_ATOMIC_64_SUPPORT METAL_INTERNAL METAL_MAX_DEVICE_REGIONS=2  VIRTIO_SLAVE_ONLY</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\..\..\ThirdParty\AMP\open-amp\lib\include\openamp;..\..\..\..\ThirdParty\AMP\open-amp\lib\include;..\..\..\..\ThirdParty\AMP\libmetal\lib\include;..\..\..\..\Library\StdDriver\inc;..\..\..\..\Library\CMSIS\Include;..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Include;..\porting;.\RTE</IncludePath>
+              <IncludePath>..\..\..\..\ThirdParty\AMP\open-amp\lib\include\openamp;..\..\..\..\ThirdParty\AMP\open-amp\lib\include;..\..\..\..\ThirdParty\AMP\libmetal\lib\include;..\..\..\..\Library\StdDriver\inc;..\..\..\..\Library\CMSIS\Include;..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Include;..\porting;.\RTE</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -422,14 +422,14 @@
           <GroupName>CMSIS</GroupName>
           <Files>
             <File>
-              <FileName>system_nua3500_m4.c</FileName>
+              <FileName>system_ma35d1_rtp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\system_nua3500_m4.c</FilePath>
+              <FilePath>..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\system_ma35d1_rtp.c</FilePath>
             </File>
             <File>
-              <FileName>startup_nua3500_m4.s</FileName>
+              <FileName>startup_ma35d1_rtp.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\ARM\startup_nua3500_m4.s</FilePath>
+              <FilePath>..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\ARM\startup_ma35d1_rtp.s</FilePath>
             </File>
           </Files>
         </Group>

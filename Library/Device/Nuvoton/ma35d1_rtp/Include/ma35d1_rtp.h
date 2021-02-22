@@ -1,5 +1,5 @@
 /**************************************************************************//**
- * @file     nua3500_m4.h
+ * @file     ma35d1_rtp.h
  * @brief    Peripheral access layer header file.
  *           This file contains all the peripheral register's definitions
  *           and bits definitions and memory mapping.
@@ -8,11 +8,11 @@
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 /**
-  \mainpage NuMicro NUA3500 M4 Driver Reference Guide
+  \mainpage NuMicro MA35D1 RTP Driver Reference Guide
   *
   * <b>Introduction</b>
   *
-  * This user manual describes the usage of NUA3500 M4 device driver
+  * This user manual describes the usage of MA35D1 RTP device driver
   *
   * <b>Disclaimer</b>
   *
@@ -46,8 +46,8 @@
   *
   * Copyright (C) 2021 Nuvoton Technology Corp. All rights reserved.
   */
-#ifndef __NUA3500_M4_H__
-#define __NUA3500_M4_H__
+#ifndef __MA35D1_RTP_H__
+#define __MA35D1_RTP_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,7 +76,7 @@ typedef enum IRQn
     PendSV_IRQn                   = -2,       /*!< 14 Pend SV Interrupt                             */
     SysTick_IRQn                  = -1,       /*!< 15 System Tick Interrupt                         */
 
-    /******  nua3500_m4 Specific Interrupt Numbers **************************************************/
+    /******  ma35d_rtp Specific Interrupt Numbers **************************************************/
 
     LVD_IRQn                      = 0,
     PWRWU_IRQn                    = 2,
@@ -205,7 +205,7 @@ IRQn_Type;
 
 
 #include "core_cm4.h"               /* Cortex-M4 processor and core peripherals           */
-#include "system_nua3500_m4.h"            /* System include file                         */
+#include "system_ma35d1_rtp.h"            /* System include file                         */
 #include <stdint.h>
 
 
@@ -668,5 +668,5 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 }
 #endif
 
-#endif  /* __NUA3500_M4_H__ */
+#endif  /* __MA35D1_RTP_H__ */
 

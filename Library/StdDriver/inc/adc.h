@@ -182,7 +182,7 @@ extern "C"
   * \hideinitializer
   */
 #define ADC_DETECT_PD_MODE(adc) do {(adc)->CONF &= ~(ADC_CONF_TEN_Msk | ADC_CONF_ZEN_Msk);\
-                                    (adc)->CTL |= ADC_CTL_PEDEEN_Msk} while(0)
+                                    (adc)->CTL |= ADC_CTL_PEDEEN_Msk;} while(0)
 
 
 void ADC_Open(ADC_T *adc,

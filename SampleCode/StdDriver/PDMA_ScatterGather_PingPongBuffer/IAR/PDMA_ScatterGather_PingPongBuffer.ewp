@@ -302,7 +302,7 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\..\..\..\..\Library\CMSIS\Include</state>
-          <state>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Include</state>
+          <state>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\Library\StdDriver\inc</state>
         </option>
         <option>
@@ -704,7 +704,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\..\..\..\..\Script\nua3500_m4.icf</state>
+          <state>$PROJ_DIR$\..\..\..\..\Script\ma35d1_rtp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -939,10 +939,10 @@
   <group>
     <name>CMSIS</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\IAR\startup_nua3500_m4.s</name>
+      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\IAR\startup_ma35d1_rtp.s</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\system_nua3500_m4.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\system_ma35d1_rtp.c</name>
     </file>
   </group>
   <group>

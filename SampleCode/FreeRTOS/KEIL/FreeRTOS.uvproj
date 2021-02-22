@@ -374,7 +374,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\..\Library\CMSIS\Include;..\..\..\Library\StdDriver\inc;..\..\..\Library\Device\Nuvoton\nua3500_m4\Include;..\..\..\ThirdParty\FreeRTOS\Source\include;..\..\..\ThirdParty\FreeRTOS\Demo\COMMON\include;..\..\..\ThirdParty\FreeRTOS\SOURCE\portable\RVDS\ARM_CM4F;..\..\FreeRTOS</IncludePath>
+              <IncludePath>..\..\..\Library\CMSIS\Include;..\..\..\Library\StdDriver\inc;..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Include;..\..\..\ThirdParty\FreeRTOS\Source\include;..\..\..\ThirdParty\FreeRTOS\Demo\COMMON\include;..\..\..\ThirdParty\FreeRTOS\SOURCE\portable\RVDS\ARM_CM4F;..\..\FreeRTOS</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -419,14 +419,14 @@
           <GroupName>System</GroupName>
           <Files>
             <File>
-              <FileName>system_nua3500_m4.c</FileName>
+              <FileName>system_ma35d1_rtp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\system_nua3500_m4.c</FilePath>
+              <FilePath>..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\system_ma35d1_rtp.c</FilePath>
             </File>
             <File>
-              <FileName>startup_nua3500_m4.s</FileName>
+              <FileName>startup_ma35d1_rtp.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\ARM\startup_nua3500_m4.s</FilePath>
+              <FilePath>..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\ARM\startup_ma35d1_rtp.s</FilePath>
             </File>
           </Files>
         </Group>

@@ -12,7 +12,7 @@
 #include "metal/device.h"
 /* Private define ------------------------------------------------------------*/
 
-#define SHM_DEVICE_NAME         "NUA3500_SHM"
+#define SHM_DEVICE_NAME         "MA35D1_SHM"
 
 /* Globals */
 
@@ -87,7 +87,7 @@ static int OPENAMP_shmem_init(int RPMsgRole)
     return 0;
 }
 
-int NUA3500_OpenAMP_Init(int RPMsgRole, rpmsg_ns_bind_cb ns_bind_cb)
+int MA35D1_OpenAMP_Init(int RPMsgRole, rpmsg_ns_bind_cb ns_bind_cb)
 {
     struct fw_rsc_vdev_vring *vring_rsc;
     struct virtio_device *vdev;

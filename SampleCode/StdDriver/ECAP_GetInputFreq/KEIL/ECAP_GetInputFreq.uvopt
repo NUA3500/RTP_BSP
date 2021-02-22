@@ -195,8 +195,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\system_nua3500_m4.c</PathWithFileName>
-      <FilenameWithoutPath>system_nua3500_m4.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\system_ma35d1_rtp.c</PathWithFileName>
+      <FilenameWithoutPath>system_ma35d1_rtp.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -207,8 +207,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\Library\Device\Nuvoton\nua3500_m4\Source\ARM\startup_nua3500_m4.s</PathWithFileName>
-      <FilenameWithoutPath>startup_nua3500_m4.s</FilenameWithoutPath>
+      <PathWithFileName>..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\ARM\startup_ma35d1_rtp.s</PathWithFileName>
+      <FilenameWithoutPath>startup_ma35d1_rtp.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

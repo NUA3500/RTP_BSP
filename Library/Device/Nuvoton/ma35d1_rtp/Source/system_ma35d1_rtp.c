@@ -1,5 +1,5 @@
 /**************************************************************************//**
- * @file     system_nua3500_m4.c
+ * @file     startup_ma35d1_rtp.c
  * @brief    CMSIS Cortex-M4 Core Peripheral Access Layer Source File
  *
  * SPDX-License-Identifier: Apache-2.0

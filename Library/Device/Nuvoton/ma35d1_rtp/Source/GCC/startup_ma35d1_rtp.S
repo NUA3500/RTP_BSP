@@ -1,5 +1,5 @@
 /****************************************************************************//**
- * @file     startup_nua3500_m4.S
+ * @file     startup_ma35d1_rtp.S
  * @brief    CMSIS Cortex-M4 Core Device Startup File
  *
  * SPDX-License-Identifier: Apache-2.0
