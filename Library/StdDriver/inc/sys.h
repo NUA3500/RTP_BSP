@@ -119,7 +119,7 @@ extern "C"
 #define EPWM2_RST           ((16UL<<24) | SYS_IPRST3_EPWM2RST_Pos)      /*!< Reset EPWM2 \hideinitializer */
 #define ECAP2_RST           ((16UL<<24) | SYS_IPRST3_ECAP2RST_Pos)      /*!< Reset ECAP2 \hideinitializer */
 #define QEI2_RST            ((16UL<<24) | SYS_IPRST3_QEI2RST_Pos)       /*!< Reset QEI2 \hideinitializer */
-#define MCAN3_RST           ((16UL<<24) | SYS_IPRST3_MCAN3RST_Pos)      /*!< Reset MCAN3 \hideinitializer */
+#define CANFD3_RST          ((16UL<<24) | SYS_IPRST3_CANFD3RST_Pos)     /*!< Reset MCAN3 \hideinitializer */
 #define KPI_RST             ((16UL<<24) | SYS_IPRST3_KPIRST_Pos)        /*!< Reset KPI \hideinitializer */
 #define GIC_RST             ((16UL<<24) | SYS_IPRST3_GICRST_Pos)        /*!< Reset GIC \hideinitializer */
 #define SSMCC_RST           ((16UL<<24) | SYS_IPRST3_SSMCCRST_Pos)      /*!< Reset SSMCC \hideinitializer */

@@ -10,9 +10,6 @@
 #include "stdio.h"
 #include "NuMicro.h"
 
-
-#define PLL_CLOCK   192000000
-
 #define RXBUFSIZE   1024
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -34,37 +31,34 @@ void UART_FunctionTest(void);
 
 void SYS_Init(void)
 {
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Enable HXT */
+    CLK->PWRCTL |= CLK_PWRCTL_HXTEN_Msk;
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Wait for HXT clock ready */
+    /* Waiting clock ready */
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(192000000);
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2); // PCLK divider set 2
+    /* Enable IP clock */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(UART1_MODULE);
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init I/O Multi-function                                                                                 */
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Set multi-function pins for Debug UART RXD and TXD */
+    SYS->GPJ_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPJ_MFPL |= SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD;
 
-    /* Select UART clock source is HXT */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~CLK_CLKSEL1_UART0SEL_Msk) | (0x0 << CLK_CLKSEL1_UART0SEL_Pos);
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void UART0_Init()
+void UART_Init()
 {
     /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -86,7 +80,7 @@ int32_t main(void)
     SYS_LockReg();
 
     /* Init UART0 for printf and test */
-    UART0_Init();
+    UART_Init();
 
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
@@ -103,7 +97,7 @@ int32_t main(void)
 /*---------------------------------------------------------------------------------------------------------*/
 /* ISR to handle UART Channel 0 interrupt event                                                            */
 /*---------------------------------------------------------------------------------------------------------*/
-void UART0_IRQHandler(void)
+void UART16_IRQHandler(void)
 {
     UART_TEST_HANDLE();
 }
@@ -114,17 +108,17 @@ void UART0_IRQHandler(void)
 void UART_TEST_HANDLE()
 {
     uint8_t u8InChar = 0xFF;
-    uint32_t u32IntSts = UART0->INTSTS;
+    uint32_t u32IntSts = UART16->INTSTS;
 
     if((u32IntSts & UART_INTSTS_RDAINT_Msk) || (u32IntSts & UART_INTSTS_RXTOINT_Msk))
     {
         printf("\nInput:");
 
         /* Get all the input characters */
-        while(UART_GET_RX_EMPTY(UART0) == 0)
+        while(UART_GET_RX_EMPTY(UART16) == 0)
         {
             /* Get the character from UART Buffer */
-            u8InChar = UART_READ(UART0);
+            u8InChar = UART_READ(UART16);
 
             printf("%c ", u8InChar);
 
@@ -152,16 +146,16 @@ void UART_TEST_HANDLE()
         if(g_u32comRhead != tmp)
         {
             u8InChar = g_u8RecData[g_u32comRhead];
-            while(UART_IS_TX_FULL(UART0));  /* Wait Tx is not full to transmit data */
-            UART_WRITE(UART0, u8InChar);
+            while(UART_IS_TX_FULL(UART16));  /* Wait Tx is not full to transmit data */
+            UART_WRITE(UART16, u8InChar);
             g_u32comRhead = (g_u32comRhead == (RXBUFSIZE - 1)) ? 0 : (g_u32comRhead + 1);
             g_u32comRbytes--;
         }
     }
 
-    if(UART0->FIFOSTS & (UART_FIFOSTS_BIF_Msk | UART_FIFOSTS_FEF_Msk | UART_FIFOSTS_PEF_Msk | UART_FIFOSTS_RXOVIF_Msk))
+    if(UART16->FIFOSTS & (UART_FIFOSTS_BIF_Msk | UART_FIFOSTS_FEF_Msk | UART_FIFOSTS_PEF_Msk | UART_FIFOSTS_RXOVIF_Msk))
     {
-        UART0->FIFOSTS = (UART_FIFOSTS_BIF_Msk | UART_FIFOSTS_FEF_Msk | UART_FIFOSTS_PEF_Msk | UART_FIFOSTS_RXOVIF_Msk);
+        UART16->FIFOSTS = (UART_FIFOSTS_BIF_Msk | UART_FIFOSTS_FEF_Msk | UART_FIFOSTS_PEF_Msk | UART_FIFOSTS_RXOVIF_Msk);
     }
 }
 
@@ -185,22 +179,22 @@ void UART_FunctionTest()
         UART0 will print the received char on screen.
     */
 
-    UART_SetTimeoutCnt(UART0, 0x10); // Set Rx Time-out counter
+    UART_SetTimeoutCnt(UART16, 0x10); // Set Rx Time-out counter
 
     // Set RX FIFO Interrupt Trigger Level
-    UART0->FIFO &= ~ UART_FIFO_RFITL_Msk;
-    UART0->FIFO |= UART_FIFO_RFITL_4BYTES;
+    UART16->FIFO &= ~ UART_FIFO_RFITL_Msk;
+    UART16->FIFO |= UART_FIFO_RFITL_4BYTES;
 
     /* Enable UART RDA/THRE/Time-out interrupt */
-    NVIC_EnableIRQ(UART0_IRQn);
-    UART_EnableInt(UART0, (UART_INTEN_RDAIEN_Msk | UART_INTEN_THREIEN_Msk | UART_INTEN_RXTOIEN_Msk));
+    NVIC_EnableIRQ(UART16_IRQn);
+    UART_EnableInt(UART16, (UART_INTEN_RDAIEN_Msk | UART_INTEN_THREIEN_Msk | UART_INTEN_RXTOIEN_Msk));
     while(g_bWait);
 
     /* Disable UART RDA/THRE/Time-out interrupt */
-    UART_DisableInt(UART0, (UART_INTEN_RDAIEN_Msk | UART_INTEN_THREIEN_Msk | UART_INTEN_RXTOIEN_Msk));
+    UART_DisableInt(UART16, (UART_INTEN_RDAIEN_Msk | UART_INTEN_THREIEN_Msk | UART_INTEN_RXTOIEN_Msk));
 
     // Reset RX FIFO Interrupt Trigger Level
-    UART0->FIFO &= ~ UART_FIFO_RFITL_Msk;
+    UART16->FIFO &= ~ UART_FIFO_RFITL_Msk;
 
     g_bWait = TRUE;
     printf("\nUART Sample Demo End.\n");

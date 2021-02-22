@@ -34,9 +34,9 @@ void RTC_AlarmHandle(void)
   */
 void RTC_IRQHandler(void)
 {
-    if ( (RTC->INTEN & RTC_INTEN_ALMIEN_Msk) && (RTC->INTSTS & RTC_INTSTS_ALMIF_Msk) )        /* alarm interrupt occurred */
+    if ( (RTC->INTEN_M & RTC_INTEN_ALMIEN_Msk) && (RTC->INTSTS_M & RTC_INTSTS_ALMIF_Msk) )        /* alarm interrupt occurred */
     {
-        RTC->INTSTS = 0x1;
+        RTC->INTSTS_M = 0x1;
 
         RTC_AlarmHandle();
     }
@@ -50,12 +50,6 @@ void SYS_Init(void)
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Set X32_OUT(PF.4) and X32_IN(PF.5) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE4_Msk | GPIO_MODE_MODE5_Msk);
-
     /* Enable HXT and LXT */
     CLK->PWRCTL |= CLK_PWRCTL_HXTEN_Msk; // XTAL12M (HXT) Enabled
     CLK->PWRCTL |= CLK_PWRCTL_LXTEN_Msk; // 32K (LXT) Enabled
@@ -64,34 +58,25 @@ void SYS_Init(void)
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
     CLK_WaitClockReady(CLK_STATUS_LXTSTB_Msk);
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(192000000);
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2); // PCLK divider set 2
-
     /* Enable IP clock */
-    CLK->APBCLK0 |= CLK_APBCLK0_UART0CKEN_Msk; // UART0 Clock Enable
-    CLK->APBCLK0 |= CLK_APBCLK0_RTCCKEN_Msk; // RTC Clock Enable
+    CLK_EnableModuleClock(RTC_MODULE);
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Select IP clock source */
-    CLK->CLKSEL1 &= ~CLK_CLKSEL1_UART0SEL_Msk;
-    CLK->CLKSEL1 |= (0x0 << CLK_CLKSEL1_UART0SEL_Pos);// Clock source from external 12 MHz or 32 KHz crystal clock
-
-    /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
-    SystemCoreClockUpdate();
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init I/O Multi-function                                                                                 */
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Set PK multi-function pins for Debug UART RXD and TXD */
+    SYS->GPJ_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPJ_MFPL |= SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD;
 
     /* Lock protected registers */
     SYS_LockReg();
-
 }
 
-void UART0_Init()
+void UART_Init()
 {
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 
@@ -101,7 +86,7 @@ int32_t main(void)
     S_RTC_TIME_DATA_T sCurTime;
 
     SYS_Init();
-    UART0_Init();
+    UART_Init();
 
     /* Time Setting */
     sInitTime.u32Year       = 2020;

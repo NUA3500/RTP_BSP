@@ -660,7 +660,7 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 #include "sc.h"
 #include "spi.h"
 #include "qspi.h"
-//#include "rtc.h"
+#include "rtc.h"
 //#include "kpi.h"
 #include "canfd.h"
 

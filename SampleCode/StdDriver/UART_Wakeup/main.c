@@ -10,8 +10,6 @@
 #include "stdio.h"
 #include "NuMicro.h"
 
-#define PLL_CLOCK   192000000
-
 #define RXBUFSIZE   1024
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -33,63 +31,52 @@ void UART_FunctionTest(void);
 
 void SYS_Init(void)
 {
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Enable HXT */
+    CLK->PWRCTL |= CLK_PWRCTL_HXTEN_Msk;
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Wait for HXT clock ready */
+    /* Waiting clock ready */
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(192000000);
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2); // PCLK divider set 2
-
-    /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    /* Enable IP clock */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
+    CLK_EnableModuleClock(UART16_MODULE);
+    CLK_SetModuleClock(UART1_MODULE, CLK_CLKSEL2_UART1SEL_HXT, CLK_CLKDIV1_UART1(1));
     CLK_EnableModuleClock(UART1_MODULE);
 
-    /* Select UART clock source is HXT */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~CLK_CLKSEL1_UART0SEL_Msk) | (0x3 << CLK_CLKSEL1_UART0SEL_Pos);
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~CLK_CLKSEL1_UART1SEL_Msk) | (0x3 << CLK_CLKSEL1_UART1SEL_Pos);
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init I/O Multi-function                                                                                 */
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Set multi-function pins for Debug UART RXD and TXD */
+    SYS->GPJ_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPJ_MFPL |= SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD;
+    /* Set multi-function pins for UART1 */
+    SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA2MFP_Msk | SYS_GPA_MFPL_PA3MFP_Msk);
+    SYS->GPA_MFPL |= SYS_GPA_MFPL_PA2MFP_UART1_RXD | SYS_GPA_MFPL_PA3MFP_UART1_TXD;
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    /* Set PA multi-function pins for UART1 RXD, TXD, CTS, RTS*/
-    SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA0MFP_Msk | SYS_GPA_MFPL_PA1MFP_Msk |
-                       SYS_GPA_MFPL_PA2MFP_Msk | SYS_GPA_MFPL_PA3MFP_Msk);
-    SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA0MFP_UART1_nRTS | SYS_GPA_MFPL_PA1MFP_UART1_nCTS |
-                      SYS_GPA_MFPL_PA2MFP_UART1_RXD | SYS_GPA_MFPL_PA3MFP_UART1_TXD);
-
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void UART0_Init()
+void UART_Init()
 {
-
-
     /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 
 int32_t main(void)
 {
-
-    /* Unlock protected registers */
-    SYS_UnlockReg();
-
     /* Init System, peripheral clock and multi-function I/O */
     SYS_Init();
 
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Init UART0 for printf and test */
-    UART0_Init();
+    /* Init UART for printf and test */
+    UART_Init();
 
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
@@ -164,7 +151,7 @@ void UART_FunctionTest()
     UART1->WKSTS = UART1->WKSTS; // clecar status
 
     /* Wait debug message finish */
-    while((UART0->FIFOSTS & UART_FIFOSTS_TXEMPTYF_Msk) == 0);
+    while((UART16->FIFOSTS & UART_FIFOSTS_TXEMPTYF_Msk) == 0);
 
     CLK_PowerDown();
 

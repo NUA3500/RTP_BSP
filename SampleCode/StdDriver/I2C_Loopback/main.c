@@ -9,8 +9,6 @@
 #include <stdio.h>
 #include "NuMicro.h"
 
-#define PLL_CLOCK       192000000
-
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables                                                                                        */
 /*---------------------------------------------------------------------------------------------------------*/
@@ -26,27 +24,27 @@ uint8_t g_u8MstEndFlag = 0;
 
 typedef void (*I2C_FUNC)(uint32_t u32Status);
 
-volatile static I2C_FUNC s_I2C0HandlerFn = NULL;
+volatile static I2C_FUNC s_I2C2HandlerFn = NULL;
 volatile static I2C_FUNC s_I2C1HandlerFn = NULL;
 
 /*---------------------------------------------------------------------------------------------------------*/
 /*  I2C0 IRQ Handler                                                                                       */
 /*---------------------------------------------------------------------------------------------------------*/
-void I2C0_IRQHandler(void)
+void I2C2_IRQHandler(void)
 {
     uint32_t u32Status;
 
-    u32Status = I2C_GET_STATUS(I2C0);
+    u32Status = I2C_GET_STATUS(I2C2);
 
-    if(I2C_GET_TIMEOUT_FLAG(I2C0))
+    if(I2C_GET_TIMEOUT_FLAG(I2C2))
     {
         /* Clear I2C0 Timeout Flag */
-        I2C_ClearTimeoutFlag(I2C0);
+        I2C_ClearTimeoutFlag(I2C2);
     }
     else
     {
-        if(s_I2C0HandlerFn != NULL)
-            s_I2C0HandlerFn(u32Status);
+        if(s_I2C2HandlerFn != NULL)
+            s_I2C2HandlerFn(u32Status);
     }
 }
 
@@ -78,44 +76,44 @@ void I2C_MasterRx(uint32_t u32Status)
 {
     if(u32Status == 0x08)                       /* START has been transmitted and prepare SLA+W */
     {
-        I2C_SET_DATA(I2C0, (g_u8DeviceAddr << 1));    /* Write SLA+W to Register I2CDAT */
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+        I2C_SET_DATA(I2C2, (g_u8DeviceAddr << 1));    /* Write SLA+W to Register I2CDAT */
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
     }
     else if(u32Status == 0x18)                  /* SLA+W has been transmitted and ACK has been received */
     {
-        I2C_SET_DATA(I2C0, g_au8MstTxData[g_u8MstDataLen++]);
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+        I2C_SET_DATA(I2C2, g_au8MstTxData[g_u8MstDataLen++]);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
     }
     else if(u32Status == 0x20)                  /* SLA+W has been transmitted and NACK has been received */
     {
-        I2C_STOP(I2C0);
-        I2C_START(I2C0);
+        I2C_STOP(I2C2);
+        I2C_START(I2C2);
     }
     else if(u32Status == 0x28)                  /* DATA has been transmitted and ACK has been received */
     {
         if(g_u8MstDataLen != 2)
         {
-            I2C_SET_DATA(I2C0, g_au8MstTxData[g_u8MstDataLen++]);
-            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+            I2C_SET_DATA(I2C2, g_au8MstTxData[g_u8MstDataLen++]);
+            I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
         }
         else
         {
-            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA_SI);
+            I2C_SET_CONTROL_REG(I2C2, I2C_CTL_STA_SI);
         }
     }
     else if(u32Status == 0x10)                  /* Repeat START has been transmitted and prepare SLA+R */
     {
-        I2C_SET_DATA(I2C0, ((g_u8DeviceAddr << 1) | 0x01));   /* Write SLA+R to Register I2CDAT */
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+        I2C_SET_DATA(I2C2, ((g_u8DeviceAddr << 1) | 0x01));   /* Write SLA+R to Register I2CDAT */
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
     }
     else if(u32Status == 0x40)                  /* SLA+R has been transmitted and ACK has been received */
     {
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
     }
     else if(u32Status == 0x58)                  /* DATA has been received and NACK has been returned */
     {
-        g_u8MstRxData = (unsigned char) I2C_GET_DATA(I2C0);
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STO_SI);
+        g_u8MstRxData = (unsigned char) I2C_GET_DATA(I2C2);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_STO_SI);
         g_u8MstEndFlag = 1;
     }
     else
@@ -131,29 +129,29 @@ void I2C_MasterTx(uint32_t u32Status)
 {
     if(u32Status == 0x08)                       /* START has been transmitted */
     {
-        I2C_SET_DATA(I2C0, g_u8DeviceAddr << 1);    /* Write SLA+W to Register I2CDAT */
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+        I2C_SET_DATA(I2C2, g_u8DeviceAddr << 1);    /* Write SLA+W to Register I2CDAT */
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
     }
     else if(u32Status == 0x18)                  /* SLA+W has been transmitted and ACK has been received */
     {
-        I2C_SET_DATA(I2C0, g_au8MstTxData[g_u8MstDataLen++]);
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+        I2C_SET_DATA(I2C2, g_au8MstTxData[g_u8MstDataLen++]);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
     }
     else if(u32Status == 0x20)                  /* SLA+W has been transmitted and NACK has been received */
     {
-        I2C_STOP(I2C0);
-        I2C_START(I2C0);
+        I2C_STOP(I2C2);
+        I2C_START(I2C2);
     }
     else if(u32Status == 0x28)                  /* DATA has been transmitted and ACK has been received */
     {
         if(g_u8MstDataLen != 3)
         {
-            I2C_SET_DATA(I2C0, g_au8MstTxData[g_u8MstDataLen++]);
-            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+            I2C_SET_DATA(I2C2, g_au8MstTxData[g_u8MstDataLen++]);
+            I2C_SET_CONTROL_REG(I2C2, I2C_CTL_SI);
         }
         else
         {
-            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STO_SI);
+            I2C_SET_CONTROL_REG(I2C2, I2C_CTL_STO_SI);
             g_u8MstEndFlag = 1;
         }
     }
@@ -224,72 +222,61 @@ void I2C_SlaveTRx(uint32_t u32Status)
 
 void SYS_Init(void)
 {
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Enable external XTAL 12MHz clock */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Enable HXT */
+    CLK->PWRCTL |= CLK_PWRCTL_HXTEN_Msk;
 
-    /* Waiting for external XTAL clock ready */
+    /* Waiting clock ready */
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(192000000);
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2); // PCLK divider set 2
-
-    /* Enable UART clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-
-    /* Enable I2C0 clock */
-    CLK_EnableModuleClock(I2C0_MODULE);
+    /* Enable IP clock */
     CLK_EnableModuleClock(I2C1_MODULE);
+    CLK_EnableModuleClock(I2C2_MODULE);
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Select UART clock source from HXT */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init I/O Multi-function                                                                                 */
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Set multi-function pins for Debug UART RXD and TXD */
+    SYS->GPJ_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPJ_MFPL |= SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD;
+    /* Set multi-function pins for I2C1 */
+    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB10MFP_Msk | SYS_GPB_MFPH_PB11MFP_Msk);
+    SYS->GPB_MFPH |= SYS_GPB_MFPH_PB10MFP_I2C1_SDA | SYS_GPB_MFPH_PB11MFP_I2C1_SCL;
+    /* Set multi-function pins for I2C2 */
+    SYS->GPI_MFPL &= ~(SYS_GPI_MFPL_PI0MFP_Msk | SYS_GPI_MFPL_PI1MFP_Msk);
+    SYS->GPI_MFPL |= SYS_GPI_MFPL_PI0MFP_I2C2_SDA | SYS_GPI_MFPL_PI1MFP_I2C2_SCL;
 
-    /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
-    SystemCoreClockUpdate();
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    /* Set I2C0 multi-function pins */
-    SYS->GPA_MFPL = (SYS->GPA_MFPL & ~(SYS_GPA_MFPL_PA4MFP_Msk | SYS_GPA_MFPL_PA5MFP_Msk)) |
-                    (SYS_GPA_MFPL_PA4MFP_I2C0_SDA | SYS_GPA_MFPL_PA5MFP_I2C0_SCL);
-    /* Set I2C1 multi-function pins */
-    SYS->GPA_MFPL = (SYS->GPA_MFPL & ~(SYS_GPA_MFPL_PA2MFP_Msk | SYS_GPA_MFPL_PA3MFP_Msk)) |
-                    (SYS_GPA_MFPL_PA2MFP_I2C1_SDA | SYS_GPA_MFPL_PA3MFP_I2C1_SCL);
-
-    /* I2C clock pin enable schmitt trigger */
-    PA->SMTEN |= GPIO_SMTEN_SMTEN5_Msk;
-    PA->SMTEN |= GPIO_SMTEN_SMTEN3_Msk;
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
-void I2C0_Init(void)
+void I2C2_Init(void)
 {
     /* Open I2C0 module and set bus clock */
-    I2C_Open(I2C0, 100000);
+    I2C_Open(I2C2, 100000);
 
-    /* Get I2C0 Bus Clock */
-    printf("I2C0 clock %d Hz\n", I2C_GetBusClockFreq(I2C0));
+    /* Get I2C2 Bus Clock */
+    printf("I2C2 clock %d Hz\n", I2C_GetBusClockFreq(I2C2));
 
-    /* Set I2C0 4 Slave Addresses */
-    I2C_SetSlaveAddr(I2C0, 0, 0x15, 0);   /* Slave Address : 0x15 */
-    I2C_SetSlaveAddr(I2C0, 1, 0x35, 0);   /* Slave Address : 0x35 */
-    I2C_SetSlaveAddr(I2C0, 2, 0x55, 0);   /* Slave Address : 0x55 */
-    I2C_SetSlaveAddr(I2C0, 3, 0x75, 0);   /* Slave Address : 0x75 */
+    /* Set I2C2 4 Slave Addresses */
+    I2C_SetSlaveAddr(I2C2, 0, 0x15, 0);   /* Slave Address : 0x15 */
+    I2C_SetSlaveAddr(I2C2, 1, 0x35, 0);   /* Slave Address : 0x35 */
+    I2C_SetSlaveAddr(I2C2, 2, 0x55, 0);   /* Slave Address : 0x55 */
+    I2C_SetSlaveAddr(I2C2, 3, 0x75, 0);   /* Slave Address : 0x75 */
 
-    /* Set I2C0 4 Slave Addresses Mask */
-    I2C_SetSlaveAddrMask(I2C0, 0, 0x01);
-    I2C_SetSlaveAddrMask(I2C0, 1, 0x04);
-    I2C_SetSlaveAddrMask(I2C0, 2, 0x01);
-    I2C_SetSlaveAddrMask(I2C0, 3, 0x04);
+    /* Set I2C2 4 Slave Addresses Mask */
+    I2C_SetSlaveAddrMask(I2C2, 0, 0x01);
+    I2C_SetSlaveAddrMask(I2C2, 1, 0x04);
+    I2C_SetSlaveAddrMask(I2C2, 2, 0x01);
+    I2C_SetSlaveAddrMask(I2C2, 3, 0x04);
 
-    /* Enable I2C0 interrupt */
-    I2C_EnableInt(I2C0);
-    NVIC_EnableIRQ(I2C0_IRQn);
+    /* Enable I2C2 interrupt */
+    I2C_EnableInt(I2C2);
+    NVIC_EnableIRQ(I2C2_IRQn);
 }
 
 void I2C1_Init(void)
@@ -317,14 +304,14 @@ void I2C1_Init(void)
     NVIC_EnableIRQ(I2C1_IRQn);
 }
 
-void I2C0_Close(void)
+void I2C2_Close(void)
 {
     /* Disable I2C0 interrupt and clear corresponding NVIC bit */
-    I2C_DisableInt(I2C0);
-    NVIC_DisableIRQ(I2C0_IRQn);
+    I2C_DisableInt(I2C2);
+    NVIC_DisableIRQ(I2C2_IRQn);
 
     /* Disable I2C0 and close I2C0 clock */
-    I2C_Close(I2C0);
+    I2C_Close(I2C2);
     CLK_DisableModuleClock(I2C0_MODULE);
 
 }
@@ -340,7 +327,7 @@ void I2C1_Close(void)
     CLK_DisableModuleClock(I2C1_MODULE);
 }
 
-int32_t I2C0_Read_Write_SLAVE(uint8_t slvaddr)
+int32_t I2C2_Read_Write_SLAVE(uint8_t slvaddr)
 {
     uint32_t i;
 
@@ -356,22 +343,22 @@ int32_t I2C0_Read_Write_SLAVE(uint8_t slvaddr)
         g_u8MstEndFlag = 0;
 
         /* I2C function to write data to slave */
-        s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterTx;
+        s_I2C2HandlerFn = (I2C_FUNC)I2C_MasterTx;
 
         /* I2C as master sends START signal */
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_STA);
 
         /* Wait I2C Tx Finish */
         while(g_u8MstEndFlag == 0);
         g_u8MstEndFlag = 0;
 
         /* I2C function to read data from slave */
-        s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterRx;
+        s_I2C2HandlerFn = (I2C_FUNC)I2C_MasterRx;
 
         g_u8MstDataLen = 0;
         g_u8DeviceAddr = slvaddr;
 
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_STA);
 
         /* Wait I2C Rx Finish */
         while(g_u8MstEndFlag == 0);
@@ -387,7 +374,7 @@ int32_t I2C0_Read_Write_SLAVE(uint8_t slvaddr)
     return 0;
 }
 
-int32_t I2C0_Read_Write_Slave(uint8_t slvaddr)
+int32_t I2C2_Read_Write_Slave(uint8_t slvaddr)
 {
     uint32_t i;
 
@@ -403,22 +390,22 @@ int32_t I2C0_Read_Write_Slave(uint8_t slvaddr)
         g_u8MstEndFlag = 0;
 
         /* I2C0 function to write data to slave */
-        s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterTx;
+        s_I2C2HandlerFn = (I2C_FUNC)I2C_MasterTx;
 
         /* I2C0 as master sends START signal */
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_STA);
 
         /* Wait I2C0 Tx Finish */
         while(g_u8MstEndFlag == 0);
         g_u8MstEndFlag = 0;
 
         /* I2C0 function to read data from slave */
-        s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterRx;
+        s_I2C2HandlerFn = (I2C_FUNC)I2C_MasterRx;
 
         g_u8MstDataLen = 0;
         g_u8DeviceAddr = slvaddr;
 
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
+        I2C_SET_CONTROL_REG(I2C2, I2C_CTL_STA);
 
         /* Wait I2C0 Rx Finish */
         while(g_u8MstEndFlag == 0);
@@ -426,7 +413,7 @@ int32_t I2C0_Read_Write_Slave(uint8_t slvaddr)
         /* Compare data */
         if(g_u8MstRxData != g_au8MstTxData[2])
         {
-            printf("I2C0 Byte Write/Read Failed, Data 0x%x\n", g_u8MstRxData);
+            printf("I2C2 Byte Write/Read Failed, Data 0x%x\n", g_u8MstRxData);
             return -1;
         }
     }
@@ -446,8 +433,8 @@ int32_t main(void)
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Configure UART0: 115200, 8-bit word, no parity bit, 1 stop bit. */
-    UART_Open(UART0, 115200);
+    /* Configure UART: 115200, 8-bit word, no parity bit, 1 stop bit. */
+    UART_Open(UART16, 115200);
 
     /*
         This sample code sets I2C bus clock to 100kHz. Then, Master accesses Slave with Byte Write
@@ -457,17 +444,17 @@ int32_t main(void)
     printf("+-------------------------------------------------------+\n");
     printf("| I2C Driver Sample Code for loopback test              |\n");
     printf("|                                                       |\n");
-    printf("| I2C Master (I2C0) <---> I2C Slave(I2C1)               |\n");
+    printf("| I2C Master (I2C2) <---> I2C Slave(I2C1)               |\n");
     printf("+-------------------------------------------------------+\n");
 
     printf("\n");
-    printf("Configure I2C0 as Master, and I2C1 as a slave.\n");
-    printf("The I/O connection I2C0 to I2C1:\n");
-    printf("I2C0_SDA, I2C0_SCL\n");
+    printf("Configure I2C2 as Master, and I2C1 as a slave.\n");
+    printf("The I/O connection I2C2 to I2C1:\n");
+    printf("I2C2_SDA, I2C2_SCL\n");
     printf("I2C1_SDA, I2C1_SCL\n\n");
 
-    /* Init I2C0 */
-    I2C0_Init();
+    /* Init I2C2 */
+    I2C2_Init();
 
     /* Init I2C1 */
     I2C1_Init();
@@ -489,26 +476,26 @@ int32_t main(void)
     /* Access Slave with no address */
     printf("\n");
     printf(" == No Mask Address ==\n");
-    I2C0_Read_Write_Slave(0x16);
-    I2C0_Read_Write_Slave(0x36);
-    I2C0_Read_Write_Slave(0x56);
-    I2C0_Read_Write_Slave(0x76);
+    I2C2_Read_Write_Slave(0x16);
+    I2C2_Read_Write_Slave(0x36);
+    I2C2_Read_Write_Slave(0x56);
+    I2C2_Read_Write_Slave(0x76);
     printf("Slave Address test OK.\n");
 
     /* Access Slave with address mask */
     printf("\n");
     printf(" == Mask Address ==\n");
-    I2C0_Read_Write_Slave(0x16 & ~0x04);
-    I2C0_Read_Write_Slave(0x36 & ~0x02);
-    I2C0_Read_Write_Slave(0x56 & ~0x04);
-    I2C0_Read_Write_Slave(0x76 & ~0x02);
+    I2C2_Read_Write_Slave(0x16 & ~0x04);
+    I2C2_Read_Write_Slave(0x36 & ~0x02);
+    I2C2_Read_Write_Slave(0x56 & ~0x04);
+    I2C2_Read_Write_Slave(0x76 & ~0x02);
     printf("Slave Address Mask test OK.\n");
 
-    s_I2C0HandlerFn = NULL;
+    s_I2C2HandlerFn = NULL;
     s_I2C1HandlerFn = NULL;
 
     /* Close I2C0,1 */
-    I2C0_Close();
+    I2C2_Close();
     I2C1_Close();
 
     while(1);
