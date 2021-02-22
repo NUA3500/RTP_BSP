@@ -28,9 +28,9 @@ extern "C"
 /*---------------------------------------------------------------------------------------------------------*/
 /*  Miscellaneous Constant Definitions                                                                     */
 /*---------------------------------------------------------------------------------------------------------*/
-#define EBI_BANK0_BASE_ADDR     0x60000000UL /*!< EBI bank0 base address \hideinitializer */
-#define EBI_BANK1_BASE_ADDR     0x60100000UL /*!< EBI bank1 base address \hideinitializer */
-#define EBI_BANK2_BASE_ADDR     0x60200000UL /*!< EBI bank2 base address \hideinitializer */
+#define EBI_BANK0_BASE_ADDR     0x68000000UL /*!< EBI bank0 base address \hideinitializer */
+#define EBI_BANK1_BASE_ADDR     0x68100000UL /*!< EBI bank1 base address \hideinitializer */
+#define EBI_BANK2_BASE_ADDR     0x68200000UL /*!< EBI bank2 base address \hideinitializer */
 #define EBI_MAX_SIZE            0x00100000UL /*!< Maximum EBI size for each bank is 1 MB \hideinitializer */
 
 /*---------------------------------------------------------------------------------------------------------*/

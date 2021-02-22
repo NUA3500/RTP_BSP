@@ -1,110 +1,92 @@
 /**************************************************************************//**
  * @file     main.c
- * @brief    Configure EBI interface to access BS616LV4017 (SRAM) on EBI interface.
+ * @brief    Configure EBI interface to access IS61WV204816BLL(SRAM) on EBI interface.
  *
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #include <stdio.h>
 #include "NuMicro.h"
 
-#define PLL_CLOCK       192000000
-
-extern void SRAM_BS616LV4017(uint32_t u32MaxSize);
+extern void SRAM_IS61WV204816BLL(uint32_t u32MaxSize);
 void AccessEBIWithPDMA(void);
 
 void Configure_EBI_16BIT_Pins(void)
 {
-    /* EBI AD0~5 pins on PC.0~5 */
-    SYS->GPC_MFPL |= SYS_GPC_MFPL_PC0MFP_EBI_AD0 | SYS_GPC_MFPL_PC1MFP_EBI_AD1 |
-                     SYS_GPC_MFPL_PC2MFP_EBI_AD2 | SYS_GPC_MFPL_PC3MFP_EBI_AD3 |
-                     SYS_GPC_MFPL_PC4MFP_EBI_AD4 | SYS_GPC_MFPL_PC5MFP_EBI_AD5;
+    /* EBI CS0 pin on PJ.0 */
+    SYS->GPJ_MFPL |=SYS_GPJ_MFPL_PJ0MFP_EBI_nCS0;
+    /* EBI RD and WR pins on PL.4 and PL.5 */
+    SYS->GPL_MFPL |=SYS_GPL_MFPL_PL4MFP_EBI_nRD;
+    SYS->GPL_MFPL |=SYS_GPL_MFPL_PL5MFP_EBI_nWR;
+    /* EBI ALE pin on PB.11 */
+    SYS->GPB_MFPH |= SYS_GPB_MFPH_PB11MFP_EBI_ALE;
+    /* EBI MCLK pin on PG.13 */
+    SYS->GPG_MFPH |=SYS_GPG_MFPH_PG13MFP_EBI_MCLK;
+    /* EBI WRL and WRH pins on PL.11 and PL.10 */
+    SYS->GPL_MFPH |=SYS_GPL_MFPH_PL11MFP_EBI_nWRL;
+    SYS->GPL_MFPH |=SYS_GPL_MFPH_PL10MFP_EBI_nWRH;
 
-    /* EBI AD6, AD7 pins on PD.8, PD.9 */
-    SYS->GPD_MFPH |= SYS_GPD_MFPH_PD8MFP_EBI_AD6 | SYS_GPD_MFPH_PD9MFP_EBI_AD7;
+    /* EBI AD0~2 pins on PK.9~11 */
+    SYS->GPK_MFPH |= SYS_GPK_MFPH_PK9MFP_EBI_AD0;
+    SYS->GPK_MFPH |= SYS_GPK_MFPH_PK10MFP_EBI_AD1;
+    SYS->GPK_MFPH |= SYS_GPK_MFPH_PK11MFP_EBI_AD2;
+    /* EBI AD3~5 pins on PM.0~2 */
+    SYS->GPM_MFPL |= SYS_GPM_MFPL_PM0MFP_EBI_AD3;
+    SYS->GPM_MFPL |= SYS_GPM_MFPL_PM1MFP_EBI_AD4;
+    SYS->GPM_MFPL |= SYS_GPM_MFPL_PM2MFP_EBI_AD5;
+    /* EBI AD6~8 pins on PL.7~9 */
+    SYS->GPL_MFPL |=  SYS_GPL_MFPL_PL7MFP_EBI_AD6;
+    SYS->GPL_MFPH |=  SYS_GPL_MFPH_PL8MFP_EBI_AD7;
+    SYS->GPL_MFPH |=  SYS_GPL_MFPH_PL9MFP_EBI_AD8;
+    /* EBI AD9~13 pins on PA.9~13 */
+    SYS->GPA_MFPH |= SYS_GPA_MFPH_PA9MFP_EBI_AD9;
+    SYS->GPA_MFPH |= SYS_GPA_MFPH_PA10MFP_EBI_AD10;
+    SYS->GPA_MFPH |= SYS_GPA_MFPH_PA11MFP_EBI_AD11;
+    SYS->GPA_MFPH |= SYS_GPA_MFPH_PA12MFP_EBI_AD12;
+    SYS->GPA_MFPH |= SYS_GPA_MFPH_PA13MFP_EBI_AD13;
+    /* EBI AD14 pin on PL.15 */
+    SYS->GPL_MFPH |=  SYS_GPL_MFPH_PL15MFP_EBI_AD14;
+    /* EBI AD15 pin on PK.8 */
+    SYS->GPK_MFPH |= SYS_GPK_MFPH_PK8MFP_EBI_AD15;
 
-    /* EBI AD8, AD9 pins on PE.14, PE.15 */
-    SYS->GPE_MFPH |= SYS_GPE_MFPH_PE14MFP_EBI_AD8 | SYS_GPE_MFPH_PE15MFP_EBI_AD9;
+    /* EBI ADR16~19 pins on PB.12~15 */
+    SYS->GPB_MFPH |= SYS_GPB_MFPH_PB12MFP_EBI_ADR16;
+    SYS->GPB_MFPH |= SYS_GPB_MFPH_PB13MFP_EBI_ADR17;
+    SYS->GPB_MFPH |= SYS_GPB_MFPH_PB14MFP_EBI_ADR18;
+    SYS->GPB_MFPH |= SYS_GPB_MFPH_PB15MFP_EBI_ADR19;
 
-    /* EBI AD10, AD11 pins on PE.1, PE.0 */
-    SYS->GPE_MFPL |= SYS_GPE_MFPL_PE1MFP_EBI_AD10 | SYS_GPE_MFPL_PE0MFP_EBI_AD11;
-
-    /* EBI AD12~15 pins on PH.8~11 */
-    SYS->GPH_MFPH |= SYS_GPH_MFPH_PH8MFP_EBI_AD12 | SYS_GPH_MFPH_PH9MFP_EBI_AD13 |
-                     SYS_GPH_MFPH_PH10MFP_EBI_AD14 | SYS_GPH_MFPH_PH11MFP_EBI_AD15;
-
-    /* EBI ADR16, ADR17 pins on PF.9, PF.8 */
-    SYS->GPF_MFPH |= SYS_GPF_MFPH_PF9MFP_EBI_ADR16 | SYS_GPF_MFPH_PF8MFP_EBI_ADR17;
-
-    /* EBI ADR18, ADR19 pins on PF.7, PF.6 */
-    SYS->GPF_MFPL |= SYS_GPF_MFPL_PF7MFP_EBI_ADR18 | SYS_GPF_MFPL_PF6MFP_EBI_ADR19;
-
-
-    /* EBI RD and WR pins on PE.4 and PE.5 */
-    SYS->GPE_MFPL |= SYS_GPE_MFPL_PE4MFP_EBI_nWR | SYS_GPE_MFPL_PE5MFP_EBI_nRD;
-
-    /* EBI WRL and WRH pins on PG.7 and PG.8 */
-    SYS->GPG_MFPL |= SYS_GPG_MFPL_PG7MFP_EBI_nWRL;
-    SYS->GPG_MFPH |= SYS_GPG_MFPH_PG8MFP_EBI_nWRH;
-
-    /* EBI CS0 pin on PD.12 */
-    SYS->GPD_MFPH |= SYS_GPD_MFPH_PD12MFP_EBI_nCS0;
-
-    /* EBI ALE pin on PE.2 */
-    SYS->GPE_MFPL |= SYS_GPE_MFPL_PE2MFP_EBI_ALE;
-
-    /* EBI MCLK pin on PE.3 */
-    SYS->GPE_MFPL |= SYS_GPE_MFPL_PE3MFP_EBI_MCLK;
 }
 
 void SYS_Init(void)
 {
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Unlock protected registers */
+    SYS_UnlockReg();
 
-    /* Enable HXT */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL and SysTick source to HCLK/2*/
-    CLK_SetCoreClock(PLL_CLOCK);
-    CLK_SetSysTickClockSrc(CLK_CLKSEL0_STCLKSEL_HCLK_DIV2);
-
-    /* Set PCLK0/PCLK1 to HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
+    SystemCoreClockUpdate();
 
     /* Enable peripheral clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
     CLK_EnableModuleClock(EBI_MODULE);
 
     /* Peripheral clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-}
+    /* Set GPB multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-void UART0_Init(void)
-{
-    /* Configure UART0 and set UART0 Baudrate */
-    UART_Open(UART0, 115200);
+    /* Lock protected registers */
+    SYS_LockReg();
 }
 
 int main(void)
 {
-    /* Unlock protected registers */
-    SYS_UnlockReg();
-
     /* Init System, peripheral clock and multi-function I/O */
     SYS_Init();
 
-    /* Lock protected registers */
-    SYS_LockReg();
-
-    /* Init UART0 for printf */
-    UART0_Init();
+    /* Init UART16 for printf */
+    UART_Open(UART16, 115200);
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
     printf("+--------------------------------------------------------+\n");
@@ -112,25 +94,22 @@ int main(void)
     printf("+--------------------------------------------------------+\n\n");
 
     printf("********************************************************************\n");
-    printf("* Please connect BS616LV4017 SRAM to EBI bank0 before accessing !! *\n");
+    printf("* Please connect IS61WV204816BLL to EBI bank0 before accessing !!  *\n");
     printf("* EBI pins settings:                                               *\n");
-    printf("*   - AD0 ~ AD5   on PC.0 ~ PC.5                                   *\n");
-    printf("*   - AD6 ~ AD7   on PD.8 ~ PD.9                                   *\n");
-    printf("*   - AD8 ~ AD9   on PE.14 ~ PE.15                                 *\n");
-    printf("*   - AD10        on PE.1                                          *\n");
-    printf("*   - AD11        on PE.0                                          *\n");
-    printf("*   - AD12 ~ AD15 on PH.8 ~ PH.11                                  *\n");
-    printf("*   - ADR16     on PF.9                                            *\n");
-    printf("*   - ADR17     on PF.8                                            *\n");
-    printf("*   - ADR18     on PF.7                                            *\n");
-    printf("*   - ADR19     on PF.6                                            *\n");
-    printf("*   - nWR on PE.4                                                  *\n");
-    printf("*   - nRD on PE.5                                                  *\n");
-    printf("*   - nWRL on PG.7                                                 *\n");
-    printf("*   - nWRH on PG.8                                                 *\n");
-    printf("*   - nCS0 on PD.12                                                *\n");
-    printf("*   - ALE on PE.2                                                  *\n");
-    printf("*   - MCLK on PE.3                                                 *\n");
+    printf("*   - AD0  ~  AD2   on PK.9 ~ PK.11                                *\n");
+    printf("*   - AD3  ~  AD5   on PM.0 ~ PM.2                                 *\n");
+    printf("*   - AD6  ~  AD8   on PL.7 ~ PL.9                                 *\n");
+    printf("*   - AD9  ~  AD13  on PA.9 ~ PA.13                                *\n");
+    printf("*   - AD14          on PL.15                                       *\n");
+    printf("*   - AD15          on PK.8                                        *\n");
+    printf("*   - ADR16 ~ ADR19 on PB.12 ~ PB.15                               *\n");
+    printf("*   - nWR  on PL.5                                                 *\n");
+    printf("*   - nRD  on PL.4                                                 *\n");
+    printf("*   - nWRL on PL.11                                                *\n");
+    printf("*   - nWRH on PL.10                                                *\n");
+    printf("*   - nCS0 on PJ.0                                                 *\n");
+    printf("*   - ALE  on PB.11                                                *\n");
+    printf("*   - MCLK on PG.13                                                *\n");
     printf("********************************************************************\n\n");
 
     /* Configure multi-function pins for EBI 16-bit application */
@@ -140,7 +119,7 @@ int main(void)
     EBI_Open(EBI_BANK0, EBI_BUSWIDTH_16BIT, EBI_TIMING_SLOWEST, 0, EBI_CS_ACTIVE_LOW);
 
     /* Start to test EBI SRAM */
-    SRAM_BS616LV4017(512 * 1024);
+    SRAM_IS61WV204816BLL( 512 * 1024);
 
     /* EBI SRAM with PDMA test */
     AccessEBIWithPDMA();
@@ -174,24 +153,24 @@ uint32_t volatile u32IsTestOver = 0;
  *
  * @details     The DMA default IRQ
  */
-void PDMA_IRQHandler(void)
+void PDMA2_IRQHandler(void)
 {
-    uint32_t status = PDMA_GET_INT_STATUS(PDMA);
+    uint32_t status = PDMA_GET_INT_STATUS(PDMA2);
 
     if(status & PDMA_INTSTS_ABTIF_Msk)    /* abort */
     {
-        if(PDMA_GET_ABORT_STS(PDMA) & PDMA_ABTSTS_ABTIF2_Msk)
+        if(PDMA_GET_ABORT_STS(PDMA2) & PDMA_ABTSTS_ABTIF2_Msk)
             u32IsTestOver = 2;
-        PDMA_CLR_ABORT_FLAG(PDMA, PDMA_ABTSTS_ABTIF2_Msk);
+        PDMA_CLR_ABORT_FLAG(PDMA2, PDMA_ABTSTS_ABTIF2_Msk);
     }
     else if(status & PDMA_INTSTS_TDIF_Msk)      /* done */
     {
-        if(PDMA_GET_TD_STS(PDMA) & PDMA_TDSTS_TDIF2_Msk)
+        if(PDMA_GET_TD_STS(PDMA2) & PDMA_TDSTS_TDIF2_Msk)
             u32IsTestOver = 1;
-        PDMA_CLR_TD_FLAG(PDMA, PDMA_TDSTS_TDIF2_Msk);
+        PDMA_CLR_TD_FLAG(PDMA2, PDMA_TDSTS_TDIF2_Msk);
     }
     else
-        printf("unknown interrupt !!\n");
+        printf("unknown interrupt 0x%08x!!\n",status);
 }
 
 void AccessEBIWithPDMA(void)
@@ -202,7 +181,7 @@ void AccessEBIWithPDMA(void)
     printf("[[ Access EBI with PDMA ]]\n");
 
     /* Enable PDMA clock source */
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
 
     for(i=0; i<64; i++)
     {
@@ -211,21 +190,22 @@ void AccessEBIWithPDMA(void)
     }
 
     /* Open Channel 2 */
-    PDMA_Open(PDMA, (1<<2));
+    PDMA_Open(PDMA2, (1<<2));
 
     //burst size is 4
-    PDMA_SetBurstType(PDMA, 2, PDMA_REQ_BURST, PDMA_BURST_4);
+    PDMA_SetBurstType(PDMA2, 2, PDMA_REQ_BURST, PDMA_BURST_4);
 
     /* transfer width is one word(32 bit) */
-    PDMA_SetTransferCnt(PDMA, 2, PDMA_WIDTH_32, PDMA_TEST_LENGTH);
-    PDMA_SetTransferAddr(PDMA, 2, (uint32_t)SrcArray, PDMA_SAR_INC, EBI_BANK0_BASE_ADDR, PDMA_DAR_INC);
-    PDMA_SetTransferMode(PDMA, 2, PDMA_MEM, FALSE, 0);
+    PDMA_SetTransferCnt(PDMA2, 2, PDMA_WIDTH_32, PDMA_TEST_LENGTH);
+    PDMA_SetTransferAddr(PDMA2, 2, (uint32_t)SrcArray, PDMA_SAR_INC, EBI_BANK0_BASE_ADDR, PDMA_DAR_INC);
+    PDMA_SetTransferMode(PDMA2, 2, PDMA_MEM, FALSE, 0);
 
-    PDMA_EnableInt(PDMA, 2, PDMA_INT_TRANS_DONE);
-    NVIC_EnableIRQ(PDMA_IRQn);
+    PDMA_EnableInt(PDMA2, 2, PDMA_INT_TRANS_DONE);
+    /* Enable NVIC for PDMA */
+    NVIC_EnableIRQ(PDMA2_IRQn);
 
     u32IsTestOver = 0;
-    PDMA_Trigger(PDMA, 2);
+    PDMA_Trigger(PDMA2, 2);
     while(u32IsTestOver == 0);
     /* Transfer internal SRAM to EBI SRAM done */
 
@@ -236,12 +216,12 @@ void AccessEBIWithPDMA(void)
     }
 
     /* transfer width is one word(32 bit) */
-    PDMA_SetTransferCnt(PDMA, 2, PDMA_WIDTH_32, PDMA_TEST_LENGTH);
-    PDMA_SetTransferAddr(PDMA, 2, EBI_BANK0_BASE_ADDR, PDMA_SAR_INC, (uint32_t)SrcArray, PDMA_DAR_INC);
-    PDMA_SetTransferMode(PDMA, 2, PDMA_MEM, FALSE, 0);
+    PDMA_SetTransferCnt(PDMA2, 2, PDMA_WIDTH_32, PDMA_TEST_LENGTH);
+    PDMA_SetTransferAddr(PDMA2, 2, EBI_BANK0_BASE_ADDR, PDMA_SAR_INC, (uint32_t)SrcArray, PDMA_DAR_INC);
+    PDMA_SetTransferMode(PDMA2, 2, PDMA_MEM, FALSE, 0);
 
     u32IsTestOver = 0;
-    PDMA_Trigger(PDMA, 2);
+    PDMA_Trigger(PDMA2, 2);
     while(u32IsTestOver == 0);
     /* Transfer EBI SRAM to internal SRAM done */
     for(i=0; i<64; i++)
@@ -267,6 +247,6 @@ void AccessEBIWithPDMA(void)
         while(1);
     }
 
-    PDMA_Close(PDMA);
+    PDMA_Close(PDMA2);
 }
 

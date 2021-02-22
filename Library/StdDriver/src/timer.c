@@ -307,7 +307,7 @@ uint32_t TIMER_GetModuleClock(TIMER_T *timer)
   * @param[in] u32EnableInt Enable interrupt assertion after capture complete or not. Valid values are TRUE and FALSE
   * @return None
   * @details This function is used to calculate input event frequency. After enable
-  *          this function, a pair of timers, TIMER0 and TIMER1, or TIMER2 and TIMER3
+  *          this function, a pair of timers, TIMER2 and TIMER3, or TIMER4 and TIMER5
   *          will be configured for this function. The mode used to calculate input
   *          event frequency is mentioned as "Inter Timer Trigger Mode" in Technical
   *          Reference Manual
@@ -317,7 +317,7 @@ void TIMER_EnableFreqCounter(TIMER_T *timer,
                              uint32_t u32Timeout,
                              uint32_t u32EnableInt)
 {
-    TIMER_T *t;    /* store the timer base to configure compare value */
+    TIMER_T *t = NULL;    /* store the timer base to configure compare value */
 
     if (timer == TIMER2)
         t = TIMER3;
@@ -329,10 +329,12 @@ void TIMER_EnableFreqCounter(TIMER_T *timer,
         t = TIMER9;
     else if (timer == TIMER10)
         t = TIMER11;
+	else // Select error 
+		return;
 
     t->CMP = 0xFFFFFFUL;
     t->EXTCTL = u32EnableInt ? TIMER_EXTCTL_CAPIEN_Msk : 0UL;
-    timer->CTL = TIMER_CTL_INTRGEN_Msk | TIMER_CTL_CNTEN_Msk;
+    t->CTL = TIMER_CTL_INTRGEN_Msk | TIMER_CTL_CNTEN_Msk;
 
     return;
 }

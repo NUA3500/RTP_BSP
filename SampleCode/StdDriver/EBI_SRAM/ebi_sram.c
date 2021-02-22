@@ -264,7 +264,7 @@ void SRAM_CompareFunction(uint32_t u32Param0, uint32_t u32Param1, uint32_t u32Pa
 /**
   * @brief      This function is used to perform writing data to SRAM and check result.
   */
-void SRAM_BS616LV4017(uint32_t u32MaxSize)
+void SRAM_IS61WV204816BLL(uint32_t u32MaxSize)
 {
     uint32_t u32WriteData;
     uint32_t u32Idx, u32DataIdx;
