@@ -42,7 +42,7 @@
 		<link>
 			<name>CMSIS/CMSIS</name>
 			<type>2</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Library/Device/Nuvoton/M480/Source</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/Library/Device/Nuvoton/ma35d1_rtp/Source</locationURI>
 		</link>
 		<link>
 			<name>Library/Library</name>
@@ -57,7 +57,7 @@
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>0</id>
+			<id>1613722104914</id>
 			<name>CMSIS/CMSIS</name>
 			<type>9</type>
 			<matcher>

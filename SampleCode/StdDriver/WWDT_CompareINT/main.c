@@ -8,17 +8,11 @@
 #include <stdio.h>
 #include "NuMicro.h"
 
-#define PLL_CLOCK       192000000
-
-
-
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global Interface Variables Declarations                                                                 */
 /*---------------------------------------------------------------------------------------------------------*/
-extern int IsDebugFifoEmpty(void);
 volatile uint32_t g_u32WDTINTCounts;
 volatile uint8_t g_u8IsWDTWakeupINT;
-extern int IsDebugFifoEmpty(void);
 volatile uint8_t g_u32WWDTINTCounts;
 
 
@@ -31,7 +25,7 @@ volatile uint8_t g_u32WWDTINTCounts;
  *
  * @details     The WDT_IRQHandler is default IRQ of WWDT.
  */
-void WDT_IRQHandler(void)
+void WWDT2_IRQHandler(void)
 {
     if(WWDT_GET_INT_FLAG() == 1)
     {
@@ -55,42 +49,20 @@ void WDT_IRQHandler(void)
 void SYS_Init(void)
 {
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Enable IP clock */
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Select IP clock source */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
+    CLK_SetModuleClock(WDT2_MODULE, CLK_CLKSEL3_WWDT2SEL_LIRC, 0);
 
-    /* Wait for HXT clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
+    /* To update the variable SystemCoreClock */
+    SystemCoreClockUpdate();
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(PLL_CLOCK);
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    /* Set PCLK0 = PCLK1 = HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
-    /* Enable IP module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(WWDT_MODULE);
-
-    /* Peripheral clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-    CLK_SetModuleClock(WWDT_MODULE, CLK_CLKSEL1_WWDTSEL_LIRC, 0);
-
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-
-}
-
-void UART0_Init()
-{
-
-    /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
 }
 
 
@@ -107,8 +79,8 @@ int main(void)
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Init UART0 for printf */
-    UART0_Init();
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
     printf("+------------------------------------------------+\n");
@@ -118,15 +90,15 @@ int main(void)
     /* To check if system has been reset by WWDT time-out reset or not */
     if(WWDT_GET_RESET_FLAG() == 1)
     {
-        printf("*** System has been reset by WWDT time-out reset event. [WWDT_CTL: 0x%08X] ***\n\n", WWDT->CTL);
+        printf("*** System has been reset by WWDT time-out reset event. [WWDT_CTL: 0x%08X] ***\n\n", WWDT2->CTL);
         WWDT_CLEAR_RESET_FLAG();
         while(1);
     }
 
     dPeriodTime = (((double)(1000000 * 2048) / (double)SystemCoreClock) * 1024) * 32;
 
-    printf("# WWDT Settings: \n");
-    printf("    - Clock source is PCLK0/2048 (%d Hz)    \n", SystemCoreClock / 2048);
+    printf("# WWDT2 Settings: \n");
+    printf("    - Clock source is PCLK4/4096 (%d Hz)    \n", SystemCoreClock / 4096);
     printf("    - WWDT counter prescale period is 1024, \n");
     printf("        and max WWDT time-out period is 1024 * (64 * WWDT_CLK)\n");
     printf("    - Interrupt enable                      \n");
@@ -143,7 +115,7 @@ int main(void)
     PA0 = 1;
 
     /* Enable WWDT NVIC */
-    NVIC_EnableIRQ(WDT_IRQn);
+    NVIC_EnableIRQ(WWDT2_IRQn);
 
     g_u32WWDTINTCounts = 0;
 
@@ -155,7 +127,7 @@ int main(void)
     /* Note: WWDT_CTL register can be written only once after chip is powered on or reset */
     WWDT_Open(WWDT_PRESCALER_1024, 32, TRUE);
 
-    printf("[WWDT_CTL: 0x%08X]\n\n", WWDT->CTL);
+    printf("[WWDT_CTL: 0x%08X]\n\n", WWDT2->CTL);
 
     while(1);
 }

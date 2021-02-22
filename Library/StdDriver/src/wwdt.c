@@ -52,7 +52,7 @@ void WWDT_Open(uint32_t u32PreScale,
                uint32_t u32CmpValue,
                uint32_t u32EnableInt)
 {
-    WWDT->CTL = u32PreScale |
+    WWDT2->CTL = u32PreScale |
                 (u32CmpValue << WWDT_CTL_CMPDAT_Pos) |
                 ((u32EnableInt == TRUE) ? WWDT_CTL_INTEN_Msk : 0U) |
                 WWDT_CTL_WWDTEN_Msk;

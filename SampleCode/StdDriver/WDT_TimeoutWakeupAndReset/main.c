@@ -9,9 +9,6 @@
 #include <stdio.h>
 #include "NuMicro.h"
 
-#define PLL_CLOCK       192000000
-
-
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global Interface Variables Declarations                                                                 */
@@ -30,12 +27,12 @@ volatile uint8_t g_u8IsWDTWakeupINT = 0;
  *
  * @details     The WDT_IRQHandler is default IRQ of WDT.
  */
-void WDT_IRQHandler(void)
+void WDT2_IRQHandler(void)
 {
-    if(g_u32WDTINTCounts < 10)
+    if (g_u32WDTINTCounts < 10)
         WDT_RESET_COUNTER();
 
-    if(WDT_GET_TIMEOUT_INT_FLAG() == 1)
+    if (WDT_GET_TIMEOUT_INT_FLAG() == 1)
     {
         /* Clear WDT time-out interrupt flag */
         WDT_CLEAR_TIMEOUT_INT_FLAG();
@@ -43,7 +40,7 @@ void WDT_IRQHandler(void)
         g_u32WDTINTCounts++;
     }
 
-    if(WDT_GET_TIMEOUT_WAKEUP_FLAG() == 1)
+    if (WDT_GET_TIMEOUT_WAKEUP_FLAG() == 1)
     {
         /* Clear WDT time-out wake-up flag */
         WDT_CLEAR_TIMEOUT_WAKEUP_FLAG();
@@ -55,44 +52,21 @@ void WDT_IRQHandler(void)
 void SYS_Init(void)
 {
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Enable IP clock */
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Enable HXT clock (external XTAL 12MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Select IP clock source */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
+    CLK_SetModuleClock(WDT2_MODULE, CLK_CLKSEL3_WDT2SEL_LIRC, 0);
 
-    /* Wait for HXT clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
+    /* To update the variable SystemCoreClock */
+    SystemCoreClockUpdate();
 
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(PLL_CLOCK);
-
-    /* Set PCLK0 = PCLK1 = HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
-    /* Enable IP module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(WDT_MODULE);
-
-    /* Peripheral clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-    CLK_SetModuleClock(WDT_MODULE, CLK_CLKSEL1_WDTSEL_LIRC, 0);
-
-
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
 }
-
-void UART0_Init()
-{
-
-    /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
-}
-
 
 int main(void)
 {
@@ -102,46 +76,11 @@ int main(void)
     /* Init System, peripheral clock and multi-function I/O */
     SYS_Init();
 
-    /* System enters power-down mode (NPD/FWPD/LLPD),
-     * and reset by WDT. If any other NVIC is enabled and that interrupt occurs,
-     * CPU will trap in interrupt handler. Work around solution is as following:
-     * 1. Configure WDT
-     * 2. Enter power down and wake up by WDT time-out
-     */
-    /* To check if system has been reset by WDT time-out reset or not */
-    if(SYS_GetResetSrc() & SYS_RSTSTS_WDTRF_Msk)
-    {
-        /* Because of all bits can be written in WDT Control Register are write-protected;
-           To program it needs to disable register protection first. */
-        SYS_UnlockReg();
-
-        /* Configure WDT settings and start WDT counting */
-        WDT_Open(WDT_TIMEOUT_2POW4, WDT_RESET_DELAY_18CLK, TRUE, TRUE);
-
-        /* Enable WDT interrupt function */
-        WDT_EnableInt();
-
-        /* Enable WDT NVIC */
-        NVIC_EnableIRQ(WDT_IRQn);
-
-        /* If system has been reset by WDT time-out reset, remember to enter
-         * power-down and wait for WDT wake-up */
-        CLK_PowerDown();
-
-        /* Clear WDT reset flag */
-        WDT_CLEAR_RESET_FLAG();
-
-        /* Init UART0 for printf */
-        UART0_Init();
-        printf("*** System has been reset by WDT time-out event ***\n\n");
-        while(1);
-    }
-
     /* Lock protected registers */
     SYS_LockReg();
 
-    /* Init UART0 for printf */
-    UART0_Init();
+    /* Init UART to 115200-8n1 for print message */
+    UART_Open(UART16, 115200);
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
     printf("+----------------------------------------+\n");
@@ -166,7 +105,7 @@ int main(void)
     PA0 = 1;
 
     /* Enable WDT NVIC */
-    NVIC_EnableIRQ(WDT_IRQn);
+    NVIC_EnableIRQ(WDT2_IRQn);
 
     /* Because of all bits can be written in WDT Control Register are write-protected;
        To program it needs to disable register protection first. */
