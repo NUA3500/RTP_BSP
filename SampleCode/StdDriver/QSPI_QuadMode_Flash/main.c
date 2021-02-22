@@ -13,7 +13,7 @@
 #define TEST_NUMBER         1   /* page numbers */
 #define TEST_LENGTH         256 /* length */
 
-#define QSPI_FLASH_PORT  QSPI0
+#define QSPI_FLASH_PORT  QSPI1
 
 uint8_t SrcArray[TEST_LENGTH];
 uint8_t DestArray[TEST_LENGTH];
@@ -29,7 +29,7 @@ void D2D3_SwitchToNormalMode(void)
 
 void D2D3_SwitchToQuadMode(void)
 {
-    SYS->GPA_MFPL =  (SYS->GPA_MFPL & ~(SYS_GPA_MFPL_PA4MFP_Msk | SYS_GPA_MFPL_PA5MFP_Msk)) | SYS_GPA_MFPL_PA4MFP_QSPI0_MOSI1 | SYS_GPA_MFPL_PA5MFP_QSPI0_MISO1;
+    SYS->GPD_MFPL =  (SYS->GPD_MFPL & ~(SYS_GPD_MFPL_PD6MFP_Msk | SYS_GPD_MFPL_PD7MFP_Msk)) | SYS_GPD_MFPL_PD6MFP_QSPI1_MOSI1 | SYS_GPD_MFPL_PD7MFP_QSPI1_MISO1;
 }
 
 uint16_t SpiFlash_ReadMidDid(void)
@@ -329,36 +329,29 @@ void SYS_Init(void)
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
     /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
+    CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
+    /* Enable UART module clock */
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Select PCLK0 as the clock source of QSPI0 */
-    CLK_SetModuleClock(QSPI0_MODULE, CLK_CLKSEL2_QSPI0SEL_PCLK0, MODULE_NoMsk);
+    CLK_SetModuleClock(QSPI1_MODULE, CLK_CLKSEL4_QSPI1SEL_HXT, MODULE_NoMsk);
 
-    /* Enable UART peripheral clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    /* Enable QSPI1 peripheral clock */
+    CLK_EnableModuleClock(QSPI1_MODULE);
 
-    /* Enable QSPI0 peripheral clock */
-    CLK_EnableModuleClock(QSPI0_MODULE);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    /* Setup QSPI0 multi-function pins */
-    SYS->GPA_MFPL |= SYS_GPA_MFPL_PA0MFP_QSPI0_MOSI0 | SYS_GPA_MFPL_PA1MFP_QSPI0_MISO0 | SYS_GPA_MFPL_PA2MFP_QSPI0_CLK | SYS_GPA_MFPL_PA3MFP_QSPI0_SS |
-                     SYS_GPA_MFPL_PA4MFP_QSPI0_MOSI1 | SYS_GPA_MFPL_PA5MFP_QSPI0_MISO1;
-
-    /* Enable QSPI0 clock pin (PA2) schmitt trigger */
-    PA->SMTEN |= GPIO_SMTEN_SMTEN2_Msk;
-
-    /* Enable QSPI0 I/O high slew rate */
-    GPIO_SetSlewCtl(PA, 0x3F, GPIO_SLEWCTL_HIGH);
+    /* Setup QSPI1 multi-function pins */
+    SYS->GPD_MFPL &= ~(SYS_GPD_MFPL_PD6MFP_Msk | SYS_GPD_MFPL_PD7MFP_Msk);
+    SYS->GPD_MFPL |= (SYS_GPD_MFPL_PD6MFP_QSPI1_MOSI1 | SYS_GPD_MFPL_PD7MFP_QSPI1_MISO1);
+    SYS->GPD_MFPH &= ~(SYS_GPD_MFPH_PD8MFP_Msk | SYS_GPD_MFPH_PD9MFP_Msk | SYS_GPD_MFPH_PD10MFP_Msk | SYS_GPD_MFPH_PD11MFP_Msk);
+    SYS->GPD_MFPH |= (SYS_GPD_MFPH_PD8MFP_QSPI1_SS0 | SYS_GPD_MFPH_PD9MFP_QSPI1_CLK | SYS_GPD_MFPH_PD10MFP_QSPI1_MOSI0 | SYS_GPD_MFPH_PD11MFP_QSPI1_MISO0);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and CyclesPerUs automatically. */
@@ -381,7 +374,7 @@ int main(void)
     D2D3_SwitchToNormalMode();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     /* Configure QSPI_FLASH_PORT as a master, MSB first, 8-bit transaction, QSPI Mode-0 timing, clock is 20MHz */
     QSPI_Open(QSPI_FLASH_PORT, QSPI_MASTER, QSPI_MODE_0, 8, 20000000);
@@ -393,13 +386,13 @@ int main(void)
     printf("|                    QSPI Quad Mode with Flash Sample Code               |\n");
     printf("+------------------------------------------------------------------------+\n");
 
-    if((u16ID = SpiFlash_ReadMidDid()) != 0xEF14)
+    if((u16ID = SpiFlash_ReadMidDid()) != 0xEF17)
     {
         printf("Wrong ID, 0x%x\n", u16ID);
-        while(1);
+        return -1;
     }
     else
-        printf("Flash found: W25X16 ...\n");
+        printf("Flash found: W25Q128 ...\n");
 
     printf("Erase chip ...");
 

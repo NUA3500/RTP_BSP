@@ -88,13 +88,8 @@ void CalPeriodTime(EPWM_T *EPWM, uint32_t u32Ch)
 
     u16TotalPeriod = 0x10000 - u32Count[2];
 
-    printf("\nEPWM generate: \nHigh Period=19199 ~ 19201, Low Period=44799 ~ 44801, Total Period=63999 ~ 64001\n");
     printf("\nCapture Result: Rising Time = %d, Falling Time = %d \nHigh Period = %d, Low Period = %d, Total Period = %d.\n\n",
            u16RisingTime, u16FallingTime, u16HighPeriod, u16LowPeriod, u16TotalPeriod);
-    if((u16HighPeriod < 19199) || (u16HighPeriod > 19201) || (u16LowPeriod < 44799) || (u16LowPeriod > 44801) || (u16TotalPeriod < 63999) || (u16TotalPeriod > 64001))
-        printf("Capture Test Fail!!\n");
-    else
-        printf("Capture Test Pass!!\n");
 }
 
 void SYS_Init(void)
@@ -112,39 +107,32 @@ void SYS_Init(void)
     /* Set core clock as PLL_CLOCK from PLL */
     CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set PCLK0 = PCLK1 = HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
     /* Enable IP module clock */
     CLK_EnableModuleClock(EPWM1_MODULE);
 
-    /* EPWM clock frequency is set double to PCLK: select EPWM module clock source as PLL */
-    CLK_SetModuleClock(EPWM1_MODULE, CLK_CLKSEL2_EPWM1SEL_PLL, (uint32_t)NULL);
-
     /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Update System Core Clock */
     SystemCoreClockUpdate();
 
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    /* Set PC multi-function pins for EPWM1 Channel 0 and 2 */
-    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC12MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk);
-    SYS->GPC_MFPH |= (SYS_GPC_MFPH_PC12MFP_EPWM1_CH0 | SYS_GPC_MFPH_PC10MFP_EPWM1_CH2);
+    /* Set PL multi-function pins for EPWM1 Channel 0 and 2 */
+    SYS->GPL_MFPL &= ~(SYS_GPL_MFPL_PL0MFP_Msk | SYS_GPL_MFPL_PL2MFP_Msk);
+    SYS->GPL_MFPL |= (SYS_GPL_MFPL_PL0MFP_EPWM1_CH0 | SYS_GPL_MFPL_PL2MFP_EPWM1_CH2);
 
 }
 
 void UART0_Init()
 {
     /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 int32_t main(void)
@@ -167,16 +155,14 @@ int32_t main(void)
     /* Init UART to 115200-8n1 for print message */
     UART0_Init();
 
-    printf("\n\nCPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock);
-    printf("EPWM1 clock is from %s\n", (CLK->CLKSEL2 & CLK_CLKSEL2_EPWM1SEL_Msk) ? "CPU" : "PLL");
     printf("+------------------------------------------------------------------------+\n");
     printf("|                          EPWM Driver Sample Code                        |\n");
     printf("|                                                                        |\n");
     printf("+------------------------------------------------------------------------+\n");
     printf("  This sample code will use EPWM1 channel 2 to capture\n  the signal from EPWM1 channel 0.\n");
     printf("  I/O configuration:\n");
-    printf("    EPWM1 channel 2(PC.10) <--> EPWM1 channel 0(PC.12)\n\n");
-    printf("Use EPWM1 Channel 2(PC.10) to capture the EPWM1 Channel 0(PC.12) Waveform\n");
+    printf("    EPWM1 channel 2(PL.2) <--> EPWM1 channel 0(PL.0)\n\n");
+    printf("Use EPWM1 Channel 2(PL.2) to capture the EPWM1 Channel 0(PL.0) Waveform\n");
 
     while(1)
     {
@@ -186,20 +172,6 @@ int32_t main(void)
         /*--------------------------------------------------------------------------------------*/
         /* Set the EPWM1 Channel 0 as EPWM output function.                                       */
         /*--------------------------------------------------------------------------------------*/
-
-        /* Assume EPWM output frequency is 300Hz and duty ratio is 30%, user can calculate EPWM settings by follows.
-           duty ratio = (CMR+1)/(CNR+1)
-           cycle time = CNR+1
-           High level = CMR+1
-           EPWM clock source frequency = PLL = 192000000
-           (CNR+1) = EPWM clock source frequency/prescaler/EPWM output frequency
-                   = 192000000/10/300 = 64000
-           (Note: CNR is 16 bits, so if calculated value is larger than 65536, user should increase prescale value.)
-           CNR = 63999
-           duty ratio = 30% ==> (CMR+1)/(CNR+1) = 30%
-           CMR = 19199
-           Prescale value is 9 : prescaler= 10
-        */
 
         /* set EPWM1 channel 0 output configuration */
         EPWM_ConfigOutputChannel(EPWM1, 0, 300, 30);
@@ -213,18 +185,6 @@ int32_t main(void)
         /*--------------------------------------------------------------------------------------*/
         /* Set the EPWM1 channel 2 for capture function                                          */
         /*--------------------------------------------------------------------------------------*/
-
-        /* If input minimum frequency is 300Hz, user can calculate capture settings by follows.
-           Capture clock source frequency = PCLK = 96000000 in the sample code.
-           (CNR+1) = Capture clock source frequency/prescaler/minimum input frequency
-                   = 192000000/10/300 = 64000
-           (Note: CNR is 16 bits, so if calculated value is larger than 65536, user should increase prescale value.)
-           CNR = 0xFFFF
-           (Note: In capture mode, user should set CNR to 0xFFFF to increase capture frequency range.)
-
-           Capture unit time = 1/Capture clock source frequency/prescaler
-           52ns = 1/192000000/10
-        */
 
         /* set EPWM1 channel 2 capture configuration */
         EPWM_ConfigCaptureChannel(EPWM1, 2, 52, 0);

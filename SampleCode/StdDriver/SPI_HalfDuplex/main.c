@@ -34,20 +34,18 @@ void SYS_Init(void)
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
     /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
+    CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
+    /* Enable UART module clock */
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
-    /* Select PCLK as the clock source of SPI0 and SPI1 */
-    CLK_SetModuleClock(SPI0_MODULE, CLK_CLKSEL2_SPI0SEL_PCLK1, MODULE_NoMsk);
-    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL2_SPI1SEL_PCLK0, MODULE_NoMsk);
+    /* Select clock source of SPI0 and SPI1 */
+    CLK_SetModuleClock(SPI0_MODULE, CLK_CLKSEL4_SPI0SEL_HXT, MODULE_NoMsk);
+    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL4_SPI1SEL_HXT, MODULE_NoMsk);
 
-    /* Enable UART peripheral clock */
-    CLK_EnableModuleClock(UART0_MODULE);
     /* Enable SPI0 peripheral clock */
     CLK_EnableModuleClock(SPI0_MODULE);
     /* Enable SPI1 peripheral clock */
@@ -57,22 +55,17 @@ void SYS_Init(void)
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and CyclesPerUs automatically. */
     SystemCoreClockUpdate();
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    /* Enable SPI0 clock pin (PA2) schmitt trigger */
-    PA->SMTEN |= GPIO_SMTEN_SMTEN2_Msk;
-
-    /* Enable SPI0 I/O high slew rate */
-    GPIO_SetSlewCtl(PA, 0xF, GPIO_SLEWCTL_HIGH);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
     /* Setup SPI0 multi-function pins */
-    SYS->GPA_MFPL |= SYS_GPA_MFPL_PA0MFP_SPI0_MOSI | SYS_GPA_MFPL_PA2MFP_SPI0_CLK | SYS_GPA_MFPL_PA3MFP_SPI0_SS;
+    SYS->GPL_MFPH &= ~(SYS_GPL_MFPH_PL12MFP_Msk | SYS_GPL_MFPH_PL13MFP_Msk | SYS_GPL_MFPH_PL14MFP_Msk);
+    SYS->GPL_MFPH |= SYS_GPL_MFPH_PL12MFP_SPI0_SS0 | SYS_GPL_MFPH_PL13MFP_SPI0_CLK | SYS_GPL_MFPH_PL14MFP_SPI0_MOSI;
 
-    /* Configure SPI1 related multi-function pins. GPH[7:5] : SPI1_MOSI, SPI1_CLK, SPI1_SS. */
-    SYS->GPH_MFPL &= ~(SYS_GPH_MFPL_PH5MFP_Msk | SYS_GPH_MFPL_PH6MFP_Msk | SYS_GPH_MFPL_PH7MFP_Msk);
-    SYS->GPH_MFPL |= (SYS_GPH_MFPL_PH5MFP_SPI1_MOSI | SYS_GPH_MFPL_PH6MFP_SPI1_CLK | SYS_GPH_MFPL_PH7MFP_SPI1_SS);
+    /* Configure SPI1 related multi-function pins */
+    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC8MFP_Msk | SYS_GPC_MFPH_PC9MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk);
+    SYS->GPC_MFPH |= (SYS_GPC_MFPH_PC8MFP_SPI1_SS0 | SYS_GPC_MFPH_PC9MFP_SPI1_CLK | SYS_GPC_MFPH_PC10MFP_SPI1_MOSI);
 }
 
 void SPI_Init(void)
@@ -104,7 +97,7 @@ int main(void)
     SYS_Init();
 
     /* Configure UART0: 115200, 8-bit word, no parity bit, 1 stop bit. */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     /* Init SPI */
     SPI_Init();
@@ -118,9 +111,9 @@ int main(void)
     printf("Set both SPI0 and SPI1 to half-duplex.\n");
     printf("Bit length of a transaction: 32\n");
     printf("Please connect below I/O connections for SPI0 and SPI1:\n");
-    printf("    SPI0_SS(PA3)   <->   SPI1_SS(PH7)\n");
-    printf("    SPI0_CLK(PA2)  <->   SPI1_CLK(PH6)\n");
-    printf("    SPI0_MOSI(PA0) <->   SPI1_MOSI(PH5)\n\n");
+    printf("    SPI0_SS(PL12)   <->   SPI1_SS(PC8)\n");
+    printf("    SPI0_CLK(PL13)  <->   SPI1_CLK(PC9)\n");
+    printf("    SPI0_MOSI(PL14) <->   SPI1_MOSI(PC10)\n\n");
     printf("After the transfer is done, the received data will be printed out.\n");
 
 

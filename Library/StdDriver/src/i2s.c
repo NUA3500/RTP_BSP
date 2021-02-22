@@ -33,23 +33,23 @@ static uint32_t I2S_GetSourceClockFreq(I2S_T *i2s)
     uint32_t u32Freq, u32ClkSrcSel;
 
     /* get I2S selection clock source */
-    u32ClkSrcSel = CLK->CLKSEL3 & CLK_CLKSEL3_I2S0SEL_Msk;
+    u32ClkSrcSel = CLK->CLKSEL3 & CLK_CLKSEL4_I2S0SEL_Msk;
 
     switch (u32ClkSrcSel)
     {
-    case CLK_CLKSEL3_I2S0SEL_HXT:
+    case CLK_CLKSEL4_I2S0SEL_HXT:
         u32Freq = __HXT;
         break;
 
-    case CLK_CLKSEL3_I2S0SEL_PLL:
-        u32Freq = CLK_GetPLLClockFreq();
+    case CLK_CLKSEL4_I2S0SEL_APLL:
+        u32Freq = CLK_GetPLLClockFreq(APLL);
         break;
 
-    case CLK_CLKSEL3_I2S0SEL_HIRC:
+    case CLK_CLKSEL4_I2S0SEL_HIRC:
         u32Freq = __HIRC;
         break;
 
-    case CLK_CLKSEL3_I2S0SEL_PCLK0:
+    case CLK_CLKSEL4_I2S0SEL_PCLK0:
         u32Freq = (uint32_t)CLK_GetPCLK0Freq();
         break;
 

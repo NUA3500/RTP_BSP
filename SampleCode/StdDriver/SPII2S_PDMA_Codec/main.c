@@ -12,6 +12,7 @@
 #include "NuMicro.h"
 
 #define NAU8822     1
+#define PLL_CLOCK   192000000
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables                                                                                        */
@@ -246,47 +247,38 @@ void SYS_Init(void)
     /* Waiting for 12MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
 
-    /* Switch HCLK clock source to HXT */
-    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT,CLK_CLKDIV0_HCLK(1));
-
     /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
+    CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
+    /* Enable UART module clock */
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
-    /* Select PCLK0 as the clock source of SPI1 */
-    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL2_SPI1SEL_PCLK0, MODULE_NoMsk);
+    /* Select clock source of SPI1 */
+    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL4_SPI1SEL_HXT, MODULE_NoMsk);
 
     /* Enable peripheral clock */
-    CLK_EnableModuleClock(UART0_MODULE);
     CLK_EnableModuleClock(I2C2_MODULE);
     CLK_EnableModuleClock(SPI1_MODULE);
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
     SystemCoreClockUpdate();
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
-
-    SYS->GPD_MFPL &= ~(SYS_GPD_MFPL_PD0MFP_Msk | SYS_GPD_MFPL_PD1MFP_Msk);
-    SYS->GPD_MFPL |= (SYS_GPD_MFPL_PD0MFP_I2C2_SDA | SYS_GPD_MFPL_PD1MFP_I2C2_SCL);
-    PD->SMTEN |= GPIO_SMTEN_SMTEN1_Msk;
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
     /* Configure SPI1 related multi-function pins. */
-    /* GPH[7:4] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
-    SYS->GPH_MFPL &= ~(SYS_GPH_MFPL_PH4MFP_Msk | SYS_GPH_MFPL_PH5MFP_Msk | SYS_GPH_MFPL_PH6MFP_Msk | SYS_GPH_MFPL_PH7MFP_Msk);
-    SYS->GPH_MFPL |= (SYS_GPH_MFPL_PH4MFP_SPI1_MISO | SYS_GPH_MFPL_PH5MFP_SPI1_MOSI | SYS_GPH_MFPL_PH6MFP_SPI1_CLK | SYS_GPH_MFPL_PH7MFP_SPI1_SS);
-    PH->SMTEN |= GPIO_SMTEN_SMTEN6_Msk;
+    /* GPC[11:8] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
+    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC8MFP_Msk | SYS_GPC_MFPH_PC9MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk | SYS_GPC_MFPH_PC11MFP_Msk);
+    SYS->GPC_MFPH |= SYS_GPC_MFPH_PC8MFP_SPI1_SS0 | SYS_GPC_MFPH_PC9MFP_SPI1_CLK | SYS_GPC_MFPH_PC10MFP_SPI1_MOSI | SYS_GPC_MFPH_PC11MFP_SPI1_MISO;
 
-    /* GPH[3] : SPI1_MCLK */
-    SYS->GPH_MFPL = (SYS->GPH_MFPL & (~SYS_GPH_MFPL_PH3MFP_Msk)) | SYS_GPH_MFPL_PH3MFP_SPI1_I2SMCLK;
+    /* GPN[14] : SPI1_MCLK */
+    SYS->GPN_MFPH = (SYS->GPN_MFPH & (~SYS_GPN_MFPH_PN14MFP_Msk)) | SYS_GPN_MFPH_PN14MFP_SPI1_I2SMCLK;
 }
 
 // Configure PDMA to Scatter Gather mode */
@@ -296,36 +288,36 @@ void PDMA_Init(void)
     g_asDescTable_TX[0].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_TX[0].SA = (uint32_t)&PcmTxBuff[0];
     g_asDescTable_TX[0].DA = (uint32_t)&SPI1->TX;
-    g_asDescTable_TX[0].FIRST = (uint32_t)&g_asDescTable_TX[1] - (PDMA->SCATBA);
+    g_asDescTable_TX[0].FIRST = (uint32_t)&g_asDescTable_TX[1] - (PDMA2->SCATBA);
 
     g_asDescTable_TX[1].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_TX[1].SA = (uint32_t)&PcmTxBuff[1];
     g_asDescTable_TX[1].DA = (uint32_t)&SPI1->TX;
-    g_asDescTable_TX[1].FIRST = (uint32_t)&g_asDescTable_TX[0] - (PDMA->SCATBA);   //link to first description
+    g_asDescTable_TX[1].FIRST = (uint32_t)&g_asDescTable_TX[0] - (PDMA2->SCATBA);   //link to first description
 
     /* Rx description */
     g_asDescTable_RX[0].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_RX[0].SA = (uint32_t)&SPI1->RX;
     g_asDescTable_RX[0].DA = (uint32_t)&PcmRxBuff[0];
-    g_asDescTable_RX[0].FIRST = (uint32_t)&g_asDescTable_RX[1] - (PDMA->SCATBA);
+    g_asDescTable_RX[0].FIRST = (uint32_t)&g_asDescTable_RX[1] - (PDMA2->SCATBA);
 
     g_asDescTable_RX[1].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_RX[1].SA = (uint32_t)&SPI1->RX;
     g_asDescTable_RX[1].DA = (uint32_t)&PcmRxBuff[1];
-    g_asDescTable_RX[1].FIRST = (uint32_t)&g_asDescTable_RX[0] - (PDMA->SCATBA);   //link to first description
+    g_asDescTable_RX[1].FIRST = (uint32_t)&g_asDescTable_RX[0] - (PDMA2->SCATBA);   //link to first description
 
     /* Open PDMA channel 1 for SPI TX and channel 2 for SPI RX */
-    PDMA_Open(PDMA,0x3 << 1);
+    PDMA_Open(PDMA2,0x3 << 1);
 
     /* Configure PDMA transfer mode */
-    PDMA_SetTransferMode(PDMA,1, PDMA_SPI1_TX, 1, (uint32_t)&g_asDescTable_TX[0]);
-    PDMA_SetTransferMode(PDMA,2, PDMA_SPI1_RX, 1, (uint32_t)&g_asDescTable_RX[0]);
+    PDMA_SetTransferMode(PDMA2,1, PDMA_SPI1_TX, 1, (uint32_t)&g_asDescTable_TX[0]);
+    PDMA_SetTransferMode(PDMA2,2, PDMA_SPI1_RX, 1, (uint32_t)&g_asDescTable_RX[0]);
 
     /* Enable PDMA channel 1&2 interrupt */
-    PDMA_EnableInt(PDMA,1, 0);
-    PDMA_EnableInt(PDMA,2, 0);
+    PDMA_EnableInt(PDMA2,1, 0);
+    PDMA_EnableInt(PDMA2,2, 0);
 
-    NVIC_EnableIRQ(PDMA_IRQn);
+    NVIC_EnableIRQ(PDMA2_IRQn);
 }
 
 /* Init I2C interface */
@@ -349,7 +341,7 @@ int32_t main (void)
     SYS_LockReg();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     printf("+------------------------------------------------------------------------+\n");
     printf("|                SPII2S Driver Sample Code with audio codec              |\n");
@@ -372,7 +364,7 @@ int32_t main (void)
     PE13 = 0;
 
     // select source from HXT(12MHz)
-    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL2_SPI1SEL_HXT, 0);
+    CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL4_SPI1SEL_HXT, 0);
 
 #if NAU8822
     /* Initialize NAU8822 codec */
@@ -400,30 +392,30 @@ int32_t main (void)
     while(1);
 }
 
-void PDMA_IRQHandler(void)
+void PDMA2_IRQHandler(void)
 {
-    uint32_t u32Status = PDMA_GET_INT_STATUS(PDMA);
+    uint32_t u32Status = PDMA_GET_INT_STATUS(PDMA2);
 
     if (u32Status & 0x1)   /* abort */
     {
-        if (PDMA_GET_ABORT_STS(PDMA) & 0x4)
-            PDMA_CLR_ABORT_FLAG(PDMA,PDMA_ABTSTS_ABTIF1_Msk);
-        PDMA_CLR_ABORT_FLAG(PDMA,PDMA_ABTSTS_ABTIF2_Msk);
+        if (PDMA_GET_ABORT_STS(PDMA2) & 0x4)
+            PDMA_CLR_ABORT_FLAG(PDMA2,PDMA_ABTSTS_ABTIF1_Msk);
+        PDMA_CLR_ABORT_FLAG(PDMA2,PDMA_ABTSTS_ABTIF2_Msk);
     }
     else if (u32Status & 0x2)
     {
-        if (PDMA_GET_TD_STS(PDMA) & 0x4)            /* channel 2 done */
+        if (PDMA_GET_TD_STS(PDMA2) & 0x4)            /* channel 2 done */
         {
             /* Copy RX data to TX buffer */
             memcpy(&PcmTxBuff[u8TxIdx^1], &PcmRxBuff[u8RxIdx], BUFF_LEN*4);
             u8RxIdx ^= 1;
         }
-        if (PDMA_GET_TD_STS(PDMA) & 0x2)            /* channel 1 done */
+        if (PDMA_GET_TD_STS(PDMA2) & 0x2)            /* channel 1 done */
         {
             u8TxIdx ^= 1;
         }
-        PDMA_CLR_TD_FLAG(PDMA,PDMA_TDSTS_TDIF1_Msk);
-        PDMA_CLR_TD_FLAG(PDMA,PDMA_TDSTS_TDIF2_Msk);
+        PDMA_CLR_TD_FLAG(PDMA2,PDMA_TDSTS_TDIF1_Msk);
+        PDMA_CLR_TD_FLAG(PDMA2,PDMA_TDSTS_TDIF2_Msk);
     }
     else
         printf("unknown interrupt, status=0x%x!!\n", u32Status);

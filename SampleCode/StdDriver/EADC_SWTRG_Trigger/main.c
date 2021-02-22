@@ -30,25 +30,22 @@ void SYS_Init(void)
     /* Set core clock as PLL_CLOCK from PLL */
     CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set PCLK0 = PCLK1 = HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
     /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Enable EADC module clock */
     CLK_EnableModuleClock(EADC_MODULE);
 
     /* EADC clock source is 96MHz, set divider to 8, ADC clock is 96/8 MHz */
-    CLK_SetModuleClock(EADC_MODULE, 0, CLK_CLKDIV0_EADC(8));
+    CLK_SetModuleClock(EADC_MODULE, 0, CLK_CLKDIV4_EADC(8));
 
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
     /* Set PB.0 ~ PB.3 to input mode */
     PB->MODE &= ~(GPIO_MODE_MODE0_Msk | GPIO_MODE_MODE1_Msk | GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
     /* Configure the GPB0 - GPB3 ADC analog input pins.  */
@@ -65,7 +62,7 @@ void UART0_Init()
 {
 
     /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 void EADC_FunctionTest()
@@ -88,62 +85,62 @@ void EADC_FunctionTest()
         if(u8Option == '1')
         {
             /* Set input mode as single-end and enable the A/D converter */
-            EADC_Open(EADC, EADC_CTL_DIFFEN_SINGLE_END);
+            EADC_Open(EADC0, EADC_CTL_DIFFEN_SINGLE_END);
 
             /* Configure the sample module 0 for analog input channel 2 and software trigger source.*/
-            EADC_ConfigSampleModule(EADC, 0, EADC_SOFTWARE_TRIGGER, 2);
+            EADC_ConfigSampleModule(EADC0, 0, EADC_SOFTWARE_TRIGGER, 2);
 
             /* Clear the A/D ADINT0 interrupt flag for safe */
-            EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADIF0_Msk);
+            EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADIF0_Msk);
 
             /* Enable the sample module 0 interrupt.  */
-            EADC_ENABLE_INT(EADC, BIT0);//Enable sample module A/D ADINT0 interrupt.
-            EADC_ENABLE_SAMPLE_MODULE_INT(EADC, 0, BIT0);//Enable sample module 0 interrupt.
+            EADC_ENABLE_INT(EADC0, BIT0);//Enable sample module A/D ADINT0 interrupt.
+            EADC_ENABLE_SAMPLE_MODULE_INT(EADC0, 0, BIT0);//Enable sample module 0 interrupt.
             NVIC_EnableIRQ(EADC00_IRQn);
 
             /* Reset the ADC interrupt indicator and trigger sample module 0 to start A/D conversion */
             g_u32AdcIntFlag = 0;
-            EADC_START_CONV(EADC, BIT0);
+            EADC_START_CONV(EADC0, BIT0);
 
             /* Wait ADC interrupt (g_u32AdcIntFlag will be set at IRQ_Handler function) */
             while(g_u32AdcIntFlag == 0);
 
             /* Disable the ADINT0 interrupt */
-            EADC_DISABLE_INT(EADC, BIT0);
+            EADC_DISABLE_INT(EADC0, BIT0);
 
             /* Get the conversion result of the sample module 0 */
-            i32ConversionData = EADC_GET_CONV_DATA(EADC, 0);
+            i32ConversionData = EADC_GET_CONV_DATA(EADC0, 0);
             printf("Conversion result of channel 2: 0x%X (%d)\n\n", i32ConversionData, i32ConversionData);
         }
         else if(u8Option == '2')
         {
 
             /* Set input mode as differential and enable the A/D converter */
-            EADC_Open(EADC, EADC_CTL_DIFFEN_DIFFERENTIAL);
+            EADC_Open(EADC0, EADC_CTL_DIFFEN_DIFFERENTIAL);
 
             /* Configure the sample module 0 for analog input channel 2 and software trigger source */
-            EADC_ConfigSampleModule(EADC, 0, EADC_SOFTWARE_TRIGGER, 2);
+            EADC_ConfigSampleModule(EADC0, 0, EADC_SOFTWARE_TRIGGER, 2);
 
             /* Clear the A/D ADINT0 interrupt flag for safe */
-            EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADIF0_Msk);
+            EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADIF0_Msk);
 
             /* Enable the sample module 0 interrupt */
-            EADC_ENABLE_INT(EADC, BIT0);//Enable sample module A/D ADINT0 interrupt.
-            EADC_ENABLE_SAMPLE_MODULE_INT(EADC, 0, BIT0);//Enable sample module 0 interrupt.
+            EADC_ENABLE_INT(EADC0, BIT0);//Enable sample module A/D ADINT0 interrupt.
+            EADC_ENABLE_SAMPLE_MODULE_INT(EADC0, 0, BIT0);//Enable sample module 0 interrupt.
             NVIC_EnableIRQ(EADC00_IRQn);
 
             /* Reset the ADC interrupt indicator and trigger sample module 0 to start A/D conversion */
             g_u32AdcIntFlag = 0;
-            EADC_START_CONV(EADC, BIT0);
+            EADC_START_CONV(EADC0, BIT0);
 
             /* Wait ADC interrupt (g_u32AdcIntFlag will be set at IRQ_Handler function) */
             while(g_u32AdcIntFlag == 0);
 
             /* Disable the ADINT0 interrupt */
-            EADC_DISABLE_INT(EADC, BIT0);
+            EADC_DISABLE_INT(EADC0, BIT0);
 
             /* Get the conversion result of the sample module 0 */
-            i32ConversionData = EADC_GET_CONV_DATA(EADC, 0);
+            i32ConversionData = EADC_GET_CONV_DATA(EADC0, 0);
             printf("Conversion result of channel pair 1: 0x%X (%d)\n\n", i32ConversionData, i32ConversionData);
         }
         else
@@ -156,7 +153,7 @@ void EADC_FunctionTest()
 void EADC00_IRQHandler(void)
 {
     g_u32AdcIntFlag = 1;
-    EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADIF0_Msk);      /* Clear the A/D ADINT0 interrupt flag */
+    EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADIF0_Msk);      /* Clear the A/D ADINT0 interrupt flag */
 }
 
 int32_t main(void)

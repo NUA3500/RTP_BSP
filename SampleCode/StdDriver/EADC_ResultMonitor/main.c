@@ -31,25 +31,22 @@ void SYS_Init(void)
     /* Set core clock as PLL_CLOCK from PLL */
     CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set PCLK0 = PCLK1 = HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
     /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Enable EADC module clock */
     CLK_EnableModuleClock(EADC_MODULE);
 
     /* EADC clock source is 96MHz, set divider to 8, ADC clock is 96/8 MHz */
-    CLK_SetModuleClock(EADC_MODULE, 0, CLK_CLKDIV0_EADC(8));
+    CLK_SetModuleClock(EADC_MODULE, 0, CLK_CLKDIV4_EADC(8));
 
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
     /* Set PB.0 ~ PB.3 to input mode */
     PB->MODE &= ~(GPIO_MODE_MODE0_Msk | GPIO_MODE_MODE1_Msk | GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
     /* Configure the GPB0 - GPB3 ADC analog input pins.  */
@@ -66,7 +63,7 @@ void UART0_Init()
 {
 
     /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 void EADC_FunctionTest()
@@ -78,59 +75,59 @@ void EADC_FunctionTest()
     printf("\nIn this test, software will compare the conversion result of channel 2.\n");
 
     /* Set input mode as single-end and enable the A/D converter */
-    EADC_Open(EADC, EADC_CTL_DIFFEN_SINGLE_END);
+    EADC_Open(EADC0, EADC_CTL_DIFFEN_SINGLE_END);
 
     /* Configure the sample module 0 for analog input channel 2 and ADINT0 trigger source */
-    EADC_ConfigSampleModule(EADC, 0, EADC_ADINT0_TRIGGER, 2);
+    EADC_ConfigSampleModule(EADC0, 0, EADC_ADINT0_TRIGGER, 2);
 
     /* Enable EADC comparator 0. Compare condition: conversion result < 0x800; match Count=5 */
     printf("   Set the compare condition of comparator 0: channel 2 is less than 0x800; match count is 5.\n");
-    EADC_ENABLE_CMP0(EADC, 0, EADC_CMP_CMPCOND_LESS_THAN, 0x800, 5);
+    EADC_ENABLE_CMP0(EADC0, 0, EADC_CMP_CMPCOND_LESS_THAN, 0x800, 5);
 
     /* Enable EADC comparator 1. Compare condition: conversion result >= 0x800; match Count=5 */
     printf("   Set the compare condition of comparator 1 : channel 2 is greater than or equal to 0x800; match count is 5.\n");
-    EADC_ENABLE_CMP1(EADC, 0, EADC_CMP_CMPCOND_GREATER_OR_EQUAL, 0x800, 5);
+    EADC_ENABLE_CMP1(EADC0, 0, EADC_CMP_CMPCOND_GREATER_OR_EQUAL, 0x800, 5);
 
     /* Enable sample module 0 for ADINT0 */
-    EADC_ENABLE_SAMPLE_MODULE_INT(EADC, 0, BIT0);
+    EADC_ENABLE_SAMPLE_MODULE_INT(EADC0, 0, BIT0);
     /* Enable ADINT0 interrupt */
-    EADC_ENABLE_INT(EADC, BIT0);
+    EADC_ENABLE_INT(EADC0, BIT0);
 
     /* Clear the A/D ADINT3 interrupt flag for safe */
-    EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADIF3_Msk);
+    EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADIF3_Msk);
     /* Enable sample module 0 for ADINT3 */
-    EADC_ENABLE_SAMPLE_MODULE_INT(EADC, 3, BIT0);
+    EADC_ENABLE_SAMPLE_MODULE_INT(EADC0, 3, BIT0);
     /* Enable ADINT3 interrupt */
-    EADC_ENABLE_INT(EADC, BIT3);
+    EADC_ENABLE_INT(EADC0, BIT3);
     NVIC_EnableIRQ(EADC03_IRQn);
 
     /* Clear the EADC comparator 0 interrupt flag for safe */
-    EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADCMPF0_Msk);
+    EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADCMPF0_Msk);
     /* Enable ADC comparator 0 interrupt */
-    EADC_ENABLE_CMP_INT(EADC, 0);
+    EADC_ENABLE_CMP_INT(EADC0, 0);
 
     /* Clear the EADC comparator 1 interrupt flag for safe */
-    EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADCMPF1_Msk);
+    EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADCMPF1_Msk);
     /* Enable ADC comparator 1 interrupt */
-    EADC_ENABLE_CMP_INT(EADC, 1);
+    EADC_ENABLE_CMP_INT(EADC0, 1);
 
     /* Reset the EADC interrupt indicator and trigger sample module 0 to start A/D conversion */
     g_u32AdcCmp0IntFlag = 0;
     g_u32AdcCmp1IntFlag = 0;
-    EADC_START_CONV(EADC, BIT0);
+    EADC_START_CONV(EADC0, BIT0);
 
     /* Wait EADC compare interrupt */
     while((g_u32AdcCmp0IntFlag == 0) && (g_u32AdcCmp1IntFlag == 0));
 
     /* Disable the sample module 0 interrupt */
-    EADC_DISABLE_SAMPLE_MODULE_INT(EADC, 0, BIT0);
+    EADC_DISABLE_SAMPLE_MODULE_INT(EADC0, 0, BIT0);
 
     /* Disable ADC comparator interrupt */
-    EADC_DISABLE_CMP_INT(EADC, 0);
-    EADC_DISABLE_CMP_INT(EADC, 1);
+    EADC_DISABLE_CMP_INT(EADC0, 0);
+    EADC_DISABLE_CMP_INT(EADC0, 1);
     /* Disable compare function */
-    EADC_DISABLE_CMP0(EADC);
-    EADC_DISABLE_CMP1(EADC);
+    EADC_DISABLE_CMP0(EADC0);
+    EADC_DISABLE_CMP1(EADC0);
 
     if(g_u32AdcCmp0IntFlag == 1)
     {
@@ -145,18 +142,18 @@ void EADC_FunctionTest()
 
 void EADC03_IRQHandler(void)
 {
-    if(EADC_GET_INT_FLAG(EADC, EADC_STATUS2_ADCMPF0_Msk))
+    if(EADC_GET_INT_FLAG(EADC0, EADC_STATUS2_ADCMPF0_Msk))
     {
         g_u32AdcCmp0IntFlag = 1;
-        EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADCMPF0_Msk);/* Clear the A/D compare flag 0 */
+        EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADCMPF0_Msk);/* Clear the A/D compare flag 0 */
     }
 
-    if(EADC_GET_INT_FLAG(EADC, EADC_STATUS2_ADCMPF1_Msk))
+    if(EADC_GET_INT_FLAG(EADC0, EADC_STATUS2_ADCMPF1_Msk))
     {
         g_u32AdcCmp1IntFlag = 1;
-        EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADCMPF1_Msk);/* Clear the A/D compare flag 1 */
+        EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADCMPF1_Msk);/* Clear the A/D compare flag 1 */
     }
-    EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADIF3_Msk);
+    EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADIF3_Msk);
 }
 
 int32_t main(void)

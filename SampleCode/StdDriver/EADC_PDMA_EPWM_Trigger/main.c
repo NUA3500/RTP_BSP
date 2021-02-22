@@ -21,7 +21,7 @@ uint32_t g_u32SampleModuleNum = 0;
 void EADC00_IRQHandler(void)
 {
     g_u32AdcIntFlag = 1;
-    EADC_CLR_INT_FLAG(EADC, EADC_STATUS2_ADIF0_Msk);      /* Clear the A/D ADINT0 interrupt flag */
+    EADC_CLR_INT_FLAG(EADC0, EADC_STATUS2_ADIF0_Msk);      /* Clear the A/D ADINT0 interrupt flag */
 }
 
 void SYS_Init(void)
@@ -39,34 +39,29 @@ void SYS_Init(void)
     /* Set core clock as PLL_CLOCK from PLL */
     CLK_SetCoreClock(PLL_CLOCK);
 
-    /* Set PCLK0 = PCLK1 = HCLK/2 */
-    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
-
     /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
 
     /* Select UART module clock source as HXT and UART module clock divider as 1 */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
 
     /* Enable EPWM0 module clock */
     CLK_EnableModuleClock(EPWM0_MODULE);
 
-    /* Select EPWM0 module clock source as PCLK0 */
-    CLK_SetModuleClock(EPWM0_MODULE, CLK_CLKSEL2_EPWM0SEL_PCLK0, 0);
-
     /* Enable EADC module clock */
     CLK_EnableModuleClock(EADC_MODULE);
 
-    /* EADC clock source is 96MHz, set divider to 8, EADC clock is 96/8 MHz */
-    CLK_SetModuleClock(EADC_MODULE, 0, CLK_CLKDIV0_EADC(8));
+    /* EADC clock source is 96MHz, set divider to 8, ADC clock is 96/8 MHz */
+    CLK_SetModuleClock(EADC_MODULE, 0, CLK_CLKDIV4_EADC(8));
 
     /* Enable PDMA clock source */
-    CLK_EnableModuleClock(PDMA_MODULE);
+    CLK_EnableModuleClock(PDMA2_MODULE);
 
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
+
     /* Set PB.0 ~ PB.3 to input mode */
     PB->MODE &= ~(GPIO_MODE_MODE0_Msk | GPIO_MODE_MODE1_Msk | GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
     /* Configure the GPB0 - GPB3 ADC analog input pins.  */
@@ -85,7 +80,7 @@ void UART0_Init()
 
 
     /* Configure UART0 and set UART0 baud rate */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 }
 
 void EPWM0_Init()
@@ -118,31 +113,31 @@ void PDMA_Init()
 
     /* Configure PDMA peripheral mode form EADC to memory */
     /* Open Channel 2 */
-    PDMA_Open(PDMA,BIT2);
+    PDMA_Open(PDMA2,BIT2);
 
     /* transfer width is half word(16 bit) and transfer count is 6 */
-    PDMA_SetTransferCnt(PDMA,2, PDMA_WIDTH_16, 6);
+    PDMA_SetTransferCnt(PDMA2,2, PDMA_WIDTH_16, 6);
 
     /* Set source address as EADC data register(no increment) and destination address as g_i32ConversionData array(increment) */
-    PDMA_SetTransferAddr(PDMA,2, (uint32_t)&EADC->DAT[g_u32SampleModuleNum], PDMA_SAR_FIX, (uint32_t)g_i32ConversionData, PDMA_DAR_INC);
+    PDMA_SetTransferAddr(PDMA2,2, (uint32_t)&EADC0->DAT[g_u32SampleModuleNum], PDMA_SAR_FIX, (uint32_t)g_i32ConversionData, PDMA_DAR_INC);
 
     /* Select PDMA request source as ADC RX */
-    PDMA_SetTransferMode(PDMA,2, PDMA_EADC0_RX, FALSE, 0);
+    PDMA_SetTransferMode(PDMA2,2, PDMA_EADC0_RX, FALSE, 0);
 
     /* Set PDMA as single request type for EADC */
-    PDMA_SetBurstType(PDMA,2, PDMA_REQ_SINGLE, PDMA_BURST_4);
+    PDMA_SetBurstType(PDMA2,2, PDMA_REQ_SINGLE, PDMA_BURST_4);
 
-    PDMA_EnableInt(PDMA,2, PDMA_INT_TRANS_DONE);
-    NVIC_EnableIRQ(PDMA_IRQn);
+    PDMA_EnableInt(PDMA2,2, PDMA_INT_TRANS_DONE);
+    NVIC_EnableIRQ(PDMA2_IRQn);
 }
 
 void ReloadPDMA()
 {
     /* transfer width is half word(16 bit) and transfer count is 6 */
-    PDMA_SetTransferCnt(PDMA,2, PDMA_WIDTH_16, 6);
+    PDMA_SetTransferCnt(PDMA2, 2, PDMA_WIDTH_16, 6);
 
     /* Select PDMA request source as ADC RX */
-    PDMA_SetTransferMode(PDMA,2, PDMA_EADC0_RX, FALSE, 0);
+    PDMA_SetTransferMode(PDMA2, 2, PDMA_EADC0_RX, FALSE, 0);
 }
 
 
@@ -170,11 +165,11 @@ void EADC_FunctionTest()
         if(u8Option == '1')
         {
             /* Set input mode as single-end and enable the A/D converter */
-            EADC_Open(EADC, EADC_CTL_DIFFEN_SINGLE_END);
+            EADC_Open(EADC0, EADC_CTL_DIFFEN_SINGLE_END);
 
             /* Configure the sample module 0 for analog input channel 2 and enable EPWM0 trigger source */
-            EADC_ConfigSampleModule(EADC, g_u32SampleModuleNum, EADC_EPWM0TG0_TRIGGER, 2);
-            EADC_ENABLE_PDMA(EADC);
+            EADC_ConfigSampleModule(EADC0, g_u32SampleModuleNum, EADC_EPWM0TG0_TRIGGER, 2);
+            EADC_ENABLE_SAMPLE_MODULE_PDMA(EADC0, 1<<g_u32SampleModuleNum);
 
             printf("Conversion result of channel 2:\n");
 
@@ -199,10 +194,10 @@ void EADC_FunctionTest()
         else if(u8Option == '2')
         {
             /* Set input mode as differential and enable the A/D converter */
-            EADC_Open(EADC, EADC_CTL_DIFFEN_DIFFERENTIAL);
+            EADC_Open(EADC0, EADC_CTL_DIFFEN_DIFFERENTIAL);
             /* Configure the sample module 0 for analog input channel 2 and software trigger source.*/
-            EADC_ConfigSampleModule(EADC, g_u32SampleModuleNum, EADC_EPWM0TG0_TRIGGER, 2);
-            EADC_ENABLE_PDMA(EADC);
+            EADC_ConfigSampleModule(EADC0, g_u32SampleModuleNum, EADC_EPWM0TG0_TRIGGER, 2);
+            EADC_ENABLE_SAMPLE_MODULE_PDMA(EADC0, 1<<g_u32SampleModuleNum);
 
 
             printf("Conversion result of channel 2:\n");
@@ -228,26 +223,26 @@ void EADC_FunctionTest()
         else
             return ;
 
-        EADC_Close(EADC);
+        EADC_Close(EADC0);
     }
 }
 
 
-void PDMA_IRQHandler(void)
+void PDMA2_IRQHandler(void)
 {
-    uint32_t status = PDMA_GET_INT_STATUS(PDMA);
+    uint32_t status = PDMA_GET_INT_STATUS(PDMA2);
 
     if(status & PDMA_INTSTS_ABTIF_Msk)    /* abort */
     {
-        if(PDMA_GET_ABORT_STS(PDMA) & PDMA_ABTSTS_ABTIF2_Msk)
+        if(PDMA_GET_ABORT_STS(PDMA2) & PDMA_ABTSTS_ABTIF2_Msk)
             g_u32IsTestOver = 2;
-        PDMA_CLR_ABORT_FLAG(PDMA,PDMA_ABTSTS_ABTIF2_Msk);
+        PDMA_CLR_ABORT_FLAG(PDMA2,PDMA_ABTSTS_ABTIF2_Msk);
     }
     else if(status & PDMA_INTSTS_TDIF_Msk)      /* done */
     {
-        if(PDMA_GET_TD_STS(PDMA) & PDMA_TDSTS_TDIF2_Msk)
+        if(PDMA_GET_TD_STS(PDMA2) & PDMA_TDSTS_TDIF2_Msk)
             g_u32IsTestOver = 1;
-        PDMA_CLR_TD_FLAG(PDMA,PDMA_TDSTS_TDIF2_Msk);
+        PDMA_CLR_TD_FLAG(PDMA2,PDMA_TDSTS_TDIF2_Msk);
     }
     else
         printf("unknown interrupt !!\n");
@@ -286,10 +281,10 @@ int32_t main(void)
     CLK_DisableModuleClock(EPWM0_MODULE);
 
     /* Disable PDMA clock source */
-    CLK_DisableModuleClock(PDMA_MODULE);
+    CLK_DisableModuleClock(PDMA0_MODULE);
 
     /* Disable PDMA Interrupt */
-    NVIC_DisableIRQ(PDMA_IRQn);
+    NVIC_DisableIRQ(PDMA2_IRQn);
 
     printf("Exit EADC sample code\n");
 
