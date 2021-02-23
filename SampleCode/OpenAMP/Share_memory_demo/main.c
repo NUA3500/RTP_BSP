@@ -29,21 +29,16 @@ void SYS_Init(void)
     SYS_UnlockReg();
 
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART1_MODULE);
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV1_UART16(1));
+    CLK_EnableModuleClock(UART16_MODULE);
     CLK_EnableModuleClock(TMR2_MODULE);
-
-
-    /* Select IP clock source */
-    //CLK_SetModuleClock(UART1_MODULE,CLK_CLKSEL1_UART_S_XTAL,CLK_CLKDIV_UART(1));
 
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
     /*---------------------------------------------------------------------------------------------------------*/
-    /* Set multi-function pins for UART RXD, TXD */
-
-
-    /* To update the variable SystemCoreClock */
-    SystemCoreClockUpdate();
+    /* Set multi-function pins for Debug UART RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD;
 
     /* Lock protected registers */
     SYS_LockReg();
