@@ -30,7 +30,7 @@
         <option>
           <name>Variant</name>
           <version>20</version>
-          <state>39</state>
+          <state>40</state>
         </option>
         <option>
           <name>GEndianMode</name>
@@ -65,7 +65,7 @@
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
@@ -138,12 +138,12 @@
         <option>
           <name>GFPUCoreSlave</name>
           <version>20</version>
-          <state>39</state>
+          <state>40</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
           <version>20</version>
-          <state>39</state>
+          <state>40</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
@@ -301,7 +301,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\M480\Include</state>
+          <state>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\Library\CMSIS\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\Library\StdDriver\inc</state>
         </option>
@@ -700,11 +700,11 @@
         </option>
         <option>
           <name>IlinkIcfOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\generic_cortex.icf</state>
+          <state>$PROJ_DIR$\..\..\..\..\Script\ma35d1_rtp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -939,10 +939,10 @@
   <group>
     <name>CMSIS</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\M480\Source\IAR\startup_M480.s</name>
+      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\IAR\startup_ma35d1_rtp.s</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\M480\Source\system_M480.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Library\Device\Nuvoton\ma35d1_rtp\Source\system_ma35d1_rtp.c</name>
     </file>
   </group>
   <group>

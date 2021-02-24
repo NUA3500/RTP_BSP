@@ -119,8 +119,10 @@ extern "C"
 #define PDMA_I2C1_RX     41UL /*!<DMA Connect to I2C1_RX \hideinitializer */
 #define PDMA_I2C2_TX     42UL /*!<DMA Connect to I2C2_TX \hideinitializer */
 #define PDMA_I2C2_RX     43UL /*!<DMA Connect to I2C2_RX \hideinitializer */
-#define PDMA_I2S0_TX     44UL /*!<DMA Connect to I2S0_TX \hideinitializer */
-#define PDMA_I2S0_RX     45UL /*!<DMA Connect to I2S0_RX \hideinitializer */
+#define PDMA_I2S0_TX     86UL /*!<DMA Connect to I2S0_TX \hideinitializer */
+#define PDMA_I2S0_RX     87UL /*!<DMA Connect to I2S0_RX \hideinitializer */
+#define PDMA_I2S1_TX     88UL /*!<DMA Connect to I2S0_TX \hideinitializer */
+#define PDMA_I2S1_RX     89UL /*!<DMA Connect to I2S0_RX \hideinitializer */
 #define PDMA_TMR0        46UL /*!<DMA Connect to TMR0 \hideinitializer */
 #define PDMA_TMR1        47UL /*!<DMA Connect to TMR1 \hideinitializer */
 #define PDMA_TMR2        48UL /*!<DMA Connect to TMR2 \hideinitializer */
