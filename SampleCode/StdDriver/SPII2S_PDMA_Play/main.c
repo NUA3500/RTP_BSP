@@ -74,8 +74,8 @@ int32_t main(void)
     printf("      I2S format\n");
     printf("      TX 1/2 value: 0x50005000/0xA000A000, 0x50015001/0xA001A001, ... \n");
     printf("  The I/O connection for I2S1 (SPI1):\n");
-    printf("      I2S1_LRCLK (PC8)\n      I2S1_BCLK(PC9)\n");
-    printf("      I2S1_DI (PC11)\n      I2S1_DO (PC10)\n\n");
+    printf("      I2S1_LRCLK (PK12)\n      I2S1_BCLK(PK13)\n");
+    printf("      I2S1_DI (PK14)\n      I2S1_DO (PK15)\n\n");
     printf("      This sample code will transmit and receive %d data with PDMA transfer.\n", CHECK_BUFF_LEN);
     printf("      Connect I2S_DI and I2S_DO to check if the received values and its' sequence\n are the same with the data which stored in two transmit buffers.\n");
     printf("      After PDMA transfer is finished, the received values will be printed.\n\n");
@@ -104,12 +104,12 @@ int32_t main(void)
     g_asDescTable_TX[0].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_TX[0].SA = (uint32_t)&PcmTxBuff[0];
     g_asDescTable_TX[0].DA = (uint32_t)&SPI1->TX;
-    g_asDescTable_TX[0].FIRST = (uint32_t)&g_asDescTable_TX[1] - (PDMA2->SCATBA);
+    g_asDescTable_TX[0].FIRST = (uint32_t)&g_asDescTable_TX[1];
 
     g_asDescTable_TX[1].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_TX[1].SA = (uint32_t)&PcmTxBuff[1];
     g_asDescTable_TX[1].DA = (uint32_t)&SPI1->TX;
-    g_asDescTable_TX[1].FIRST = (uint32_t)&g_asDescTable_TX[0] - (PDMA2->SCATBA);   //link to first description
+    g_asDescTable_TX[1].FIRST = (uint32_t)&g_asDescTable_TX[0];   //link to first description
 
     /* Rx description */
     g_asDescTable_DataRX[0].CTL = ((CHECK_BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_BASIC;
@@ -172,6 +172,7 @@ void SYS_Init(void)
     /* Enable peripheral clock */
     CLK_EnableModuleClock(SPI1_MODULE);
     CLK_EnableModuleClock(PDMA2_MODULE);
+    CLK_EnableModuleClock(GPD_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
@@ -181,10 +182,16 @@ void SYS_Init(void)
     SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
     SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
+    /* PB8: I2C2_SDA; PB9: I2C2_SCL */
+    SYS->GPB_MFPH = (SYS->GPB_MFPH & (~(SYS_GPB_MFPH_PB8MFP_Msk|SYS_GPB_MFPH_PB9MFP_Msk))) | SYS_GPB_MFPH_PB8MFP_I2C2_SDA | SYS_GPB_MFPH_PB9MFP_I2C2_SCL;
+    
     /* Configure SPI1 related multi-function pins. */
-    /* GPC[11:8] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
-    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC8MFP_Msk | SYS_GPC_MFPH_PC9MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk | SYS_GPC_MFPH_PC11MFP_Msk);
-    SYS->GPC_MFPH |= SYS_GPC_MFPH_PC8MFP_SPI1_SS0 | SYS_GPC_MFPH_PC9MFP_SPI1_CLK | SYS_GPC_MFPH_PC10MFP_SPI1_MOSI | SYS_GPC_MFPH_PC11MFP_SPI1_MISO;
+    /* GPK[12:15] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
+    SYS->GPK_MFPH &= ~(SYS_GPK_MFPH_PK12MFP_Msk | SYS_GPK_MFPH_PK13MFP_Msk | SYS_GPK_MFPH_PK14MFP_Msk | SYS_GPK_MFPH_PK15MFP_Msk);
+    SYS->GPK_MFPH |= SYS_GPK_MFPH_PK12MFP_SPI1_SS0 | SYS_GPK_MFPH_PK13MFP_SPI1_CLK | SYS_GPK_MFPH_PK14MFP_SPI1_MOSI | SYS_GPK_MFPH_PK15MFP_SPI1_MISO;
+
+    /* GPN[14] : SPI1_MCLK */
+    SYS->GPN_MFPH = (SYS->GPN_MFPH & (~SYS_GPN_MFPH_PN14MFP_Msk)) | SYS_GPN_MFPH_PN14MFP_SPI1_I2SMCLK;
 
 }
 

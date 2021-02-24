@@ -263,6 +263,7 @@ void SYS_Init(void)
     CLK_EnableModuleClock(I2C2_MODULE);
     CLK_EnableModuleClock(SPI1_MODULE);
     CLK_EnableModuleClock(PDMA2_MODULE);
+    CLK_EnableModuleClock(GPD_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
@@ -272,10 +273,13 @@ void SYS_Init(void)
     SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
     SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
+    /* PB8: I2C2_SDA; PB9: I2C2_SCL */
+    SYS->GPB_MFPH = (SYS->GPB_MFPH & (~(SYS_GPB_MFPH_PB8MFP_Msk|SYS_GPB_MFPH_PB9MFP_Msk))) | SYS_GPB_MFPH_PB8MFP_I2C2_SDA | SYS_GPB_MFPH_PB9MFP_I2C2_SCL;
+    
     /* Configure SPI1 related multi-function pins. */
-    /* GPC[11:8] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
-    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC8MFP_Msk | SYS_GPC_MFPH_PC9MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk | SYS_GPC_MFPH_PC11MFP_Msk);
-    SYS->GPC_MFPH |= SYS_GPC_MFPH_PC8MFP_SPI1_SS0 | SYS_GPC_MFPH_PC9MFP_SPI1_CLK | SYS_GPC_MFPH_PC10MFP_SPI1_MOSI | SYS_GPC_MFPH_PC11MFP_SPI1_MISO;
+    /* GPK[12:15] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
+    SYS->GPK_MFPH &= ~(SYS_GPK_MFPH_PK12MFP_Msk | SYS_GPK_MFPH_PK13MFP_Msk | SYS_GPK_MFPH_PK14MFP_Msk | SYS_GPK_MFPH_PK15MFP_Msk);
+    SYS->GPK_MFPH |= SYS_GPK_MFPH_PK12MFP_SPI1_SS0 | SYS_GPK_MFPH_PK13MFP_SPI1_CLK | SYS_GPK_MFPH_PK14MFP_SPI1_MOSI | SYS_GPK_MFPH_PK15MFP_SPI1_MISO;
 
     /* GPN[14] : SPI1_MCLK */
     SYS->GPN_MFPH = (SYS->GPN_MFPH & (~SYS_GPN_MFPH_PN14MFP_Msk)) | SYS_GPN_MFPH_PN14MFP_SPI1_I2SMCLK;
@@ -288,23 +292,23 @@ void PDMA_Init(void)
     g_asDescTable_TX[0].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_TX[0].SA = (uint32_t)&PcmTxBuff[0];
     g_asDescTable_TX[0].DA = (uint32_t)&SPI1->TX;
-    g_asDescTable_TX[0].FIRST = (uint32_t)&g_asDescTable_TX[1] - (PDMA2->SCATBA);
+    g_asDescTable_TX[0].FIRST = (uint32_t)&g_asDescTable_TX[1]; 
 
     g_asDescTable_TX[1].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_TX[1].SA = (uint32_t)&PcmTxBuff[1];
     g_asDescTable_TX[1].DA = (uint32_t)&SPI1->TX;
-    g_asDescTable_TX[1].FIRST = (uint32_t)&g_asDescTable_TX[0] - (PDMA2->SCATBA);   //link to first description
+    g_asDescTable_TX[1].FIRST = (uint32_t)&g_asDescTable_TX[0];   //link to first description
 
     /* Rx description */
     g_asDescTable_RX[0].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_RX[0].SA = (uint32_t)&SPI1->RX;
     g_asDescTable_RX[0].DA = (uint32_t)&PcmRxBuff[0];
-    g_asDescTable_RX[0].FIRST = (uint32_t)&g_asDescTable_RX[1] - (PDMA2->SCATBA);
+    g_asDescTable_RX[0].FIRST = (uint32_t)&g_asDescTable_RX[1];
 
     g_asDescTable_RX[1].CTL = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     g_asDescTable_RX[1].SA = (uint32_t)&SPI1->RX;
     g_asDescTable_RX[1].DA = (uint32_t)&PcmRxBuff[1];
-    g_asDescTable_RX[1].FIRST = (uint32_t)&g_asDescTable_RX[0] - (PDMA2->SCATBA);   //link to first description
+    g_asDescTable_RX[1].FIRST = (uint32_t)&g_asDescTable_RX[0];   //link to first description
 
     /* Open PDMA channel 1 for SPI TX and channel 2 for SPI RX */
     PDMA_Open(PDMA2,0x3 << 1);
@@ -358,10 +362,11 @@ int32_t main (void)
 
     SPII2S_Open(SPI1, SPII2S_MODE_SLAVE, 16000, SPII2S_DATABIT_16, SPII2S_STEREO, SPII2S_FORMAT_I2S);
 
-    /* Set PE.13 low to enable phone jack on NuMaker board. */
-    SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE13MFP_Msk);
-    GPIO_SetMode(PE, BIT13, GPIO_MODE_OUTPUT);
-    PE13 = 0;
+    /* Set PD.13 low to enable phone jack on NuMaker board. */
+    /* PD.13(AUDIO_JKEN : keep output low) */
+    SYS->GPD_MFPH = (SYS->GPD_MFPH & ~(SYS_GPD_MFPH_PD13MFP_Msk));
+    GPIO_SetMode(PD, BIT13, GPIO_MODE_OUTPUT);
+    PD13 = 0;
 
     // select source from HXT(12MHz)
     CLK_SetModuleClock(SPI1_MODULE, CLK_CLKSEL4_SPI1SEL_HXT, 0);

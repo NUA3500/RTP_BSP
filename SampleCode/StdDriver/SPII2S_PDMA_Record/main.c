@@ -73,8 +73,8 @@ int32_t main(void)
     printf("      I2S format\n");
     printf("      TX value: 0x50005000, 0x50015001, ... \n");
     printf("  The I/O connection for I2S:\n");
-    printf("      I2S1_LRCLK (PC8)\n      I2S1_BCLK(PC9)\n");
-    printf("      I2S1_DI (PC11)\n      I2S1_DO (PC10)\n\n");
+    printf("      I2S1_LRCLK (PK12)\n      I2S1_BCLK(PK13)\n");
+    printf("      I2S1_DI (PK14)\n      I2S1_DO (PK15)\n\n");
     printf("      This sample code will transmit and receive data with PDMA transfer.\n");
     printf("      Connect I2S_DI and I2S_DO to check if the data which stored in two receive\n buffers are the same with the transmitted values.\n");
     printf("      After PDMA transfer is finished, the received values will be printed.\n\n");
@@ -184,9 +184,12 @@ void SYS_Init(void)
     SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
     /* Configure SPI1 related multi-function pins. */
-    /* GPC[11:8] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
-    SYS->GPC_MFPH &= ~(SYS_GPC_MFPH_PC8MFP_Msk | SYS_GPC_MFPH_PC9MFP_Msk | SYS_GPC_MFPH_PC10MFP_Msk | SYS_GPC_MFPH_PC11MFP_Msk);
-    SYS->GPC_MFPH |= SYS_GPC_MFPH_PC8MFP_SPI1_SS0 | SYS_GPC_MFPH_PC9MFP_SPI1_CLK | SYS_GPC_MFPH_PC10MFP_SPI1_MOSI | SYS_GPC_MFPH_PC11MFP_SPI1_MISO;
+    /* GPK[12:15] : SPI1_CLK (I2S1_BCLK), SPI1_MISO (I2S1_DI), SPI1_MOSI (I2S1_DO), SPI1_SS (I2S1_LRCLK). */
+    SYS->GPK_MFPH &= ~(SYS_GPK_MFPH_PK12MFP_Msk | SYS_GPK_MFPH_PK13MFP_Msk | SYS_GPK_MFPH_PK14MFP_Msk | SYS_GPK_MFPH_PK15MFP_Msk);
+    SYS->GPK_MFPH |= SYS_GPK_MFPH_PK12MFP_SPI1_SS0 | SYS_GPK_MFPH_PK13MFP_SPI1_CLK | SYS_GPK_MFPH_PK14MFP_SPI1_MOSI | SYS_GPK_MFPH_PK15MFP_SPI1_MISO;
+
+    /* GPN[14] : SPI1_MCLK */
+    SYS->GPN_MFPH = (SYS->GPN_MFPH & (~SYS_GPN_MFPH_PN14MFP_Msk)) | SYS_GPN_MFPH_PN14MFP_SPI1_I2SMCLK;
 }
 
 void PDMA2_IRQHandler(void)
