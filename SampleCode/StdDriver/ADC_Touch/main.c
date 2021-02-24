@@ -52,13 +52,14 @@ void SYS_Init(void)
     SYS_UnlockReg();
 
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART1_MODULE);
-    CLK_EnableModuleClock(ADC0_MODULE);
+    CLK_EnableModuleClock(ADC_MODULE);
+    CLK_EnableModuleClock(GPB_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
     CLK_EnableModuleClock(TMR2_MODULE);
 
     /* Select IP clock source */
-    CLK_SetModuleClock(UART1_MODULE,CLK_CLKSEL1_UART_S_XTAL,CLK_CLKDIV_UART(1));
-    CLK_SetModuleClock(ADC0_MODULE,CLK_CLKSEL1_ADC_S_XTAL,CLK_CLKDIV_ADC0(20));
+    CLK_SetModuleClock(ADC_MODULE, 0, CLK_CLKDIV4_ADC(20));  // Set ADC clock rate to 9MHz
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
     CLK_SetModuleClock(TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_HXT, 0);
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
@@ -93,7 +94,7 @@ int32_t main (void)
     SYS_Init();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART1, 115200);
+    UART_Open(UART16, 115200);
 
     printf("\nThis sample code demonstrate 4-wire touch panel convert function and prints the result on UART\n");
 

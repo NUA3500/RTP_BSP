@@ -30,7 +30,7 @@
         <option>
           <name>Variant</name>
           <version>20</version>
-          <state>34</state>
+          <state>40</state>
         </option>
         <option>
           <name>GEndianMode</name>
@@ -61,11 +61,11 @@
         <option>
           <name>FPU</name>
           <version>2</version>
-          <state>0</state>
+          <state>5</state>
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
@@ -138,12 +138,12 @@
         <option>
           <name>GFPUCoreSlave</name>
           <version>20</version>
-          <state>34</state>
+          <state>40</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
           <version>20</version>
-          <state>34</state>
+          <state>40</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
@@ -212,7 +212,7 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state></state>
+          <state>Pa082</state>
         </option>
         <option>
           <name>CCDiagRemark</name>
@@ -700,11 +700,11 @@
         </option>
         <option>
           <name>IlinkIcfOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\generic_cortex.icf</state>
+          <state>$PROJ_DIR$\ADC_Touch.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -958,6 +958,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Library\StdDriver\src\sys.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\Library\StdDriver\src\timer.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Library\StdDriver\src\uart.c</name>
