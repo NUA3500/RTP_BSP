@@ -23,13 +23,13 @@
 /**
   * @brief      Set PWM Counter Clock Source
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32CntClkSrc    PWM counter clock source, could be one of following source
   *                                 - \ref TPWM_CNTR_CLKSRC_TMR_CLK
-  *                                 - \ref TPWM_CNTR_CLKSRC_TIMER0_INT
-  *                                 - \ref TPWM_CNTR_CLKSRC_TIMER1_INT
   *                                 - \ref TPWM_CNTR_CLKSRC_TIMER2_INT
   *                                 - \ref TPWM_CNTR_CLKSRC_TIMER3_INT
+  *                                 - \ref TPWM_CNTR_CLKSRC_TIMER4_INT
+  *                                 - \ref TPWM_CNTR_CLKSRC_TIMER5_INT
   *
   * @return     None
   *
@@ -43,7 +43,7 @@ void TPWM_SetCounterClockSource(TIMER_T *timer, uint32_t u32CntClkSrc)
 /**
   * @brief      Configure PWM Output Frequency and Duty Cycle
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32Frequency    Target generator frequency.
   * @param[in]  u32DutyCycle    Target generator duty cycle percentage. Valid range are between 0~100. 10 means 10%, 20 means 20%...
   *
@@ -57,7 +57,7 @@ uint32_t TPWM_ConfigOutputFreqAndDuty(TIMER_T *timer, uint32_t u32Frequency, uin
     uint32_t u32PWMClockFreq, u32TargetFreq;
     uint32_t u32Prescaler = 0x1000UL, u32Period, u32CMP;
 
-    u32PWMClockFreq = CLK_GetPCLK0Freq();
+    u32PWMClockFreq = CLK_GetPLLClockFreq(SYSPLL);
 
     /* Calculate u16PERIOD and u16PSC */
     for (u32Prescaler = 1UL; u32Prescaler <= 0x1000UL; u32Prescaler++)
@@ -102,7 +102,7 @@ uint32_t TPWM_ConfigOutputFreqAndDuty(TIMER_T *timer, uint32_t u32Frequency, uin
 /**
   * @brief      Enable Dead-Time Function
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32DTCount  Dead-Time duration in PWM clock count, valid values are between 0x0~0xFFF, but 0x0 means there is no Dead-Time insertion.
   *
   * @return     None
@@ -118,7 +118,7 @@ void TPWM_EnableDeadTime(TIMER_T *timer, uint32_t u32DTCount)
 /**
   * @brief      Enable Dead-Time Function
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32DTCount  Dead-Time duration in PWM clock count, valid values are between 0x0~0xFFF, but 0x0 means there is no Dead-Time insertion.
   *
   * @return     None
@@ -134,7 +134,7 @@ void TPWM_EnableDeadTimeWithPrescale(TIMER_T *timer, uint32_t u32DTCount)
 /**
   * @brief      Disable Dead-Time Function
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   *
   * @return     None
   *
@@ -149,7 +149,7 @@ void TPWM_DisableDeadTime(TIMER_T *timer)
 /**
   * @brief      Enable PWM Counter
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   *
   * @return     None
   *
@@ -163,7 +163,7 @@ void TPWM_EnableCounter(TIMER_T *timer)
 /**
   * @brief      Disable PWM Generator
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   *
   * @return     None
   *
@@ -177,7 +177,7 @@ void TPWM_DisableCounter(TIMER_T *timer)
 /**
   * @brief      Enable Trigger ADC
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32Condition    The condition to trigger ADC. It could be one of following conditions:
   *                                 - \ref TPWM_TRIGGER_ADC_AT_ZERO_POINT
   *                                 - \ref TPWM_TRIGGER_ADC_AT_PERIOD_POINT
@@ -197,7 +197,7 @@ void TPWM_EnableTriggerADC(TIMER_T *timer, uint32_t u32Condition)
 /**
   * @brief      Disable Trigger ADC
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   *
   * @return     None
   *
@@ -211,7 +211,7 @@ void TPWM_DisableTriggerADC(TIMER_T *timer)
 /**
   * @brief      Enable Fault Brake Function
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32CH0Level     PWMx_CH0 output level while fault brake event occurs. Valid value is one of following setting
   *                                 - \ref TPWM_OUTPUT_TOGGLE
   *                                 - \ref TPWM_OUTPUT_NOTHING
@@ -253,7 +253,7 @@ void TPWM_EnableFaultBrake(TIMER_T *timer, uint32_t u32CH0Level, uint32_t u32CH1
 /**
   * @brief      Enable Fault Brake Interrupt
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32IntSource    Interrupt source, could be one of following source
   *                                 - \ref TPWM_BRAKE_EDGE
   *                                 - \ref TPWM_BRAKE_LEVEL
@@ -271,7 +271,7 @@ void TPWM_EnableFaultBrakeInt(TIMER_T *timer, uint32_t u32IntSource)
 /**
   * @brief      Disable Fault Brake Interrupt
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32IntSource    Interrupt source, could be one of following source
   *                                 - \ref TPWM_BRAKE_EDGE
   *                                 - \ref TPWM_BRAKE_LEVEL
@@ -289,7 +289,7 @@ void TPWM_DisableFaultBrakeInt(TIMER_T *timer, uint32_t u32IntSource)
 /**
   * @brief      Indicate Fault Brake Interrupt Flag
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32IntSource    Interrupt source, could be one of following source
   *                                 - \ref TPWM_BRAKE_EDGE
   *                                 - \ref TPWM_BRAKE_LEVEL
@@ -308,7 +308,7 @@ uint32_t TPWM_GetFaultBrakeIntFlag(TIMER_T *timer, uint32_t u32IntSource)
 /**
   * @brief      Clear Fault Brake Interrupt Flags
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32IntSource    Interrupt source, could be one of following source
   *                                 - \ref TPWM_BRAKE_EDGE
   *                                 - \ref TPWM_BRAKE_LEVEL
@@ -326,7 +326,7 @@ void TPWM_ClearFaultBrakeIntFlag(TIMER_T *timer, uint32_t u32IntSource)
 /**
   * @brief      Enable load mode of selected channel
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32LoadMode  Timer PWM counter loading mode, could be one of following mode
   *                             - \ref TPWM_LOAD_MODE_PERIOD
   *                             - \ref TPWM_LOAD_MODE_IMMEDIATE
@@ -345,7 +345,7 @@ void TPWM_SetLoadMode(TIMER_T *timer, uint32_t u32LoadMode)
 /**
   * @brief      Enable brake pin noise filter function
   *
-  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer           The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in]  u32BrakePinSrc  The external brake pin source, could be one of following source
   *                                 - \ref TPWM_TM_BRAKE0
   *                                 - \ref TPWM_TM_BRAKE1
@@ -378,7 +378,7 @@ void TPWM_EnableBrakePinDebounce(TIMER_T *timer, uint32_t u32BrakePinSrc, uint32
 /**
   * @brief      Disable brake pin noise filter function
   *
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   *
   * @return     None
   *
@@ -392,7 +392,7 @@ void TPWM_DisableBrakePinDebounce(TIMER_T *timer)
 
 /**
   * @brief Enable brake pin inverse function
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @return None
   * @details This function is used to enable PWM brake pin inverse function.
   */
@@ -403,7 +403,7 @@ void TPWM_EnableBrakePinInverse(TIMER_T *timer)
 
 /**
   * @brief Disable brake pin inverse function
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @return None
   * @details This function is used to disable PWM brake pin inverse function.
   */
@@ -414,7 +414,7 @@ void TPWM_DisableBrakePinInverse(TIMER_T *timer)
 
 /**
   * @brief Set brake pin source
-  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER0, TIMER1, TIMER2, TIMER3.
+  * @param[in]  timer       The pointer of the specified Timer module. It could be TIMER2 ~ TIMER11.
   * @param[in] u32BrakePinNum Brake pin selection. One of the following:
   *                 - \ref TPWM_TM_BRAKE0
   *                 - \ref TPWM_TM_BRAKE1

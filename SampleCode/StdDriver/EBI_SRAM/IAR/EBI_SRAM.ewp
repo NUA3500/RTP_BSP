@@ -44,7 +44,7 @@
                 </option>
                 <option>
                     <name>OGCoreOrChip</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GRuntimeLibSelect</name>
@@ -766,7 +766,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFile</name>
-                    <state>D:\_M4_TSI\Script\ma35d1_rtp.icf</state>
+                    <state>$PROJ_DIR$\..\..\..\..\Script\ma35d1_rtp.icf</state>
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
@@ -999,7 +999,7 @@
                 </option>
                 <option>
                     <name>IlinkTrustzoneImportLibraryOut</name>
-                    <state>###Unitialized###</state>
+                    <state>EBI_SRAM_import_lib.o</state>
                 </option>
             </data>
         </settings>

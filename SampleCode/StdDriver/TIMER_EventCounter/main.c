@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file     main.c
  *
- * @brief    Use pin PA.11 to demonstrates timer event counter function
+ * @brief    Use pin PJ.12 to demonstrates timer event counter function
  *
  *
  * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
@@ -9,57 +9,41 @@
 #include <stdio.h>
 #include "NuMicro.h"
 
-void TMR0_IRQHandler(void)
+void TMR2_IRQHandler(void)
 {
     printf("Count 1000 falling events! Test complete\n");
-    TIMER_ClearIntFlag(TIMER0);
+    TIMER_ClearIntFlag(TIMER2);
 
 }
 
 void SYS_Init(void)
 {
-
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Enable External XTAL (4~24 MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
-
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(TMR0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
+    CLK_EnableModuleClock(TMR2_MODULE);
+    CLK_EnableModuleClock(GPC_MODULE);
 
     /* Select IP clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HXT, 0);
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
+    CLK_SetModuleClock(TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_HXT, 0);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
 
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
     /* Set timer event counting pin */
-    SYS->GPB_MFPL |= SYS_GPB_MFPL_PB5MFP_TM0;
+    SYS->GPJ_MFPH |= SYS_GPJ_MFPH_PJ12MFP_TM2;
 
     /* Lock protected registers */
     SYS_LockReg();
 }
-
 
 int main(void)
 {
@@ -72,35 +56,35 @@ int main(void)
     SYS_Init();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
-    printf("\nThis sample code use TM0_CNT_OUT(PB.5) to count PB.4 input event\n");
-    printf("Please connect PB.5 to PB.4, press any key to continue\n");
+    printf("\nThis sample code use TM2_CNT_OUT(PJ.12) to count PC.4 input event\n");
+    printf("Please connect PJ.12 to PC.4, press any key to continue\n");
     getchar();
 
-    PB->DOUT |= 1 << GPIO_DOUT_DOUT4_Pos;    // Set init state to high
-    PB->MODE = (PB->MODE & ~GPIO_MODE_MODE4_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE4_Pos);  // Set to output mode
+    /* Configure PC.4 as Output mode */
+    GPIO_SetMode(PC, BIT4, GPIO_MODE_OUTPUT);
 
     // Give a dummy target frequency here. Will over write prescale and compare value with macro
-    TIMER_Open(TIMER0, TIMER_ONESHOT_MODE, 100);
+    TIMER_Open(TIMER2, TIMER_ONESHOT_MODE, 100);
 
     // Update prescale and compare value to what we need in event counter mode.
-    TIMER_SET_PRESCALE_VALUE(TIMER0, 0);
-    TIMER_SET_CMP_VALUE(TIMER0, 1000);
+    TIMER_SET_PRESCALE_VALUE(TIMER2, 0);
+    TIMER_SET_CMP_VALUE(TIMER2, 1000);
     // Counter increase on falling edge
-    TIMER_EnableEventCounter(TIMER0, TIMER_COUNTER_EVENT_FALLING);
-    // Start Timer 0
-    TIMER_Start(TIMER0);
+    TIMER_EnableEventCounter(TIMER2, TIMER_COUNTER_EVENT_FALLING);
+    // Start Timer 2
+    TIMER_Start(TIMER2);
     // Enable timer interrupt
-    TIMER_EnableInt(TIMER0);
-    NVIC_EnableIRQ(TMR0_IRQn);
+    TIMER_EnableInt(TIMER2);
+    NVIC_EnableIRQ(TMR2_IRQn);
 
 
     for(i = 0; i < 1000; i++)
     {
-        PB4 = 0; // low
+        PC4 = 0; // low
         CLK_SysTickDelay(1);
-        PB4 = 1;  // high
+        PC4 = 1;  // high
         CLK_SysTickDelay(1);
     }
 

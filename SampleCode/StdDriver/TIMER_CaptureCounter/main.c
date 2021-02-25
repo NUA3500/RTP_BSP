@@ -24,46 +24,40 @@ void TMR2_IRQHandler(void)
 
 void SYS_Init(void)
 {
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init System Clock                                                                                       */
+    /*---------------------------------------------------------------------------------------------------------*/
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
+    SystemCoreClockUpdate();
 
-    /* Enable External XTAL (4~24 MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+    /* Enable UART clock */
+    CLK_EnableModuleClock(UART16_MODULE);
 
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
-
-    /* Enable UART peripheral clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HIRC, CLK_CLKDIV0_UART0(1));
+    /* Select UART clock source from HXT */
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
     /* Enable TIMER peripheral clock */
-    CLK_EnableModuleClock(TMR0_MODULE);
+    CLK_EnableModuleClock(TMR4_MODULE);
     CLK_EnableModuleClock(TMR2_MODULE);
     CLK_EnableModuleClock(TMR3_MODULE);
-    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HXT, 0);
-    CLK_SetModuleClock(TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_HIRC, 0);
+    CLK_SetModuleClock(TMR4_MODULE, CLK_CLKSEL1_TMR4SEL_HXT, 0);
+    CLK_SetModuleClock(TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_HXT, 0);
     CLK_SetModuleClock(TMR3_MODULE, CLK_CLKSEL1_TMR3SEL_HXT, 0);
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set multi-function pins for UART */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    /* Set multi-function pins for Timer0/Timer3 toggle-output pin and Timer2 event counter pin */
-    SYS->GPG_MFPL |= SYS_GPG_MFPL_PG2MFP_TM0 | SYS_GPG_MFPL_PG4MFP_TM2;
-    SYS->GPF_MFPH |= SYS_GPF_MFPH_PF11MFP_TM3;
+    /* Set multi-function pins for Timer4/Timer3 toggle-output pin and Timer2 event counter pin */
+    SYS->GPL_MFPH |= SYS_GPL_MFPH_PL8MFP_TM4;
+    SYS->GPJ_MFPH |= SYS_GPJ_MFPH_PJ14MFP_TM3 | SYS_GPJ_MFPH_PJ12MFP_TM2;
 
     /* Set multi-function pin for Timer2 external capture pin */
-    SYS->GPH_MFPL |= SYS_GPH_MFPL_PH2MFP_TM2_EXT;
+    SYS->GPJ_MFPH |= SYS_GPJ_MFPH_PJ13MFP_TM2_EXT;
 
     /* Lock protected registers */
     SYS_LockReg();
@@ -79,7 +73,7 @@ int main(void)
     SYS_Init();
 
     /* Init UART for printf */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
@@ -87,7 +81,7 @@ int main(void)
     printf("|    Timer2 Capture Counter Sample Code    |\n");
     printf("+------------------------------------------+\n\n");
 
-    printf("# Timer0 Settings:\n");
+    printf("# Timer4 Settings:\n");
     printf("    - Clock source is HXT\n");
     printf("    - Time-out frequency is 1000 Hz\n");
     printf("    - Toggle-output mode and frequency is 500 Hz\n");
@@ -96,21 +90,21 @@ int main(void)
     printf("    - Time-out frequency is 2 Hz\n");
     printf("    - Toggle-output mode and frequency is 1 Hz\n");
     printf("# Timer2 Settings:\n");
-    printf("    - Clock source is HIRC              \n");
+    printf("    - Clock source is HXT               \n");
     printf("    - Continuous counting mode          \n");
     printf("    - Interrupt enable                  \n");
     printf("    - Compared value is 0xFFFFFF        \n");
     printf("    - Event counter mode enable         \n");
     printf("    - External capture mode enable      \n");
     printf("    - Capture trigger interrupt enable  \n");
-    printf("# Connect TM0(PG.2) toggle-output pin to TM2(PG.4) event counter pin.\n");
-    printf("# Connect TM3(PF.11) toggle-output pin to TM2_EXT(PH.2) external capture pin.\n\n");
+    printf("# Connect TM4(PL.8)  toggle-output pin to TM2(PJ.12) event counter pin.\n");
+    printf("# Connect TM3(PJ.14) toggle-output pin to TM2_EXT(PJ.13) external capture pin.\n\n");
 
     /* Enable Timer2 NVIC */
     NVIC_EnableIRQ(TMR2_IRQn);
 
-    /* Open Timer0 in toggle-output mode and toggle-output frequency is 500 Hz*/
-    TIMER_Open(TIMER0, TIMER_TOGGLE_MODE, 1000);
+    /* Open Timer4 in toggle-output mode and toggle-output frequency is 500 Hz*/
+    TIMER_Open(TIMER4, TIMER_TOGGLE_MODE, 1000);
 
     /* Open Timer3 in toggle-output mode and toggle-output frequency is 1 Hz */
     TIMER_Open(TIMER3, TIMER_TOGGLE_MODE, 2);
@@ -130,8 +124,8 @@ int main(void)
     /* Clear Timer2 interrupt counts to 0 */
     u32InitCount = g_au32TMRINTCount[2] = 0;
 
-    /* Start Timer0, Timer3 and Timer2 counting */
-    TIMER_Start(TIMER0);
+    /* Start Timer4, Timer3 and Timer2 counting */
+    TIMER_Start(TIMER4);
     TIMER_Start(TIMER3);
     TIMER_Start(TIMER2);
 
@@ -239,8 +233,8 @@ int main(void)
         }
     }
 
-    /* Stop Timer0, Timer2 and Timer3 counting */
-    TIMER_Stop(TIMER0);
+    /* Stop Timer4, Timer2 and Timer3 counting */
+    TIMER_Stop(TIMER4);
     TIMER_Stop(TIMER2);
     TIMER_Stop(TIMER3);
 

@@ -1,4 +1,4 @@
-/**************************************************************************//**
+ /**************************************************************************//**
  * @file     main.c
  *
  * @brief    Implement timer counting in periodic mode.
@@ -14,30 +14,6 @@
 volatile uint32_t g_au32TMRINTCount[4] = {0};
 
 
-void TMR0_IRQHandler(void)
-{
-    if(TIMER_GetIntFlag(TIMER0) == 1)
-    {
-        /* Clear Timer0 time-out interrupt flag */
-        TIMER_ClearIntFlag(TIMER0);
-
-        g_au32TMRINTCount[0]++;
-    }
-}
-
-
-void TMR1_IRQHandler(void)
-{
-    if(TIMER_GetIntFlag(TIMER1) == 1)
-    {
-        /* Clear Timer1 time-out interrupt flag */
-        TIMER_ClearIntFlag(TIMER1);
-
-        g_au32TMRINTCount[1]++;
-    }
-}
-
-
 void TMR2_IRQHandler(void)
 {
     if(TIMER_GetIntFlag(TIMER2) == 1)
@@ -45,7 +21,7 @@ void TMR2_IRQHandler(void)
         /* Clear Timer2 time-out interrupt flag */
         TIMER_ClearIntFlag(TIMER2);
 
-        g_au32TMRINTCount[2]++;
+        g_au32TMRINTCount[0]++;
     }
 }
 
@@ -57,6 +33,30 @@ void TMR3_IRQHandler(void)
         /* Clear Timer3 time-out interrupt flag */
         TIMER_ClearIntFlag(TIMER3);
 
+        g_au32TMRINTCount[1]++;
+    }
+}
+
+
+void TMR4_IRQHandler(void)
+{
+    if(TIMER_GetIntFlag(TIMER4) == 1)
+    {
+        /* Clear Timer4 time-out interrupt flag */
+        TIMER_ClearIntFlag(TIMER4);
+
+        g_au32TMRINTCount[2]++;
+    }
+}
+
+
+void TMR5_IRQHandler(void)
+{
+    if(TIMER_GetIntFlag(TIMER5) == 1)
+    {
+        /* Clear Timer5 time-out interrupt flag */
+        TIMER_ClearIntFlag(TIMER5);
+
         g_au32TMRINTCount[3]++;
     }
 }
@@ -66,42 +66,27 @@ void SYS_Init(void)
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Enable HIRC clock */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
-
     /* Enable UART module clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
+    CLK_EnableModuleClock(UART16_MODULE);
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
 
     /* Enable TIMER module clock */
-    CLK_EnableModuleClock(TMR0_MODULE);
-    CLK_EnableModuleClock(TMR1_MODULE);
     CLK_EnableModuleClock(TMR2_MODULE);
     CLK_EnableModuleClock(TMR3_MODULE);
-    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HXT, 0);
-    CLK_SetModuleClock(TMR1_MODULE, CLK_CLKSEL1_TMR1SEL_PCLK0, 0);
-    CLK_SetModuleClock(TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_HIRC, 0);
-    CLK_SetModuleClock(TMR3_MODULE, CLK_CLKSEL1_TMR3SEL_HXT, 0);
+    CLK_EnableModuleClock(TMR4_MODULE);
+    CLK_EnableModuleClock(TMR5_MODULE);
+    CLK_SetModuleClock(TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_HXT, 0);
+    CLK_SetModuleClock(TMR3_MODULE, CLK_CLKSEL1_TMR3SEL_HIRC, 0);
+    CLK_SetModuleClock(TMR4_MODULE, CLK_CLKSEL1_TMR4SEL_HIRC, 0);
+    CLK_SetModuleClock(TMR5_MODULE, CLK_CLKSEL1_TMR5SEL_HXT, 0);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
     /* Lock protected registers */
     SYS_LockReg();
@@ -119,68 +104,68 @@ int main(void)
     SYS_Init();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
     printf("+--------------------------------------------+\n");
     printf("|    Timer Periodic Interrupt Sample Code    |\n");
     printf("+--------------------------------------------+\n\n");
 
-    printf("# Timer0 Settings:\n");
+    printf("# Timer2 Settings:\n");
     printf("    - Clock source is HXT       \n");
     printf("    - Time-out frequency is 1 Hz\n");
     printf("    - Periodic mode             \n");
     printf("    - Interrupt enable          \n");
-    printf("# Timer1 Settings:\n");
-    printf("    - Clock source is HCLK      \n");
+    printf("# Timer3 Settings:\n");
+    printf("    - Clock source is HIRC      \n");
     printf("    - Time-out frequency is 2 Hz\n");
     printf("    - Periodic mode             \n");
     printf("    - Interrupt enable          \n");
-    printf("# Timer2 Settings:\n");
+    printf("# Timer4 Settings:\n");
     printf("    - Clock source is HIRC      \n");
     printf("    - Time-out frequency is 4 Hz\n");
     printf("    - Periodic mode             \n");
     printf("    - Interrupt enable          \n");
-    printf("# Timer3 Settings:\n");
+    printf("# Timer5 Settings:\n");
     printf("    - Clock source is HXT       \n");
     printf("    - Time-out frequency is 8 Hz\n");
     printf("    - Periodic mode             \n");
     printf("    - Interrupt enable          \n");
-    printf("# Check Timer0 ~ Timer3 interrupt counts are reasonable or not.\n\n");
+    printf("# Check Timer2 ~ Timer5 interrupt counts are reasonable or not.\n\n");
 
-    /* Open Timer0 in periodic mode, enable interrupt and 1 interrupt tick per second */
-    TIMER_Open(TIMER0, TIMER_PERIODIC_MODE, 1);
-    TIMER_EnableInt(TIMER0);
-
-    /* Open Timer1 in periodic mode, enable interrupt and 2 interrupt ticks per second */
-    TIMER_Open(TIMER1, TIMER_PERIODIC_MODE, 2);
-    TIMER_EnableInt(TIMER1);
-
-    /* Open Timer2 in periodic mode, enable interrupt and 4 interrupt ticks per second */
-    TIMER_Open(TIMER2, TIMER_PERIODIC_MODE, 4);
+    /* Open Timer2 in periodic mode, enable interrupt and 1 interrupt tick per second */
+    TIMER_Open(TIMER2, TIMER_PERIODIC_MODE, 1);
     TIMER_EnableInt(TIMER2);
 
-    /* Open Timer3 in periodic mode, enable interrupt and 8 interrupt ticks per second */
-    TIMER_Open(TIMER3, TIMER_PERIODIC_MODE, 8);
+    /* Open Timer3 in periodic mode, enable interrupt and 2 interrupt ticks per second */
+    TIMER_Open(TIMER3, TIMER_PERIODIC_MODE, 2);
     TIMER_EnableInt(TIMER3);
 
-    /* Enable Timer0 ~ Timer3 NVIC */
-    NVIC_EnableIRQ(TMR0_IRQn);
-    NVIC_EnableIRQ(TMR1_IRQn);
+    /* Open Timer4 in periodic mode, enable interrupt and 4 interrupt ticks per second */
+    TIMER_Open(TIMER4, TIMER_PERIODIC_MODE, 4);
+    TIMER_EnableInt(TIMER4);
+
+    /* Open Timer5 in periodic mode, enable interrupt and 8 interrupt ticks per second */
+    TIMER_Open(TIMER5, TIMER_PERIODIC_MODE, 8);
+    TIMER_EnableInt(TIMER5);
+
+    /* Enable Timer2 ~ Timer5 NVIC */
     NVIC_EnableIRQ(TMR2_IRQn);
     NVIC_EnableIRQ(TMR3_IRQn);
+    NVIC_EnableIRQ(TMR4_IRQn);
+    NVIC_EnableIRQ(TMR5_IRQn);
 
-    /* Clear Timer0 ~ Timer3 interrupt counts to 0 */
+    /* Clear Timer2 ~ Timer5 interrupt counts to 0 */
     g_au32TMRINTCount[0] = g_au32TMRINTCount[1] = g_au32TMRINTCount[2] = g_au32TMRINTCount[3] = 0;
     u32InitCount = g_au32TMRINTCount[0];
 
-    /* Start Timer0 ~ Timer3 counting */
-    TIMER_Start(TIMER0);
-    TIMER_Start(TIMER1);
+    /* Start Timer2 ~ Timer5 counting */
     TIMER_Start(TIMER2);
     TIMER_Start(TIMER3);
+    TIMER_Start(TIMER4);
+    TIMER_Start(TIMER5);
 
-    /* Check Timer0 ~ Timer3 interrupt counts */
+    /* Check Timer2 ~ Timer5 interrupt counts */
     printf("# Timer interrupt counts :\n");
     while(u32InitCount < 20)
     {
@@ -190,7 +175,7 @@ int main(void)
             au32Counts[1] = g_au32TMRINTCount[1];
             au32Counts[2] = g_au32TMRINTCount[2];
             au32Counts[3] = g_au32TMRINTCount[3];
-            printf("    TMR0:%3d    TMR1:%3d    TMR2:%3d    TMR3:%3d\n",
+            printf("    TMR2:%3d    TMR3:%3d    TMR4:%3d    TMR5:%3d\n",
                    au32Counts[0], au32Counts[1], au32Counts[2], au32Counts[3]);
             u32InitCount = g_au32TMRINTCount[0];
 

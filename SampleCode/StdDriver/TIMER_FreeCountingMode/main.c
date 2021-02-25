@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file     main.c
  *
- * @brief    Use the timer pin PA.11 to demonstrate timer free counting mode
+ * @brief    Use the timer pin PJ.13 to demonstrate timer free counting mode
  *           function. And displays the measured input frequency to
  *           UART console
  *
@@ -11,21 +11,21 @@
 #include "NuMicro.h"
 
 
-void TMR0_IRQHandler(void)
+void TMR2_IRQHandler(void)
 {
     static int cnt = 0;
     static uint32_t t0, t1;
 
-    TIMER_ClearCaptureIntFlag(TIMER0);
+    TIMER_ClearCaptureIntFlag(TIMER2);
 
     if(cnt == 0)
     {
-        t0 = TIMER_GetCaptureData(TIMER0);
+        t0 = TIMER_GetCaptureData(TIMER2);
         cnt++;
     }
     else if(cnt == 1)
     {
-        t1 = TIMER_GetCaptureData(TIMER0);
+        t1 = TIMER_GetCaptureData(TIMER2);
         cnt++;
         if(t0 >= t1)
         {
@@ -33,7 +33,7 @@ void TMR0_IRQHandler(void)
         }
         else
         {
-            printf("Input frequency is %dHz\n", 96000000 / (t1 - t0));
+            printf("Input frequency is %dHz\n", 180000000 / (t1 - t0));
         }
     }
     else
@@ -51,39 +51,24 @@ void SYS_Init(void)
     /* Unlock protected registers */
     SYS_UnlockReg();
 
-    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
-    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
-
-    /* Enable External XTAL (4~24 MHz) */
-    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
-
-    /* Waiting for 12MHz clock ready */
-    CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk);
-
-    /* Set core clock as PLL_CLOCK from PLL */
-    CLK_SetCoreClock(FREQ_192MHZ);
-
-    /* Set both PCLK0 and PCLK1 as HCLK/2 */
-    CLK->PCLKDIV = CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2;
-
     /* Enable IP clock */
-    CLK_EnableModuleClock(UART0_MODULE);
-    CLK_EnableModuleClock(TMR0_MODULE);
+    CLK_EnableModuleClock(UART16_MODULE);
+    CLK_EnableModuleClock(TMR2_MODULE);
 
     /* Select IP clock source */
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HXT, CLK_CLKDIV0_UART0(1));
-    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_PCLK0, 0);
+    CLK_SetModuleClock(UART16_MODULE, CLK_CLKSEL3_UART16SEL_HXT, CLK_CLKDIV3_UART16(1));
+    CLK_SetModuleClock(TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_PCLK1, 0);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock. */
     SystemCoreClockUpdate();
 
-    /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFPH &= ~(SYS_GPB_MFPH_PB12MFP_Msk | SYS_GPB_MFPH_PB13MFP_Msk);
-    SYS->GPB_MFPH |= (SYS_GPB_MFPH_PB12MFP_UART0_RXD | SYS_GPB_MFPH_PB13MFP_UART0_TXD);
+    /* Set GPK multi-function pins for UART16 RXD and TXD */
+    SYS->GPK_MFPL &= ~(SYS_GPK_MFPL_PK2MFP_Msk | SYS_GPK_MFPL_PK3MFP_Msk);
+    SYS->GPK_MFPL |= (SYS_GPK_MFPL_PK2MFP_UART16_RXD | SYS_GPK_MFPL_PK3MFP_UART16_TXD);
 
-    /* Set Timer 0 capture pin */
-    SYS->GPA_MFPH |= SYS_GPA_MFPH_PA11MFP_TM0_EXT;
+    /* Set Timer 2 capture pin */
+    SYS->GPJ_MFPH |= SYS_GPJ_MFPH_PJ13MFP_TM2_EXT;
 
     /* Lock protected registers */
     SYS_LockReg();
@@ -102,30 +87,30 @@ int main(void)
     SYS_Init();
 
     /* Init UART to 115200-8n1 for print message */
-    UART_Open(UART0, 115200);
+    UART_Open(UART16, 115200);
 
     printf("\nThis sample code demonstrate timer free counting mode.\n");
-    printf("Please connect input source with Timer 0 capture pin PA.11, press any key to continue\n");
+    printf("Please connect input source with Timer 2 capture pin PJ.13, press any key to continue\n");
     getchar();
 
     // Give a dummy target frequency here. Will over write capture resolution with macro
-    TIMER_Open(TIMER0, TIMER_PERIODIC_MODE, 1000000);
+    TIMER_Open(TIMER2, TIMER_PERIODIC_MODE, 1000000);
 
     // Update prescale to set proper resolution.
-    TIMER_SET_PRESCALE_VALUE(TIMER0, 0);
+    TIMER_SET_PRESCALE_VALUE(TIMER2, 0);
 
     // Set compare value as large as possible, so don't need to worry about counter overrun too frequently.
-    TIMER_SET_CMP_VALUE(TIMER0, 0xFFFFFF);
+    TIMER_SET_CMP_VALUE(TIMER2, 0xFFFFFF);
 
-    // Configure Timer 0 free counting mode, capture TDR value on rising edge
-    TIMER_EnableCapture(TIMER0, TIMER_CAPTURE_FREE_COUNTING_MODE, TIMER_CAPTURE_EVENT_RISING);
+    // Configure Timer 2 free counting mode, capture TDR value on rising edge
+    TIMER_EnableCapture(TIMER2, TIMER_CAPTURE_FREE_COUNTING_MODE, TIMER_CAPTURE_EVENT_RISING);
 
-    // Start Timer 0
-    TIMER_Start(TIMER0);
+    // Start Timer 2
+    TIMER_Start(TIMER2);
 
     // Enable timer interrupt
-    TIMER_EnableCaptureInt(TIMER0);
-    NVIC_EnableIRQ(TMR0_IRQn);
+    TIMER_EnableCaptureInt(TIMER2);
+    NVIC_EnableIRQ(TMR2_IRQn);
 
     while(1);
 
