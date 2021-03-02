@@ -74,28 +74,8 @@ void RTC_Open(S_RTC_TIME_DATA_T *sPt)
         }
     }
 
-    if(sPt == 0)
-    {
-    }
-    else
-    {
-        /* Set RTC date and time */
-        RTC_SetDateAndTime(sPt);
-    }
-}
-
-/**
-  * @brief      Disable RTC Clock
-  *
-  * @param      None
-  *
-  * @return     None
-  *
-  * @details    This API will disable RTC peripheral clock and stops RTC counting.
-  */
-void RTC_Close(void)
-{
-    CLK->APBCLK0 &= ~CLK_APBCLK0_RTCCKEN_Msk;
+    /* Set RTC date and time */
+    RTC_SetDateAndTime(sPt);
 }
 
 /**
@@ -313,53 +293,47 @@ void RTC_SetDateAndTime(S_RTC_TIME_DATA_T *sPt)
 {
     uint32_t u32RegCAL, u32RegTIME;
 
-    if(sPt == 0ul)
-    {
-    }
-    else
-    {
-        sPt->u32TimeScale = (RTC->CLKFMT & RTC_CLKFMT_24HEN_Msk);
+    sPt->u32TimeScale = (RTC->CLKFMT & RTC_CLKFMT_24HEN_Msk);
 
-        /*-----------------------------------------------------------------------------------------------------*/
-        /* Set RTC 24/12 hour setting and Day of the Week                                                      */
-        /*-----------------------------------------------------------------------------------------------------*/
-        if(sPt->u32TimeScale == RTC_CLOCK_12)
+    /*-----------------------------------------------------------------------------------------------------*/
+    /* Set RTC 24/12 hour setting and Day of the Week                                                      */
+    /*-----------------------------------------------------------------------------------------------------*/
+    if(sPt->u32TimeScale == RTC_CLOCK_12)
+    {
+        /*-------------------------------------------------------------------------------------------------*/
+        /* Important, range of 12-hour PM mode is 21 up to 32                                               */
+        /*-------------------------------------------------------------------------------------------------*/
+        if(sPt->u32AmPm == RTC_PM)
         {
-            /*-------------------------------------------------------------------------------------------------*/
-            /* Important, range of 12-hour PM mode is 21 up to 32                                               */
-            /*-------------------------------------------------------------------------------------------------*/
-            if(sPt->u32AmPm == RTC_PM)
-            {
-                sPt->u32Hour += 20ul;
-            }
+            sPt->u32Hour += 20ul;
         }
-
-        /* Set Day of the Week */
-        RTC->WEEKDAY = sPt->u32DayOfWeek;
-
-        /*-----------------------------------------------------------------------------------------------------*/
-        /* Set RTC Current Date and Time                                                                       */
-        /*-----------------------------------------------------------------------------------------------------*/
-        u32RegCAL  = ((sPt->u32Year - RTC_YEAR2000) / 10ul) << 20;
-        u32RegCAL |= (((sPt->u32Year - RTC_YEAR2000) % 10ul) << 16);
-        u32RegCAL |= ((sPt->u32Month  / 10ul) << 12);
-        u32RegCAL |= ((sPt->u32Month  % 10ul) << 8);
-        u32RegCAL |= ((sPt->u32Day    / 10ul) << 4);
-        u32RegCAL |= (sPt->u32Day     % 10ul);
-
-        u32RegTIME  = ((sPt->u32Hour   / 10ul) << 20);
-        u32RegTIME |= ((sPt->u32Hour   % 10ul) << 16);
-        u32RegTIME |= ((sPt->u32Minute / 10ul) << 12);
-        u32RegTIME |= ((sPt->u32Minute % 10ul) << 8);
-        u32RegTIME |= ((sPt->u32Second / 10ul) << 4);
-        u32RegTIME |= (sPt->u32Second % 10ul);
-
-        /*-----------------------------------------------------------------------------------------------------*/
-        /* Set RTC Calender and Time Loading                                                                   */
-        /*-----------------------------------------------------------------------------------------------------*/
-        RTC->CAL  = (uint32_t)u32RegCAL;
-        RTC->TIME = (uint32_t)u32RegTIME;
     }
+
+    /* Set Day of the Week */
+    RTC->WEEKDAY = sPt->u32DayOfWeek;
+
+    /*-----------------------------------------------------------------------------------------------------*/
+    /* Set RTC Current Date and Time                                                                       */
+    /*-----------------------------------------------------------------------------------------------------*/
+    u32RegCAL  = ((sPt->u32Year - RTC_YEAR2000) / 10ul) << 20;
+    u32RegCAL |= (((sPt->u32Year - RTC_YEAR2000) % 10ul) << 16);
+    u32RegCAL |= ((sPt->u32Month  / 10ul) << 12);
+    u32RegCAL |= ((sPt->u32Month  % 10ul) << 8);
+    u32RegCAL |= ((sPt->u32Day    / 10ul) << 4);
+    u32RegCAL |= (sPt->u32Day     % 10ul);
+
+    u32RegTIME  = ((sPt->u32Hour   / 10ul) << 20);
+    u32RegTIME |= ((sPt->u32Hour   % 10ul) << 16);
+    u32RegTIME |= ((sPt->u32Minute / 10ul) << 12);
+    u32RegTIME |= ((sPt->u32Minute % 10ul) << 8);
+    u32RegTIME |= ((sPt->u32Second / 10ul) << 4);
+    u32RegTIME |= (sPt->u32Second % 10ul);
+
+    /*-----------------------------------------------------------------------------------------------------*/
+    /* Set RTC Calender and Time Loading                                                                   */
+    /*-----------------------------------------------------------------------------------------------------*/
+    RTC->CAL  = (uint32_t)u32RegCAL;
+    RTC->TIME = (uint32_t)u32RegTIME;
 }
 
 /**
@@ -386,47 +360,41 @@ void RTC_SetAlarmDateAndTime(S_RTC_TIME_DATA_T *sPt)
 {
     uint32_t u32RegCALM, u32RegTALM;
 
-    if(sPt == 0)
-    {
-    }
-    else
-    {
-        sPt->u32TimeScale = (RTC->CLKFMT & RTC_CLKFMT_24HEN_Msk);
+    sPt->u32TimeScale = (RTC->CLKFMT & RTC_CLKFMT_24HEN_Msk);
 
-        /*-----------------------------------------------------------------------------------------------------*/
-        /* Set RTC 24/12 hour setting and Day of the Week                                                      */
-        /*-----------------------------------------------------------------------------------------------------*/
-        if(sPt->u32TimeScale == RTC_CLOCK_12)
+    /*-----------------------------------------------------------------------------------------------------*/
+    /* Set RTC 24/12 hour setting and Day of the Week                                                      */
+    /*-----------------------------------------------------------------------------------------------------*/
+    if(sPt->u32TimeScale == RTC_CLOCK_12)
+    {
+        /*-------------------------------------------------------------------------------------------------*/
+        /* Important, range of 12-hour PM mode is 21 up to 32                                               */
+        /*-------------------------------------------------------------------------------------------------*/
+        if(sPt->u32AmPm == RTC_PM)
         {
-            /*-------------------------------------------------------------------------------------------------*/
-            /* Important, range of 12-hour PM mode is 21 up to 32                                               */
-            /*-------------------------------------------------------------------------------------------------*/
-            if(sPt->u32AmPm == RTC_PM)
-            {
-                sPt->u32Hour += 20ul;
-            }
+            sPt->u32Hour += 20ul;
         }
-
-        /*-----------------------------------------------------------------------------------------------------*/
-        /* Set RTC Alarm Date and Time                                                                         */
-        /*-----------------------------------------------------------------------------------------------------*/
-        u32RegCALM  = ((sPt->u32Year - RTC_YEAR2000) / 10ul) << 20;
-        u32RegCALM |= (((sPt->u32Year - RTC_YEAR2000) % 10ul) << 16);
-        u32RegCALM |= ((sPt->u32Month  / 10ul) << 12);
-        u32RegCALM |= ((sPt->u32Month  % 10ul) << 8);
-        u32RegCALM |= ((sPt->u32Day    / 10ul) << 4);
-        u32RegCALM |= (sPt->u32Day    % 10ul);
-
-        u32RegTALM  = ((sPt->u32Hour   / 10ul) << 20);
-        u32RegTALM |= ((sPt->u32Hour   % 10ul) << 16);
-        u32RegTALM |= ((sPt->u32Minute / 10ul) << 12);
-        u32RegTALM |= ((sPt->u32Minute % 10ul) << 8);
-        u32RegTALM |= ((sPt->u32Second / 10ul) << 4);
-        u32RegTALM |= (sPt->u32Second % 10ul);
-
-        RTC->CALM_M = (uint32_t)u32RegCALM;
-        RTC->TALM_M = (uint32_t)u32RegTALM;
     }
+
+    /*-----------------------------------------------------------------------------------------------------*/
+    /* Set RTC Alarm Date and Time                                                                         */
+    /*-----------------------------------------------------------------------------------------------------*/
+    u32RegCALM  = ((sPt->u32Year - RTC_YEAR2000) / 10ul) << 20;
+    u32RegCALM |= (((sPt->u32Year - RTC_YEAR2000) % 10ul) << 16);
+    u32RegCALM |= ((sPt->u32Month  / 10ul) << 12);
+    u32RegCALM |= ((sPt->u32Month  % 10ul) << 8);
+    u32RegCALM |= ((sPt->u32Day    / 10ul) << 4);
+    u32RegCALM |= (sPt->u32Day    % 10ul);
+
+    u32RegTALM  = ((sPt->u32Hour   / 10ul) << 20);
+    u32RegTALM |= ((sPt->u32Hour   % 10ul) << 16);
+    u32RegTALM |= ((sPt->u32Minute / 10ul) << 12);
+    u32RegTALM |= ((sPt->u32Minute % 10ul) << 8);
+    u32RegTALM |= ((sPt->u32Second / 10ul) << 4);
+    u32RegTALM |= (sPt->u32Second % 10ul);
+
+    RTC->CALM_M = (uint32_t)u32RegCALM;
+    RTC->TALM_M = (uint32_t)u32RegTALM;
 }
 
 /**

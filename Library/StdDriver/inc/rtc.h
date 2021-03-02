@@ -174,7 +174,6 @@ typedef struct
 #define RTC_READ_SPARE_REGISTER(u32RegNum)                  (RTC->SPR[(u32RegNum)])
 
 void RTC_Open(S_RTC_TIME_DATA_T *sPt);
-void RTC_Close(void);
 void RTC_GetDateAndTime(S_RTC_TIME_DATA_T *sPt);
 void RTC_GetAlarmDateAndTime(S_RTC_TIME_DATA_T *sPt);
 void RTC_SetDateAndTime(S_RTC_TIME_DATA_T *sPt);
