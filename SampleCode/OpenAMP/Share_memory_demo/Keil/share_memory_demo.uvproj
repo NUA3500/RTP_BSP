@@ -532,11 +532,6 @@
               <FilePath>..\..\..\..\ThirdParty\AMP\libmetal\lib\shmem_.c</FilePath>
             </File>
             <File>
-              <FileName>sys.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\ThirdParty\AMP\libmetal\lib\system\generic\cortexm\sys.c</FilePath>
-            </File>
-            <File>
               <FileName>log_.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\ThirdParty\AMP\libmetal\lib\log_.c</FilePath>
@@ -565,6 +560,11 @@
               <FileName>time.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\ThirdParty\AMP\libmetal\lib\system\generic\time.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\ThirdParty\AMP\libmetal\lib\system\generic\cortexm\sys_.c</FilePath>
             </File>
           </Files>
         </Group>

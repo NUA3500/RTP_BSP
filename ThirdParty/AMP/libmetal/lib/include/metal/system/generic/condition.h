@@ -16,7 +16,9 @@
 #ifndef __METAL_GENERIC_CONDITION__H__
 #define __METAL_GENERIC_CONDITION__H__
 
+#if !defined (__ICCARM__)
 #include <unistd.h>
+#endif
 #include <metal/atomic.h>
 #include <stdint.h>
 #include <limits.h>

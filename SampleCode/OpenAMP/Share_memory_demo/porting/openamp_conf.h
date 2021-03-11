@@ -35,10 +35,11 @@ static uint32_t Shere_Memory__[Shere_Memory_Size];
 #define SHM_SIZE                (size_t)Shere_Memory_Size
 
 #else
-extern int __OPENAMP_region_start__[];   /* defined by linker script */
-extern int __OPENAMP_region_end__[];  /* defined by linker script */
-#define SHM_START_ADDRESS       ((metal_phys_addr_t)__OPENAMP_region_start__)
-#define SHM_SIZE                (size_t)((void *)__OPENAMP_region_end__-(void *) __OPENAMP_region_start__)
+#define Shere_Memory_Size 1024
+static uint32_t Shere_Memory__[Shere_Memory_Size];
+
+#define SHM_START_ADDRESS       (metal_phys_addr_t)(0x24000000)
+#define SHM_SIZE                (size_t)Shere_Memory_Size
 #endif
 
 #define VRING_RX_STR_ADDR        -1
