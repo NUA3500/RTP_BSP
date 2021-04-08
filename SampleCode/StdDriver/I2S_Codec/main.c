@@ -54,8 +54,8 @@ void NAU8822_Setup()
     I2C_WriteNAU8822(0,  0x000);   /* Reset all registers */
     CLK_SysTickDelay(10000);
 
-    I2C_WriteNAU8822(1,  0x02F);
-    I2C_WriteNAU8822(2,  0x1B3);   /* Enable L/R Headphone, ADC Mix/Boost, ADC */
+    I2C_WriteNAU8822(1,  0x03F);
+    I2C_WriteNAU8822(2,  0x1BF);   /* Enable L/R Headphone, ADC Mix/Boost, ADC */
     I2C_WriteNAU8822(3,  0x07F);   /* Enable L/R main mixer, DAC */
     I2C_WriteNAU8822(4,  0x010);   /* 16-bit word length, I2S format, Stereo */
     I2C_WriteNAU8822(5,  0x000);   /* Companding control and loop back mode (all disable) */
@@ -65,10 +65,7 @@ void NAU8822_Setup()
     I2C_WriteNAU8822(14, 0x108);   /* ADC HP filter is disabled, ADC oversampling rate is 128x */
     I2C_WriteNAU8822(15, 0x1EF);   /* ADC left digital volume control */
     I2C_WriteNAU8822(16, 0x1EF);   /* ADC right digital volume control */
-
-    I2C_WriteNAU8822(44, 0x000);   /* LLIN/RLIN is not connected to PGA */
-    I2C_WriteNAU8822(47, 0x050);   /* LLIN connected, and its Gain value */
-    I2C_WriteNAU8822(48, 0x050);   /* RLIN connected, and its Gain value */
+    I2C_WriteNAU8822(44, 0x033);   /* LMICN/LMICP is connected to PGA */
     I2C_WriteNAU8822(50, 0x001);   /* Left DAC connected to LMIX */
     I2C_WriteNAU8822(51, 0x001);   /* Right DAC connected to RMIX */
 
@@ -219,9 +216,6 @@ void NAU88L25_Setup(void)
 
 void SYS_Init(void)
 {
-    /* Unlock protected registers */
-    SYS_UnlockReg();
-
     /* Enable External XTAL (4~24 MHz) */
     CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
 

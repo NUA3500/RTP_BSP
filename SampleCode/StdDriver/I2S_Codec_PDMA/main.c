@@ -84,8 +84,8 @@ void NAU8822_Setup()
     I2C_WriteNAU8822(0,  0x000);   /* Reset all registers */
     CLK_SysTickDelay(10000);
 
-    I2C_WriteNAU8822(1,  0x02F);
-    I2C_WriteNAU8822(2,  0x1B3);   /* Enable L/R Headphone, ADC Mix/Boost, ADC */
+    I2C_WriteNAU8822(1,  0x03F);
+    I2C_WriteNAU8822(2,  0x1BF);   /* Enable L/R Headphone, ADC Mix/Boost, ADC */
     I2C_WriteNAU8822(3,  0x07F);   /* Enable L/R main mixer, DAC */
     I2C_WriteNAU8822(4,  0x010);   /* 16-bit word length, I2S format, Stereo */
     I2C_WriteNAU8822(5,  0x000);   /* Companding control and loop back mode (all disable) */
@@ -95,10 +95,7 @@ void NAU8822_Setup()
     I2C_WriteNAU8822(14, 0x108);   /* ADC HP filter is disabled, ADC oversampling rate is 128x */
     I2C_WriteNAU8822(15, 0x1EF);   /* ADC left digital volume control */
     I2C_WriteNAU8822(16, 0x1EF);   /* ADC right digital volume control */
-
-    I2C_WriteNAU8822(44, 0x000);   /* LLIN/RLIN is not connected to PGA */
-    I2C_WriteNAU8822(47, 0x050);   /* LLIN connected, and its Gain value */
-    I2C_WriteNAU8822(48, 0x050);   /* RLIN connected, and its Gain value */
+    I2C_WriteNAU8822(44, 0x033);   /* LMICN/LMICP is connected to PGA */
     I2C_WriteNAU8822(50, 0x001);   /* Left DAC connected to LMIX */
     I2C_WriteNAU8822(51, 0x001);   /* Right DAC connected to RMIX */
 
@@ -298,23 +295,23 @@ void PDMA_Init(void)
     DMA_TXDESC[0].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_TXDESC[0].src = (uint32_t)&PcmTxBuff[0];
     DMA_TXDESC[0].dest = (uint32_t)&I2S0->TXFIFO;
-    DMA_TXDESC[0].offset = (uint32_t)&DMA_TXDESC[1] - (PDMA2->SCATBA);
+    DMA_TXDESC[0].offset = (uint32_t)&DMA_TXDESC[1];
 
     DMA_TXDESC[1].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_INC|PDMA_DAR_FIX|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_TXDESC[1].src = (uint32_t)&PcmTxBuff[1];
     DMA_TXDESC[1].dest = (uint32_t)&I2S0->TXFIFO;
-    DMA_TXDESC[1].offset = (uint32_t)&DMA_TXDESC[0] - (PDMA2->SCATBA);   //link to first description
+    DMA_TXDESC[1].offset = (uint32_t)&DMA_TXDESC[0];   //link to first description
 
     /* Rx description */
     DMA_RXDESC[0].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_RXDESC[0].src = (uint32_t)&I2S0->RXFIFO;
     DMA_RXDESC[0].dest = (uint32_t)&PcmRxBuff[0];
-    DMA_RXDESC[0].offset = (uint32_t)&DMA_RXDESC[1] - (PDMA2->SCATBA);
+    DMA_RXDESC[0].offset = (uint32_t)&DMA_RXDESC[1];
 
     DMA_RXDESC[1].ctl = ((BUFF_LEN-1)<<PDMA_DSCT_CTL_TXCNT_Pos)|PDMA_WIDTH_32|PDMA_SAR_FIX|PDMA_DAR_INC|PDMA_REQ_SINGLE|PDMA_OP_SCATTER;
     DMA_RXDESC[1].src = (uint32_t)&I2S0->RXFIFO;
     DMA_RXDESC[1].dest = (uint32_t)&PcmRxBuff[1];
-    DMA_RXDESC[1].offset = (uint32_t)&DMA_RXDESC[0] - (PDMA2->SCATBA);   //link to first description
+    DMA_RXDESC[1].offset = (uint32_t)&DMA_RXDESC[0];   //link to first description
 
     /* Open PDMA channel 1 for I2S TX and channel 2 for I2S RX */
     PDMA_Open(PDMA2,0x3 << 1);
@@ -348,6 +345,9 @@ int32_t main (void)
 
     /* Init System, peripheral clock and multi-function I/O */
     SYS_Init();
+
+    /* Lock protected registers */
+    SYS_LockReg();
 
     /* Init UART to 115200-8n1 for print message */
     UART_Open(UART16, 115200);
